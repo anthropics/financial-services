@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Control",
+  "description": "A single control row consumed by control-matrix and policy-gap-review. Obligation-anchored: a control without an obligation_id is either a hygiene control out of scope or evidence that obligation extraction is incomplete.",
+  "type": "object",
+  "required": [
+    "control_id",
+    "control_objective",
+    "control_activity",
+    "control_type",
+    "frequency",
+    "owner",
+    "evidence",
+    "test_method"
+  ],
+  "properties": {
+    "control_id": {
+      "type": "string",
+      "description": "Stable identifier for the control."
+    },
+    "obligation_id": {
+      "type": "string",
+      "description": "Foreign key into obligation.schema.json. The matrix is obligation-anchored. Absence means the control is hygiene (out of scope) or the obligation extraction is incomplete; in either case the row should be revisited."
+    },
+    "risk_id": {
+      "type": "string",
+      "description": "Optional foreign key into the firm's risk taxonomy when the engagement uses one."
+    },
+    "control_objective": {
+      "type": "string",
+      "description": "The condition that must be true. Distinct from control_activity, which names who does what, how often, using what system."
+    },
+    "control_activity": {
+      "type": "string",
+      "description": "Who does what, how often, using what system. Distinct from control_objective."
+    },
+    "control_type": {
+      "type": "string",
+      "enum": [
+        "preventive",
+        "detective",
+        "response",
+        "compensating"
+      ],
+      "description": "Preventive stops the risk event; detective surfaces it after the fact; response is the action taken when the event occurs; compensating substitutes for an absent or weakened primary control."
+    },
+    "frequency": {
+      "type": "string",
+      "description": "event-based, real-time, daily, weekly, monthly, quarterly, semi-annual, annual, or ad-hoc."
+    },
+    "owner": {
+      "type": "string",
+      "description": "A named role with accountability (e.g., Head of Model Risk, Chief Privacy Officer, Head of Vendor Management). Generic team labels (e.g., 'Risk team') are not sufficient."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Evidence pointers: system of record output, sample report ID, file location, sign-off log. A policy document is a control statement, not evidence of operation."
+    },
+    "test_method": {
+      "enum": [
+        "inquiry",
+        "inspection",
+        "observation",
+        "reperformance",
+        "data-analysis",
+        "walkthrough",
+        "hybrid"
+      ]
+    },
+    "last_test_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date of the most recent test. Absence is acceptable for a newly designed control; surface as 'not yet tested' in the matrix tail."
+    },
+    "design_effectiveness": {
+      "enum": [
+        "effective",
+        "partially-effective",
+        "ineffective",
+        "not-tested"
+      ]
+    },
+    "operating_effectiveness": {
+      "enum": [
+        "effective",
+        "partially-effective",
+        "ineffective",
+        "not-tested"
+      ]
+    },
+    "open_issue_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Foreign keys into issue.schema.json. Open findings against this control. Surfaces in the matrix Open issues column."
+    }
+  }
+}

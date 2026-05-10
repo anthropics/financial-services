@@ -40,6 +40,11 @@
       "description": "Operational workflows: KYC document parsing and rules-grid evaluation"
     },
     {
+      "name": "risk-compliance",
+      "source": "./plugins/vertical-plugins/risk-compliance",
+      "description": "Second-line GRC workflows: scoping, obligation mapping, control matrices, evidence binders, issue write-ups, human-review gates, policy-gap reviews"
+    },
+    {
       "name": "pitch-agent",
       "source": "./plugins/agent-plugins/pitch-agent",
       "description": "Comps, precedents, LBO to a branded pitch deck, end to end"

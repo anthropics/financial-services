@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Risk report item",
+  "type": "object",
+  "required": [
+    "metric",
+    "threshold",
+    "current_value",
+    "status",
+    "commentary",
+    "owner"
+  ],
+  "properties": {
+    "metric": {
+      "type": "string"
+    },
+    "threshold": {
+      "type": "string"
+    },
+    "current_value": {
+      "type": "string"
+    },
+    "prior_value": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "green",
+        "amber",
+        "red",
+        "not-rated"
+      ]
+    },
+    "commentary": {
+      "type": "string"
+    },
+    "owner": {
+      "type": "string"
+    },
+    "action_required": {
+      "type": "string"
+    }
+  }
+}

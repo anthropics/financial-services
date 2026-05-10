@@ -1,0 +1,362 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/skills/scoping/schemas/scope.schema.json",
+  "title": "scope",
+  "description": "Structured engagement context produced by the scoping skill. Other second-line skills consume this record to set institution context, persona, source posture, risk lens, and overlay set. Stable contract — additive changes only between minor versions.",
+  "type": "object",
+  "required": [
+    "engagement_id",
+    "engagement_summary",
+    "institution",
+    "engagement",
+    "persona",
+    "source_posture",
+    "risk_lens",
+    "sector_overlay_set",
+    "cross_cutting_overlay_set"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Unique identifier for this engagement. Stable across revisions.",
+      "minLength": 1
+    },
+    "engagement_summary": {
+      "type": "string",
+      "description": "One paragraph: what the engagement covers, why now, what is excluded.",
+      "minLength": 1
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the current scope was last revised."
+    },
+    "institution": {
+      "type": "object",
+      "required": ["type", "primary_regulators"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "bank-holding-company",
+            "national-bank",
+            "state-member-bank",
+            "state-non-member-bank",
+            "savings-association",
+            "broker-dealer",
+            "investment-adviser",
+            "registered-fund",
+            "insurance-company",
+            "money-transmitter",
+            "fintech",
+            "sponsor-bank-program",
+            "mutual",
+            "credit-union",
+            "public-company",
+            "other"
+          ]
+        },
+        "type_other_label": {
+          "type": "string",
+          "description": "Free-text label when type is 'other'."
+        },
+        "asset_size_band": {
+          "type": "string",
+          "enum": [
+            "<$10B",
+            "$10-100B",
+            "$100B-$700B",
+            "$700B+",
+            "not-applicable"
+          ]
+        },
+        "charter": {
+          "type": "string",
+          "description": "Charter description (e.g., national-bank charter under OCC, state-chartered member bank, Delaware corporation, Vermont captive)."
+        },
+        "registrations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Federal, state, FINRA, NMLS, SEC IARD, NAIC, and similar registrations."
+        },
+        "geographic_footprint": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Jurisdictions, states, branches, foreign offices."
+        },
+        "primary_regulators": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["regulator", "relationship_type"],
+            "additionalProperties": false,
+            "properties": {
+              "regulator": {
+                "type": "string",
+                "description": "Named regulator (e.g., OCC, FRB, FDIC, SEC EXAMS, SEC IM, FINRA, CFPB, NYDFS, FinCEN, OFAC, NAIC, state DOI, FCA, EBA, ECB, PRA)."
+              },
+              "relationship_type": {
+                "type": "string",
+                "enum": [
+                  "primary-supervisor",
+                  "consolidated-supervisor",
+                  "examiner",
+                  "registration-authority",
+                  "rule-issuer",
+                  "deposit-insurer",
+                  "host-state",
+                  "functional-regulator",
+                  "other"
+                ]
+              },
+              "notes": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "recent_supervisory_posture": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "MRA, MRIA, consent order, enforcement action references where public; recent exam cycle outcomes."
+        }
+      }
+    },
+    "engagement": {
+      "type": "object",
+      "required": ["type", "audience"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "advisory",
+            "internal-review",
+            "exam-readiness-sprint",
+            "audit-support",
+            "model-validation",
+            "regulatory-change-implementation",
+            "board-pack-preparation",
+            "vendor-onboarding",
+            "issue-remediation",
+            "other"
+          ]
+        },
+        "type_other_label": { "type": "string" },
+        "sponsor": {
+          "type": "string",
+          "description": "Accountable executive role (not a personal name)."
+        },
+        "audience": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" },
+          "description": "Roles consuming the deliverable (CRO, CCO, BSA officer, AI Risk Committee, OCC examiner-in-charge)."
+        },
+        "timeframe": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "start": { "type": "string", "format": "date" },
+            "target_completion": { "type": "string", "format": "date" },
+            "milestones": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["label", "date"],
+                "additionalProperties": false,
+                "properties": {
+                  "label": { "type": "string" },
+                  "date": { "type": "string", "format": "date" },
+                  "owner": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "deliverable_shape": {
+          "type": "string",
+          "enum": [
+            "memo",
+            "workpaper-set",
+            "board-pack",
+            "exam-response-file",
+            "register",
+            "model-card",
+            "charter",
+            "playbook",
+            "other"
+          ]
+        },
+        "charter_reference": {
+          "type": "string",
+          "description": "Engagement letter / SOW / internal charter ID."
+        }
+      }
+    },
+    "persona": {
+      "type": "object",
+      "required": ["role"],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "Role running the engagement day-to-day. Backward-compatible field that downstream skills still read as 'persona.role'; semantically equivalent to 'running_lead'. On most CCO/CRO-sponsored engagements this is a delegate (e.g., a Compliance Risk Lead reporting to the CCO), not the accountable executive themselves; capture the delegate here and the executive in 'accountable_executive'.",
+          "enum": [
+            "CRO",
+            "head-of-model-risk",
+            "head-of-TPRM",
+            "head-of-operational-resilience",
+            "CCO",
+            "compliance-risk-lead",
+            "BSA-officer",
+            "AI-governance-lead",
+            "head-of-regulatory-affairs",
+            "head-of-internal-audit",
+            "engagement-partner",
+            "engagement-lead-advisory",
+            "embedded-business-risk-officer-1.5-line",
+            "fund-board-secretary",
+            "general-counsel",
+            "other"
+          ]
+        },
+        "role_other_label": { "type": "string" },
+        "running_lead": {
+          "type": "string",
+          "description": "Delegate who runs the engagement day-to-day (e.g., compliance-risk-lead, model-risk-lead, TPRM-analyst-lead). Optional and additive; when not supplied, downstream consumers should default running_lead to the value of 'role' (and, if role is absent, to 'accountable_executive'). Semantically aligned with 'role' for backward compatibility; specifies the running-lead distinct from the accountable executive when the two differ. Free-text to allow lead-role variants the executive enum does not capture."
+        },
+        "accountable_executive": {
+          "type": "string",
+          "description": "Accountable executive who owns engagement sign-off. Optional. Same enum vocabulary as 'role'; common values include CRO, CCO, BSA-officer, AI-governance-lead, head-of-regulatory-affairs. When 'running_lead' is supplied without 'accountable_executive', downstream consumers should treat the executive as not yet named (open question for the sponsor) rather than infer one."
+        },
+        "function": {
+          "type": "string",
+          "description": "Plain-language function the persona sits in (risk management, model risk, AI governance, TPRM, operational resilience, compliance, financial crime, regulatory affairs, internal audit, advisory)."
+        },
+        "decision_rights": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "What the persona can sign off on within this engagement."
+        },
+        "review_gates": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Named gates the engagement passes through (committee review, board review, regulator review, customer-facing approval, independent challenge, partner approval, internal QC)."
+        }
+      }
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "public-plus-firm-policy",
+        "public-plus-firm-policy-plus-evidence",
+        "connector-aware"
+      ],
+      "description": "How much non-public input the engagement is allowed to consume."
+    },
+    "connectors_enabled": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Specific connectors the engagement can call (GRC platform, policy management system, document management, model inventory, vendor inventory, ticketing, data-lineage)."
+    },
+    "confidentiality_posture": {
+      "type": "string",
+      "enum": [
+        "public",
+        "firm-restricted",
+        "privileged",
+        "regulator-confidential"
+      ]
+    },
+    "risk_lens": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "credit",
+          "market",
+          "liquidity",
+          "operational",
+          "strategic",
+          "reputational",
+          "model",
+          "climate",
+          "cyber",
+          "conduct",
+          "financial-crime",
+          "consumer-compliance",
+          "third-party",
+          "ICT",
+          "fiduciary",
+          "legal",
+          "other"
+        ]
+      },
+      "description": "Risk types in scope. Drives which downstream skills and overlays apply."
+    },
+    "risk_taxonomy_reference": {
+      "type": "string",
+      "description": "Pointer to the firm risk taxonomy this engagement aligns to (e.g., references/firm-overlay.md#taxonomy)."
+    },
+    "sector_overlay_set": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["banking", "insurance", "capital-markets", "payments-fintech"]
+      },
+      "uniqueItems": true,
+      "description": "Which sector overlays downstream skills should load."
+    },
+    "cross_cutting_overlay_set": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["cyber", "privacy", "climate", "conduct"]
+      },
+      "uniqueItems": true,
+      "description": "Which cross-cutting overlays downstream skills should load."
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Topics, entities, products, functions explicitly excluded."
+    },
+    "assumptions_and_dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Facts treated as fixed; what would invalidate them."
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Items the practitioner has flagged for clarification with the engagement sponsor."
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "additionalProperties": false,
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "reason": { "type": "string" },
+          "delta": { "type": "string" },
+          "approved_by": { "type": "string" }
+        }
+      },
+      "description": "Append-only log of scope changes."
+    }
+  }
+}
