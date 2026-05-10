@@ -1,25 +1,85 @@
+---
+skill: commerce-intelligence
+version: 2.0.0
+vertical: commerce-currency
+maintainer: kaelum@kaelum-financial-services
+updated: 2026-05-09
+---
+
 # Commerce Intelligence
- 
-## Purpose
-This skill governs all transaction data analysis, pattern recognition, merchant and user intelligence generation, and cross-agent signal dispatch. Apply when generating insights dashboards, producing performance reports, identifying anomalies, or feeding intelligence to other agents.
- 
-## Data Sources
-Transaction event stream (via Paperclip event bridge), user account data (via Base44 SSOT), merchant performance data, KVI metrics feed, SENTINEL risk scoring output, creator activity logs.
- 
-## Spending Pattern Analysis
-Track at user level: average transaction frequency, average transaction value, preferred merchant categories, KLMback accumulation rate, redemption patterns. Segment users: high-frequency low-value (HF-LV), low-frequency high-value (LF-HV), new active, dormant (no transaction in 30 days). Personalised insights fed to User Personal Agent for individual user display.
- 
-## Merchant Pattern Analysis
-Daily: transaction volume, average basket value, customer return rate, KLM redemption request frequency, discount utilisation rate. Weekly: merchant performance score (0-100), cohort analysis (new vs. returning customer ratio), category benchmark comparison. Flag: merchants below 50th percentile for three consecutive weeks (churn risk). Flag: merchants in top 20th percentile for tier promotion recommendation.
- 
-## Cross-Agent Signal Format
-Signals dispatched via Paperclip event bridge. Standard signal structure: { signal_type: string, source_agent: string, target_agent: string, priority: 'critical' | 'high' | 'medium' | 'low', payload: object, requires_approval: boolean, timestamp: ISO8601 }. Research Scout signals to Creator Studio and Merchant Support must include: intelligence_category, urgency, recommended_action, raw_source_reference.
- 
-## Anomaly Detection Baselines
-Establish rolling 30-day baseline per user and per merchant. Flag when: transaction value exceeds 3x baseline average, transaction frequency exceeds 5x baseline hourly rate, new merchant with zero history processes transaction above £500, or geographic pattern inconsistency detected. All anomalies above medium severity forwarded to Fraud and Scam Detection Agent.
- 
-## KVI Data Feed
-Transaction Insights Agent calculates and pushes KVI dimension inputs to KVI Governance Agent via Paperclip at end of each assessment period. Inputs: total GTV (90 days), transaction count, unique active merchants, unique active creators, redemption volume, KPR inflow. Data is pre-validated for completeness before dispatch.
- 
-## Privacy Rules
-All cross-user analytics are aggregated and anonymised for admin use. Individual user data is only surfaced to that user's own User Personal Agent instance. No merchant can see another merchant's transaction data. Creator performance data is private unless the creator opts into leaderboard features.
+
+## Overview
+
+Commerce Intelligence is K.A.T.E.'s analytical layer for monitoring,
+interpreting, and acting on data signals across the KAELUM ecosystem.
+It feeds directly into the KVI Governance Framework and provides the
+data foundation for KLM price appreciation assessments.
+
+## Primary Data Signals Monitored
+
+Commerce Intelligence continuously monitors all six KLM appreciation
+signal categories on behalf of K.A.T.E.:
+
+| Signal | Data Points Monitored |
+|---|---|
+| Platform Usage | DAU, MAU, session frequency, feature engagement |
+| KLM Sale Volume | Daily/weekly/monthly KLM purchase volume, average purchase size |
+| Participant Activity | New onboardings, active accounts, retention rate, churn rate |
+| Transfers | Internal KLM transfer volume and frequency |
+| Purchases Using KLM | Transaction count, average transaction value, merchant and creator coverage |
+| Cross-Border Settlement | KXCS transaction volume, currency pairs, settlement speed |
+
+## Secondary Signals (Supplementary)
+
+Commerce Intelligence also monitors the following supplementary signals
+which may be considered by K.A.T.E. in appreciation assessments:
+
+- New merchant onboarding rate
+- New creator onboarding rate
+- KST Sub-Token slot sales
+- CLD registration volume
+- NFT marketplace transaction activity
+- Savings Vault deposit rates
+- KPR reserve balance growth
+- Bill Pay utilisation rate
+- SENTINEL clean transaction rate (low fraud rate signals healthy network)
+- KVI composite score trend over rolling 30-day period
+- Redemption float growth (gap between KLM purchased and KLM redeemed)
+- Geographic spread of transactions (new regions signal organic growth)
+
+## Intelligence Outputs
+
+Commerce Intelligence produces the following outputs for K.A.T.E.:
+
+1. **Daily Signal Report** — All six primary signals with current values,
+   7-day trend, and 30-day baseline comparison
+2. **KVI Input Data Package** — Formatted signal data for KVI Governance
+   agent assessment
+3. **Anomaly Alerts** — Real-time alerts when any signal drops below
+   threshold or spikes unexpectedly
+4. **Appreciation Readiness Score** — A daily composite score indicating
+   how close the network is to appreciation threshold conditions
+5. **Participant Intelligence Reports** — Segmented by Customer, Creator,
+   and Merchant for K.A.T.E. agent-specific use
+
+## Integration Points
+
+- **KVI Governance Agent** — Receives daily signal data package
+- **K.A.T.E. Orchestrator** — Receives anomaly alerts and appreciation
+  readiness score
+- **Merchant Performance Agent** — Receives merchant-segmented intelligence
+- **Creator Studio Agent** — Receives creator-segmented intelligence
+- **Transaction Insights Agent** — Shares transaction-level data
+- **Fraud and Scam Detection Agent** — Shares SENTINEL clean rate data
+
+## Commands
+
+- `/commerce-intelligence:daily-report` — Return current day signal report
+  across all six primary categories
+- `/commerce-intelligence:appreciation-readiness` — Return current
+  appreciation readiness score with signal breakdown
+- `/commerce-intelligence:trend-analysis` — Return 30-day trend for all
+  primary signals
+- `/commerce-intelligence:anomaly-check` — Return any active anomaly alerts
+- `/commerce-intelligence:participant-report` — Return segmented intelligence
+  by participant type

@@ -1,147 +1,104 @@
+---
+skill: creator-economics
+version: 2.0.0
+vertical: commerce-currency
+maintainer: kaelum@kaelum-financial-services
+updated: 2026-05-09
+---
+
 # Creator Economics
 
-## Purpose
-This skill governs all reasoning, communication, and processing related
-to KAELUM Creator accounts. Apply when advising creators, generating
-performance reports, processing Creator-specific transactions, or
-communicating Creator benefits and obligations.
+## Overview
 
-## Creator Active Balance (KAB)
-Minimum: 1,800 KLM (£162). Framed as a starting position in the KAELUM
-ecosystem, not a fee. Unlocks the full Creator feature suite on completion
-of onboarding.
+Creators are verified commerce professionals within the KAELUM closed-loop
+network. They operate Social Paylinks and Commerce Drops priced in KLM,
+earning KLM through purchaser transactions. Creators can redeem KLM for
+fiat through Kaelum Technologies Ltd. All Creator KLM calculations use the
+current KLM price, not the fixed floor price.
 
-## Creator Revenue Streams
+## Onboarding Requirements
 
-Commerce Drops: Creators list NFT-based commerce drops on the KAELUM
-platform. Revenue is received in KLM at the point of sale. Creator sets
-their own KLM price per drop. KAELUM charges a marketplace commission
-on each Commerce Drop sale. All listings pass Commerce Drop Content
-Moderation before publishing.
+- Active public profile with content history (required for verification)
+- Minimum Active Balance: 1,800 KLM (£162 at floor price)
+- Social profile verification completed
+- Creator terms agreed with Kaelum Technologies Ltd
 
-Personalized Commerce Contracts (PCC): Creators establish bespoke
-commerce arrangements with merchants and customers. PCCs define custom
-discount rates, exclusivity terms, and revenue share arrangements within
-the KAELUM closed-loop structure.
+## Creator Tools
 
-KPR Distribution: 1.2% TPR from every transaction a creator processes
-is allocated to the KPR. Creators receive their proportional quarterly
-KLMback distribution. KLMback rates apply by KCC tier.
-
-Referral Hub and Affiliate Program: Creators earn KLM for referring new
-users (Customer, Creator, or Merchant) to the platform. Commission rate
-defined in the current referral schedule. Commerce Circles allow creators
-to build recurring revenue networks from referred participants.
+| Tool | Description |
+|---|---|
+| Creator Studio | Central dashboard governed by K.A.T.E. |
+| Social Paylinks | Direct commerce links priced in KLM |
+| Commerce Drops | Time-limited releases moderated by K.A.T.E. |
+| Creator Advisor | K.A.T.E.-powered commerce intelligence |
+| Bill Pay | Pay business expenses using accumulated KLM |
+| Savings Vault | Designate KLM for structured holding |
+| KST Revenue Calculator | Live KST data bridge |
+| KVI Creator Dashboard | Network health and appreciation visibility |
+| Research Scout | K.A.T.E. research agent access |
+| Referral Hub | Network growth tools |
 
 ## Social Paylinks
 
-Creator Paylinks are personalised commerce links that enable creators to
-monetise content and engage directly with their audience across any
-digital channel: social media, websites, newsletters, or any other
-digital touchpoint. They eliminate complex purchase funnels by turning
-engagement directly into commerce. 
+- Purchasers receive minimum **6% spending discount** on every transaction
+- Discount applies on top of the current KLM price
+- Fiat equivalent displayed to purchasers at current KLM price
+- All transactions SENTINEL-screened by K.A.T.E. in real time
+- Creator accumulates KLM at current price per transaction
 
-Creator Paylinks offer a minimum of 6%+ Discount to purchasers.
+## Commerce Drops
 
-Direct Monetisation: Creators generate unique Paylinks pointing to
-their products, services, Commerce Drops, or support pages. Each link
-enables immediate KLM transactions from the creator's audience without
-leaving the channel they are already in.
+- Time-limited product or content releases priced in KLM
+- Automatically moderated by K.A.T.E. Commerce Drop agent
+- Purchasers receive minimum 6% discount
+- Drop pricing set by Creator in KLM at current price
 
-Social Commerce Integration: Paylinks are built for social distribution.
-A creator posts a link on Instagram, Threads, X, or any platform and
-their audience transacts in KLM directly. No redirect chains, no
-separate checkout pages.
+## Creator Redemption
 
-Performance Tracking: Every Paylink tracks clicks and conversions in
-real time via the Creator Studio dashboard. Creators see which links
-drive the most revenue, which audiences convert, and which content
-formats generate the highest transaction value. Powered by the platform
-function createSocialPayLink for link generation and trackPayLinkClick
-for performance data.
+Creators are one of two participant types (alongside Merchants) who can
+redeem KLM for fiat:
 
-Customisation: Paylinks are branded to the creator's identity. Link
-presentation matches the creator's name, handle, and listed product or
-service. Creators manage all active Paylinks from the Social Links
-section of the Creator Portal.
+- Redemption processed by Kaelum Technologies Ltd
+- Current rail: Stripe
+- Post-funding rail: Modulr BaaS
+- Redemption value calculated at current KLM price at time of redemption
+- Redemption subject to SENTINEL AML screening
 
-Payments: All Paylink transactions are settled in KLM. The creator
-receives KLM directly into their account on each completed transaction.
-The standard KAELUM marketplace commission applies. The customer
-receives the standard 6% or greater merchant spending discount on all
-Paylink purchases where the creator has a merchant relationship, or the
-standard KLM ecosystem rate where no merchant discount applies.
+## KLM Price Appreciation Impact on Creators
 
-KLM Advantage: Customers paying via Creator Paylinks in KLM receive
-their standard spending discount. The creator accumulates KLM income
-that contributes to their KPR distribution eligibility. Both sides of
-the transaction benefit from the closed-loop economics, which is the
-structural advantage Paylinks have over standard payment links using
-card rails.
+When K.A.T.E. applies appreciation:
 
+- All KLM held by the Creator increases in fiat-equivalent value
+- Future Paylink and Commerce Drop transactions are priced at the new
+  higher KLM price
+- Redemptions after appreciation yield more fiat per KLM unit
+- The Creator's Active Balance of 1,800 KLM grows in fiat value
+  automatically
 
-## Creator Spending Discount
-Creators receive the standard 6%+ or greater merchant spending discount
-when spending KLM at participating merchants, identical to Customer
-account holders.
+## Creator Dashboard Displays
 
-## KST Access for Creators
-Creators are eligible to purchase KST sub-token ownership slots at
-£180,000. A creator who owns a KST slot receives the full 2.5%
-commission on all transactions processed through that sub-token, paid
-monthly in KLM, plus quarterly Circulation Growth Bonuses and 1.2%
-compounding appreciation on each subsequent slot sale.
+- Current KLM balance at current KLM price (not floor price)
+- Appreciation history and impact on balance value
+- Total KLM earned through Paylinks and Commerce Drops
+- Total fiat redeemed to date
+- Current network signal status (simplified KVI view)
+- Bill Pay history
+- Savings Vault balance at current KLM price
 
-## KVI Creator Dashboard
-Creators have access to the KVI Creator Dashboard, which surfaces: KLM
-circulation rate for their listings, audience spending patterns, Commerce
-Drop conversion metrics, Social Paylink performance, and KVI contribution
-score. The KVI What-If Sandbox lets creators model the impact of pricing
-and listing changes on their KVI contribution before committing.
+## Bill Pay
 
-## Agentic Banking Suite for Creators
-Agentic Account: Claude Sonnet advisory layer, per-creator 30-day
-conversation history, advisory only in v1.
+Creators can use accumulated KLM to pay business expenses within the
+KAELUM network. This keeps KLM circulating within the closed loop rather
+than triggering fiat redemption, which benefits the network health signals
+monitored by K.A.T.E. for appreciation assessments.
 
-Agentic Reserve (Savings Vault): KLM savings functionality connected to
-KPR infrastructure. Creator KLM held in Savings Vault contributes to
-quarterly KPR distribution calculations.
+## Commands
 
-Agentic Credit Score (ACR): Creator creditworthiness scoring, tiers A
-through E based on transaction history, KLM circulation, and platform
-activity. Minimum ACR Tier C (501+) required for some advanced features.
-
-Agentic Liquidity: Cash flow analysis across KLM holdings, incoming
-Paylink revenue, and Bill Pay obligations.
-
-Agentic Tax Export: Generates UK-compliant transaction records for
-accountant handoff. KLM income is not VAT-able at point of receipt
-under MPV rules; VAT applies at point of merchant redemption.
-
-Agentic Supplier Pay: Streamlines KLM-denominated payments to suppliers
-within the KAELUM ecosystem.
-
-## Creator Bill Pay
-Creators can schedule and process bill payments through the KAELUM
-platform using KLM balances. All Bill Pay obligations are tracked in
-the Agentic Liquidity dashboard.
-
-## Creator Payout Mechanics
-Creators do not redeem KLM for fiat directly. Only merchants hold fiat
-redemption rights. Creators can spend KLM at participating merchants
-(6%+ discount) or hold for KPR quarterly distributions. Creators who
-wish to convert KLM to fiat must do so through a merchant redemption
-intermediary arrangement or via the standard Redeem KLM to Fiat feature
-available in Account Management, subject to platform terms.
-
-## Creator Research Scout Access
-Creators have access to Research Scout market intelligence tools within
-the platform. Pay-per-scan in KLM. Scout Profiles are configurable by
-the creator to track trends relevant to their content category,
-competitor creator activity, and audience intelligence.
-
-## Creator Trust and Verification
-Verified Creator badge available on completion of enhanced identity
-verification. Verified status unlocks: Trust Leaderboard visibility,
-higher Paylink limits, priority Creator Studio Ai advisory, and
-eligibility for co-marketing opportunities with KAELUM.
+- `/creator-economics:balance-value` — Return Creator KLM balance at
+  current KLM price
+- `/creator-economics:paylink-earnings` — Return total KLM earned through
+  Paylinks and Commerce Drops
+- `/creator-economics:redemption-value` — Return fiat value of a given
+  KLM amount at current price
+- `/creator-economics:appreciation-impact` — Return impact of all
+  appreciation events on Creator balance value

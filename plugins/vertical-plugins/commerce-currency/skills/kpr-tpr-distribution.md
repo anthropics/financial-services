@@ -1,33 +1,93 @@
+---
+skill: kpr-tpr-distribution
+version: 2.0.0
+vertical: commerce-currency
+maintainer: kaelum@kaelum-financial-services
+updated: 2026-05-09
+---
+
 # KPR and TPR Distribution
- 
-## Purpose
-This skill governs all reasoning and processing related to the Transaction Participation Reward (TPR) and the KAELUM Performance Reserve (KPR). Apply whenever calculating rewards, auditing reserve balances, preparing distribution payouts, or communicating KLMback mechanics to users.
- 
+
+## Overview
+
+The KPR (Kaelum Performance Reserve) and TPR (Transaction Participation Reward)
+are KAELUM's mechanisms for distributing value back to network participants.
+All calculations use the current KLM price at the time of each transaction or
+distribution event, not the fixed floor price of £0.09.
+
 ## Transaction Participation Reward (TPR)
-Rate: 1.2% of every transaction value. Never quote 1.5% — this is incorrect. The 1.2% rate is firm and applies to every KLM spend transaction regardless of merchant, user type, or transaction size.
- 
-Allocation: TPR is automatically allocated to the KPR (Kaelum Performance Reserve) at the point of each transaction. It is not distributed immediately.
- 
-Distribution: Quarterly, in KLM. All eligible KLM holders receive their proportional share from the KPR.
- 
-## KPR Reserve Health
-The KPR must maintain sufficient balance to cover the next quarterly distribution at all times. Target reserve coverage: minimum 1.5x the projected quarterly distribution amount. If reserve coverage drops below 1.2x, the Finance Agent and KVI Governance Agent must be notified immediately for rebalancing assessment.
- 
-## KLMback Rates by Tier
-KCR (Kaelum Commerce Reserve) account holders receive enhanced KLMback rates above the base TPR distribution:
-- Bronze (£60K to £179,999): 1.0% base rate
-- Silver (£180K to £269,999): 2.0% base rate
-- Gold (£270K to £359,999): 3.0% base rate
-- Platinum (£360K to £999,999): 4.0% base rate
-- Diamond (£1M to £1.8M): 5.0% base rate
- 
-Maximum combined KLMback rate: 14%. This includes: tier base rate + merchant boosts + TPR standard allocation. Merchant boost cap: 9% hard cap. Merchant boosts are funded by the merchant's own margin and credited from their redemption proceeds.
- 
-## KCR Account Minimums
-KCR holders must have "purchased" (never "deposited") the qualifying amount in KLM. Minimum 9% merchant and creator spending discount for all KCR holders, regardless of tier.
- 
-## KST Commission vs TPR
-These are separate mechanisms. KST slot owners earn 2.5% commission on every transaction value, paid monthly in KLM. The 1.2% TPR is additionally allocated to the KPR on every transaction. Both apply to the same transaction. They do not net against each other.
- 
-## Distribution Audit Process
-Before each quarterly distribution, the Finance Agent and Compliance and Regulatory Agent jointly audit: total KPR balance, eligible holder list and proportional allocations, KST commission calculations, KLMback tier calculations. All calculations are staged for admin approval before any KLM is distributed. The KVI Governance Agent produces its quarterly report alongside the distribution audit.
+
+- **Rate:** 1.2% of every transaction value
+- **Calculation basis:** Current KLM price at time of transaction
+- **Trigger:** Every KLM transaction within the network
+- **Allocation:** Automatically credited to the KPR reserve
+- **Distribution:** Quarterly in KLM to eligible participants
+- **Governed by:** K.A.T.E. automatically. No manual intervention required.
+
+### TPR Calculation Example
+
+If the current KLM price is £0.095 (post-appreciation) and a transaction
+value is 1,000 KLM:
+
+- Transaction value in fiat: £95.00
+- TPR at 1.2%: £1.14
+- KLM equivalent at current price (£0.095): 12 KLM credited to KPR
+
+All TPR calculations use the current KLM price at the moment of transaction,
+ensuring participants benefit from price appreciation in their TPR accrual.
+
+## KPR (Kaelum Performance Reserve)
+
+The KPR is the central reserve pool funded by TPR allocations from every
+transaction. It is governed exclusively by K.A.T.E.
+
+- **Funded by:** 1.2% TPR from every network transaction
+- **Reserve balance displayed at:** Current KLM price (not floor price)
+- **Distribution frequency:** Quarterly (1 January, 1 April, 1 July, 1 October)
+- **Distribution basis:** Current KLM price at date of distribution
+- **Eligible participants:** All active Customers, Creators, and Merchants
+  with qualifying transaction history in the preceding quarter
+
+## Quarterly Distribution Mechanics
+
+At each quarterly distribution:
+
+1. K.A.T.E. calculates total KPR balance in KLM at current KLM price
+2. K.A.T.E. identifies all eligible participants and their qualifying
+   transaction volumes for the preceding quarter
+3. Distribution is calculated proportionally based on participant transaction
+   volume as a share of total network transaction volume
+4. KLM is distributed directly to participant accounts at current KLM price
+5. Full distribution log is generated and stored with timestamp, price used,
+   total distributed, and per-participant allocation
+
+## KST Sub-Token Commission
+
+KST slot owners earn a separate commission structure, distinct from TPR/KPR:
+
+- **Rate:** 2.5% of every transaction value within their sub-token ecosystem
+- **Payment:** Monthly in KLM at current KLM price at time of distribution
+- **Basis:** Current KLM price at time of distribution (not floor price)
+- **Governed by:** K.A.T.E. KST Treasury Management system
+
+## Price Appreciation Impact on KPR
+
+When K.A.T.E. applies a KLM price appreciation event:
+
+- The KPR reserve balance increases in fiat-equivalent value automatically
+  (same KLM units, higher price per unit)
+- All future TPR accruals are calculated at the new higher price
+- Quarterly distributions are made at the price current at distribution date
+- Participants already holding KLM see their balance value increase without
+  any additional action required
+
+## Commands
+
+- `/kpr-tpr-distribution:kpr-balance` — Return current KPR reserve balance
+  in KLM and fiat equivalent at current KLM price
+- `/kpr-tpr-distribution:tpr-calculation` — Calculate TPR for a given
+  transaction value at current KLM price
+- `/kpr-tpr-distribution:quarterly-projection` — Project next quarterly
+  distribution based on current KPR balance and eligible participant count
+- `/kpr-tpr-distribution:distribution-history` — Return full quarterly
+  distribution history

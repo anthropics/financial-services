@@ -1,28 +1,143 @@
+---
+skill: kyc-onboarding-rules
+version: 2.0.0
+vertical: commerce-currency
+maintainer: kaelum@kaelum-financial-services
+updated: 2026-05-09
+---
+
 # KYC and Onboarding Rules
- 
-## Purpose
-This skill governs all user onboarding logic, KYC verification steps, Active Balance requirements, and account type-specific rules. Apply during onboarding flows, re-verification triggers, and any user account type change.
- 
-## Three Account Types
-Customer, Creator, and Merchant. All three are first-class participants. Onboarding journey and requirements differ by type.
- 
-## Active Balance Minimums (Required Before First Transaction)
-Customer: 400 KLM at £0.09 = £36 minimum. Creator: 1,800 KLM at £0.09 = £162 minimum. Merchant: 3,690 KLM at £0.09 = £332.10 minimum. Frame always as "starting balance," never as a fee. Explain it as the user's first position in the KAELUM commerce ecosystem.
- 
-## Onboarding Steps (Customer)
-1. Account creation (email, phone, password). 2. Email and phone verification. 3. Identity verification (government photo ID upload + liveness check). 4. Address verification. 5. SENTINEL KYC clearance. 6. Active Balance purchase (minimum 400 KLM via TrueLayer Open Banking or Stripe). 7. First transaction enabled.
- 
-## Onboarding Steps (Creator)
-Same as Customer steps 1 through 6, plus: social media or platform profile verification. Active Balance minimum: 1,800 KLM. Creator Studio and Social Paylinks unlocked on completion.
- 
-## Onboarding Steps (Merchant)
-1. Account creation. 2. Contact verification. 3. Business registration document upload (Companies House number or equivalent). 4. Director identity verification. 5. Beneficial ownership declaration (all UBOs above 25% ownership). 6. Business bank account verification (via TrueLayer Open Banking). 7. SENTINEL merchant KYC clearance. 8. Active Balance purchase (minimum 3,690 KLM). 9. Merchant features unlocked. KST candidacy assessment available on request after 30 days of active trading.
- 
-## Re-Verification Triggers
-SENTINEL risk score exceeds 70, identity document expiry within 30 days, address change submitted, device fingerprint anomaly, three or more failed authentication attempts in 24 hours, or manual trigger from Compliance and Regulatory Agent.
- 
-## Stall Re-engagement Protocol
-User begins onboarding but does not complete within 48 hours: automated re-engagement message at 48 hours, 96 hours, and 7 days. Message content: warm, contextual, references the specific step they left incomplete. After 7 days without completion: flag to Onboarding Concierge Agent for personalised intervention. After 30 days of no activity on an incomplete onboarding: soft archive (account preserved, no further outreach unless user re-initiates).
- 
-## Approval Gates in Onboarding
-KYC rejection (any reason): requires admin review before rejection is communicated to user. Merchant UBO declaration anomaly: escalate to Legal Counsel Agent and admin. SENTINEL hard hold during onboarding: admin release required. Merchant KST application: separate assessment process (KST Sub-Token Application Assessment function).
+
+## Overview
+
+KAELUM operates KYC and onboarding requirements across three participant
+types: Customers, Creators, and Merchants. All onboarding is governed
+by K.A.T.E. via the Onboarding Concierge agent and the Compliance and
+Regulatory agent. SENTINEL screens all participants at onboarding and
+on an ongoing basis.
+
+## Customer Onboarding
+
+**Minimum Active Balance:** 400 KLM (£36 at floor price)
+**Framing:** Starting balance, not a fee
+
+**Required:**
+- Name and email verification
+- Account creation via kaelum.app
+- Active Balance of 400 KLM purchased to activate account
+- Agreement to KAELUM Customer terms
+
+**KYC Level:** Standard consumer KYC
+- Identity verification (name, date of birth, address)
+- SENTINEL AML screening on account creation
+- Ongoing transaction monitoring by SENTINEL
+
+**Onboarding Flow:**
+1. Customer registers at kaelum.app
+2. Onboarding Concierge agent guides through verification
+3. Identity verified by Compliance and Regulatory agent
+4. Active Balance of 400 KLM purchased via TrueLayer or Stripe
+3. Account activated
+4. new_user_registered event fired to Paperclip, routed to
+   Onboarding Concierge agent
+
+## Creator Onboarding
+
+**Minimum Active Balance:** 1,800 KLM (£162 at floor price)
+**Framing:** Starting balance, not a fee
+
+**Required:**
+- All Customer requirements plus:
+- Active public profile with content history (mandatory for verification)
+- Social profile verification by K.A.T.E. Creator Acquisition agent
+- Agreement to KAELUM Creator terms
+- Active Balance of 1,800 KLM purchased to unlock Creator tools
+
+**KYC Level:** Enhanced consumer KYC with commerce verification
+- Identity verification (as Customer)
+- Social profile authenticity check by K.A.T.E.
+- Content history review confirming active creator status
+- SENTINEL AML screening on account creation and on first redemption
+- Business activity verification if Creator operates as a business entity
+
+**Onboarding Flow:**
+1. Creator applies via kaelum.app Creator onboarding
+2. Creator Acquisition agent reviews social profile and content history
+3. Compliance and Regulatory agent completes KYC
+4. Active Balance of 1,800 KLM purchased
+5. Creator Studio, Social Paylinks, Commerce Drops, and all Creator
+   tools unlocked
+6. new_user_registered event fired to Paperclip
+
+**Creator Tools Unlocked on Onboarding:**
+- Creator Studio
+- Social Paylinks
+- Commerce Drops
+- Creator Advisor
+- PCC (Personal Commerce Control)
+- Discount Engine
+- Bill Pay
+- Agentic Banking Suite
+- KVI Creator Dashboard
+- KST Revenue Calculator
+- Referral Hub
+- Research Scout
+- Social Commerce
+
+## Merchant Onboarding
+
+**Minimum Active Balance:** 3,690 KLM (£332.10 at floor price)
+**Framing:** Starting balance, not a fee
+
+**Required:**
+- Business registration verification
+- Director/owner identity verification
+- Business bank account confirmation
+- Agreement to KAELUM Merchant terms
+- Active Balance of 3,690 KLM purchased to activate merchant account
+
+**KYC Level:** Full business KYC and AML
+- Business identity verification (Companies House or equivalent)
+- Director/UBO identity verification
+- Source of funds confirmation
+- SENTINEL AML screening on account creation and on every redemption
+- Ongoing transaction monitoring and periodic re-verification
+
+**Onboarding Flow:**
+1. Merchant applies via kaelum.app Merchant onboarding
+2. Merchant Acquisition agent manages pipeline
+3. Compliance and Regulatory agent completes business KYC
+4. SENTINEL clears AML check
+5. Active Balance of 3,690 KLM purchased
+6. Merchant account activated
+7. new_user_registered event fired to Paperclip
+
+## Ongoing Compliance
+
+All three participant types are subject to:
+
+- Continuous SENTINEL transaction monitoring
+- Periodic KYC refresh (frequency determined by risk profile)
+- kyc_result_received event fired to Paperclip on every KYC update,
+  routed to Compliance and Regulatory agent and Onboarding Concierge
+- Immediate account restriction if SENTINEL flags suspicious activity
+
+## KLM Redemption KYC
+
+Before any Merchant or Creator redemption is processed:
+
+- SENTINEL runs a full AML screen on the redemption request
+- Compliance and Regulatory agent confirms KYC is current
+- Finance agent approves redemption above threshold amounts
+- Redemption processed at current KLM price at time of approval
+
+## Commands
+
+- `/kyc-onboarding-rules:onboarding-status` — Return KYC status for
+  a given participant account
+- `/kyc-onboarding-rules:redemption-clearance` — Run pre-redemption
+  KYC and AML check for a given Merchant or Creator
+- `/kyc-onboarding-rules:refresh-required` — Return list of participants
+  due for KYC refresh
+- `/kyc-onboarding-rules:sentinel-flags` — Return active SENTINEL flags
+  across all participant accounts

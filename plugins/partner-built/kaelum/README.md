@@ -50,12 +50,27 @@ Closed-loop exemption: UK Electronic Money Regulations 2011 Regulation 3 and EU 
 
 ## Token Economics
 
-- KLM fixed floor price: £0.09 per token
-- Customer spending discount: minimum 6% at partnered merchants
-- Transaction Participation Reward (TPR): 1.2% per transaction to KPR pool
-- KST Sub-Tokens: from £180,000 creation fee, 2M KLM minimum supply
+- KLM fixed floor price: £0.09 per token (immutable, enforced by K.A.T.E.)
+- KLM price direction: One-directional. Price can only rise above the floor,
+  never fall below it.
+- Customer spending discount: Minimum 6% at participating Merchants and
+  Creator Paylinks
+- Transaction Participation Reward (TPR): 1.2% per transaction to KPR pool,
+  calculated at current KLM price
+- KST Sub-Tokens: From £180,000 creation fee, 2M KLM minimum supply
 - KST commission: 2.5% per transaction to slot owner, paid monthly in KLM
+  at current KLM price
 - Hard cap: 96.3B KLM across three reserve tiers (KRF)
+
+## KLM Price Appreciation
+
+K.A.T.E. governs all KLM price appreciation. Appreciation is applied
+ecosystem-wide at 1.2% compounding when K.A.T.E. determines network
+conditions warrant it, based on six signal categories: platform usage,
+KLM sale volume, participant activity, transfers, purchases using KLM,
+and cross-border trade settlement. No single event triggers appreciation
+automatically. Every appreciation event is logged with a full audit trail.
+Appreciation is one-directional, non-speculative, and non-market-driven.
 
 ## GTV Targets
 
