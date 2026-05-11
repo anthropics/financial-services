@@ -1,6 +1,9 @@
-# Tax-Loss Harvesting
-
+---
+name: tax-loss-harvesting
 description: Identify tax-loss harvesting opportunities across taxable accounts. Finds positions with unrealized losses, suggests replacement securities, and tracks wash sale windows. Triggers on "tax-loss harvesting", "TLH", "harvest losses", "tax losses", "unrealized losses", or "year-end tax planning".
+---
+
+# Tax-Loss Harvesting
 
 ## Workflow
 

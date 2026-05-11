@@ -1,6 +1,9 @@
-# Buyer List
-
+---
+name: buyer-list
 description: Build and organize a universe of potential acquirers for sell-side M&A processes. Identifies strategic and financial buyers, assesses fit, and prioritizes outreach. Use when preparing for a sell-side mandate, building a buyer universe, or evaluating potential partners. Triggers on "buyer list", "buyer universe", "potential acquirers", "who would buy this", "strategic buyers", or "financial sponsors".
+---
+
+# Buyer List
 
 ## Workflow
 
