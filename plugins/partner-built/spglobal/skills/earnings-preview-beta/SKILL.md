@@ -1,5 +1,5 @@
 ---
-name: earnings-preview-single
+name: earnings-preview-beta
 description: Generate a concise 4-5 page equity research earnings preview for a single company. Analyzes the most recent earnings transcript, competitor landscape, valuation, and recent news to produce a professional HTML report.
 ---
 
