@@ -254,6 +254,7 @@ Everything here is markdown and YAML. Fork, edit, PR. For new content:
 
 - New skill → add it under `plugins/vertical-plugins/<vertical>/skills/`, then run `python3 scripts/sync-agent-skills.py` to propagate to any agent that bundles it.
 - New agent → `plugins/agent-plugins/<slug>/` (with `agents/<slug>.md` + `skills/`) and a matching `managed-agent-cookbooks/<slug>/`.
+- New translation → create `README.<lang-code>.md` (e.g. `README.pt-BR.md`) and add a link in the language switcher at the top of `README.md` and each existing translation.
 - Run `python3 scripts/check.py` before pushing — it lints every manifest, verifies all cross-file references resolve, and fails if any bundled skill has drifted from its vertical source.
 
 ## License

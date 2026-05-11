@@ -254,6 +254,7 @@ Tudo aqui é markdown e YAML. Fork, edite, abra um PR. Para novo conteúdo:
 
 - Nova habilidade → adicione em `plugins/vertical-plugins/<vertical>/skills/`, depois execute `python3 scripts/sync-agent-skills.py` para propagar para qualquer agente que a inclua.
 - Novo agente → `plugins/agent-plugins/<slug>/` (com `agents/<slug>.md` + `skills/`) e um `managed-agent-cookbooks/<slug>/` correspondente.
+- Nova tradução → crie `README.<código-do-idioma>.md` (ex.: `README.pt-BR.md`) e adicione um link no seletor de idiomas no topo de `README.md` e de cada arquivo de tradução existente.
 - Execute `python3 scripts/check.py` antes de fazer push — ele valida todos os manifestos, verifica se todas as referências cruzadas de arquivos resolvem e falha se alguma habilidade incluída divergiu de sua fonte vertical.
 
 ## Licença
