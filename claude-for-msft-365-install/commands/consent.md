@@ -1,5 +1,5 @@
 ---
-description: Azure admin consent URL — one-time tenant approval for Entra SSO
+description: Azure admin consent URLs — one-time tenant approval for Entra SSO and Outlook Graph access
 ---
 
 # Azure admin consent
@@ -34,3 +34,27 @@ az ad sp show --id c2995f31-11e7-4882-b7a7-ef9def0a0266 --query appId -o tsv
 
 If that returns the same GUID, the service principal exists in their tenant —
 consent worked. If it errors with "does not exist", consent didn't complete.
+
+## Outlook — Microsoft Graph consent
+
+**Only needed when deploying the Outlook manifest.** Separate from `entra_sso`
+above; required even if `entra_sso` is off.
+
+Claude for Outlook reads mail and calendar through Microsoft Graph. The Graph
+token stays in the user's Outlook client and is never sent to the gateway or to
+Anthropic, so this consent is the same regardless of which cloud serves the
+model. A Global Admin opens the URL, clicks Accept, done.
+
+```
+https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=c2995f31-11e7-4882-b7a7-ef9def0a0266&scope=https://graph.microsoft.com/Mail.ReadWrite%20https://graph.microsoft.com/Calendars.Read%20https://graph.microsoft.com/People.Read%20https://graph.microsoft.com/User.Read%20offline_access&redirect_uri=https://pivot.claude.ai/auth/callback
+```
+
+Without this, every user hits a "Need admin approval" wall the first time
+Claude tries to read mail.
+
+**If their policy forbids consenting to a third-party app:** they can register
+their own single-tenant Entra app with the same delegated Graph permissions
+(Mail.ReadWrite, Calendars.Read, People.Read, User.Read, offline_access), grant
+admin consent on it, and pass its client ID as `graph_client_id` when generating
+the Outlook manifest. Same data flow; approval lives under their app instead of
+Anthropic's.

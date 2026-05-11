@@ -2,15 +2,19 @@
 // Fetches the canonical add-in manifest and writes a customized copy with your
 // org's config baked into the taskpane URL as query parameters.
 //
-// Usage: node build-manifest.mjs <out.xml> key=value [key=value ...]
-// Example: node build-manifest.mjs acme.xml gcp_project_id=acme gcp_region=us-east5
+// Usage: node build-manifest.mjs <office|outlook> <out.xml> key=value [key=value ...]
+// Example: node build-manifest.mjs office acme.xml gcp_project_id=acme gcp_region=us-east5
 
 import { writeFileSync } from "node:fs";
 
-const MANIFEST_URL = process.env.MANIFEST_URL || "https://pivot.claude.ai/manifest.xml";
+const MANIFESTS = {
+  office: "https://pivot.claude.ai/manifest.xml", // Excel + Word + PowerPoint (TaskPaneApp)
+  outlook: "https://pivot.claude.ai/manifest-outlook-3p.xml", // Outlook (MailApp — separate schema)
+};
 
-// The manifest has two URL slots Office reads from; both must carry the same params.
-const URL_SLOTS = [/(<SourceLocation\s+DefaultValue=")([^"]+)(")/, /(id="Taskpane\.Url"\s+DefaultValue=")([^"]+)(")/];
+// Every URL slot Office reads from must carry the same params. Outlook's MailApp
+// schema repeats Taskpane.Url across V1_0 and V1_1 VersionOverrides, hence /g.
+const URL_SLOTS = [/(<SourceLocation\s+DefaultValue=")([^"]+)(")/g, /(id="Taskpane\.Url"\s+DefaultValue=")([^"]+)(")/g];
 
 // Recognized config keys. `pattern` is a shape hint — mismatches warn but don't block
 // (your infra may look different). `secret` keys warn louder: the manifest is an
@@ -33,6 +37,10 @@ const KEYS = {
   azure_api_key: {
     pattern: /^[A-Za-z0-9]{20,}$/,
     hint: "From Azure Portal → your Foundry resource → Keys and Endpoint → KEY 1",
+  },
+  graph_client_id: {
+    pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    hint: "Entra app (client) ID for Microsoft Graph — Outlook only; omit to use Anthropic's multi-tenant app via the admin consent URL",
   },
   gateway_url: { pattern: /^https:\/\//, hint: "HTTPS base URL" },
   gateway_token: { pattern: /./, hint: "gateway API key", secret: true },
@@ -61,16 +69,28 @@ const KEYS = {
     pattern: /^[01]$/,
     hint: "1 allows Claude.ai OAuth alongside 3P (default: locked when other keys present)",
   },
+  disabled_features: {
+    pattern: /^[\w.]+(,[\w.]+)*$/,
+    hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring",
+  },
 };
 
 const NEEDS_ENTRA = ["aws_role_arn", "graph_client_id", "entra_scope"];
 
 async function main() {
-  const [out, ...pairs] = process.argv.slice(2);
-  if (!out || pairs.length === 0) {
-    console.error("Usage: node build-manifest.mjs <out.xml> key=value [key=value ...]");
+  const [host, out, ...pairs] = process.argv.slice(2);
+  const manifestUrl = process.env.MANIFEST_URL || MANIFESTS[host];
+  if (!manifestUrl || !out || pairs.length === 0) {
+    console.error("Usage: node build-manifest.mjs <office|outlook> <out.xml> key=value [key=value ...]");
     console.error(`Keys: ${Object.keys(KEYS).join(", ")}`);
     process.exit(1);
+  }
+  if (host === "outlook" && pairs.some((p) => p.startsWith("aws_"))) {
+    console.error("error: Amazon Bedrock (aws_role_arn/aws_region) is not currently supported for Outlook");
+    process.exit(1);
+  }
+  if (host !== "outlook" && pairs.some((p) => p.startsWith("graph_client_id="))) {
+    console.warn("note: graph_client_id only applies to Outlook; it has no effect in the office manifest");
   }
 
   const params = new URLSearchParams();
@@ -102,18 +122,20 @@ async function main() {
   // URLSearchParams joins with `&`; XML attribute values need it escaped.
   const qs = params.toString().replaceAll("&", "&amp;");
 
-  const res = await fetch(MANIFEST_URL);
-  if (!res.ok) throw new Error(`fetch ${MANIFEST_URL}: ${res.status} ${res.statusText}`);
+  const res = await fetch(manifestUrl);
+  if (!res.ok) throw new Error(`fetch ${manifestUrl}: ${res.status} ${res.statusText}`);
   let xml = await res.text();
 
   for (const slot of URL_SLOTS) {
+    slot.lastIndex = 0;
     if (!slot.test(xml)) throw new Error(`manifest missing expected URL slot: ${slot.source}`);
+    slot.lastIndex = 0;
     // The template URL already carries ?m=<tag> — append with & not a second ?
     xml = xml.replace(slot, (_, pre, url, post) => pre + url + (url.includes("?") ? "&amp;" : "?") + qs + post);
   }
 
   writeFileSync(out, xml);
-  console.log(`Wrote ${out}  (params: ${params})`);
+  console.log(`Wrote ${out} (${host}, params: ${params})`);
 }
 
 main().catch((err) => {

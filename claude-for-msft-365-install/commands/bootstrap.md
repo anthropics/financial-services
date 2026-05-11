@@ -249,6 +249,16 @@ fetched from a URL — set one or the other.
 Inline `content` is simplest for small text-only skills. Use `url` once
 you're shipping zips with images or the base64 starts bloating the response.
 
+### `disabled_features`
+
+JSON array of feature slugs to lock for this user. Same vocabulary as the
+[manifest key](manifest.md#disabled-features) — bootstrap is the per-user
+layer.
+
+```json
+"disabled_features": ["skills.authoring"]
+```
+
 ### `bootstrap_expires_at`
 
 Epoch timestamp (seconds or milliseconds — auto-detected) for when this
