@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fundos": {
+      "type": "http",
+      "url": "https://mcp.kela.com/mcp"
+    }
+  }
+}

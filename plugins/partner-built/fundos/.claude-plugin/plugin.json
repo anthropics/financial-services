@@ -1,0 +1,30 @@
+{
+  "name": "fundos",
+  "version": "1.0.0",
+  "description": "AI-native fund operations for emerging VC and private credit managers — capital calls, LP reporting, waterfall calculations, covenant monitoring, and VDR workflow",
+  "author": {
+    "name": "VantedgeAI",
+    "email": "support@kela.com"
+  },
+  "homepage": "https://www.kela.com",
+  "repository": "https://github.com/8vdx1/FundOS",
+  "license": "MIT",
+  "keywords": [
+    "fund-operations",
+    "private-equity",
+    "venture-capital",
+    "private-credit",
+    "capital-calls",
+    "lp-reporting",
+    "waterfall",
+    "covenant-monitoring",
+    "vdr",
+    "fund-administration"
+  ],
+  "mcpServers": {
+    "fundos": {
+      "type": "http",
+      "url": "https://mcp.kela.com/mcp"
+    }
+  }
+}
