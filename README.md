@@ -131,6 +131,7 @@ All connectors are centralized in the **financial-analysis** core plugin and sha
 | [PitchBook](https://pitchbook.com/) | `https://premium.mcp.pitchbook.com/mcp` |
 | [Chronograph](https://www.chronograph.pe/) | `https://ai.chronograph.pe/mcp` |
 | [Egnyte](https://www.egnyte.com/) | `https://mcp-server.egnyte.com/mcp` |
+| [Longbridge](https://longbridge.com/) | `http://openapi.longbridge.com/mcp` |
 
 > MCP access may require a subscription or API key from the provider.
 
