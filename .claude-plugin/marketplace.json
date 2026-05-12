@@ -100,6 +100,11 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "valuein",
+      "source": "./plugins/partner-built/valuein",
+      "description": "Free + low-cost SEC EDGAR fundamentals, ratios, valuation metrics, smart-money intelligence, and forensic-audit scores for US-listed equities. Point-in-time accurate, survivorship-bias free."
+    },
+    {
       "name": "claude-for-msft-365-install",
       "source": "./claude-for-msft-365-install",
       "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Microsoft 365 add-in. Generates the customized manifest, walks through Azure admin consent, and writes per-user config via Graph extension attributes."
