@@ -129,6 +129,7 @@ All connectors are centralized in the **financial-analysis** core plugin and sha
 | [Aiera](https://www.aiera.com/) | `https://mcp-pub.aiera.com` |
 | [LSEG](https://www.lseg.com/) | `https://api.analytics.lseg.com/lfa/mcp` |
 | [PitchBook](https://pitchbook.com/) | `https://premium.mcp.pitchbook.com/mcp` |
+| [Quartr](https://quartr.com/) | `https://mcp.quartr.com/mcp` |
 | [Chronograph](https://www.chronograph.pe/) | `https://ai.chronograph.pe/mcp` |
 | [Egnyte](https://www.egnyte.com/) | `https://mcp-server.egnyte.com/mcp` |
 
