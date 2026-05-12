@@ -43,6 +43,10 @@
     "egnyte": {
       "type": "http",
       "url": "https://mcp-server.egnyte.com/mcp"
+    },
+    "longbridge": {
+      "type": "http",
+      "url": "http://openapi.longbridge.com/mcp"
     }
   }
 }
