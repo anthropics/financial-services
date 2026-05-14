@@ -1,0 +1,32 @@
+{
+  "name": "certnode-provenance",
+  "description": "Cryptographic provenance layer for finance-agent outputs. Wraps any agent's deliver step with CertNode signing — pitch decks, IC memos, earnings notes, KYC outputs, valuation reports carry FRE 902(13)/(14)-framed evidence + EU AI Act Article 50 disclosure surface.",
+  "version": "0.1.0",
+  "author": {
+    "name": "CertNode"
+  },
+  "homepage": "https://certnode.io/solutions/financial-services",
+  "repository": "https://github.com/srbryant86/certnode/tree/main/partner-plugins/anthropic-financial-services/certnode-provenance",
+  "license": "Apache-2.0",
+  "keywords": [
+    "fre-902-13",
+    "fre-902-14",
+    "ai-provenance",
+    "anthropic-finance-agents",
+    "eu-ai-act",
+    "compliance",
+    "audit-trail",
+    "financial-services",
+    "finra",
+    "rfc-3161"
+  ],
+  "mcpServers": {
+    "certnode-provenance": {
+      "command": "npx",
+      "args": ["-y", "@certnode/mcp-server"],
+      "env": {
+        "CERTNODE_API_KEY": "${CERTNODE_API_KEY}"
+      }
+    }
+  }
+}
