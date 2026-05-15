@@ -1,6 +1,9 @@
-# Due Diligence Checklist
-
+---
+name: dd-checklist
 description: Generate and track comprehensive due diligence checklists tailored to the target company's sector, deal type, and complexity. Covers all major workstreams with request lists, status tracking, and red flag escalation. Use when kicking off diligence, organizing a data room review, or tracking outstanding items. Triggers on "dd checklist", "due diligence tracker", "diligence request list", "what do we still need", or "data room review".
+---
+
+# Due Diligence Checklist
 
 ## Workflow
 
