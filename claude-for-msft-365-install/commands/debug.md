@@ -16,6 +16,7 @@ Ask the admin to describe the symptom. Route by answer:
 | Updated the manifest but users still see old config | [Stale config after update](#stale-config-after-update) |
 | Add-in shows "Connection failed" | [Read the error paste](#read-the-error-paste) |
 | Add-in doesn't appear in Excel/PowerPoint at all | [Add-in not visible](#add-in-not-visible) |
+| Want to test/iterate a manifest locally before deploying | [Sideload a manifest for local debugging](#sideload-a-manifest-for-local-debugging) |
 | Sign-in popup fails or loops | [Admin consent](#admin-consent) |
 | Need to see the browser console | [Opening browser devtools](#opening-browser-devtools-on-the-add-in) |
 
@@ -73,7 +74,7 @@ Two caches, two clocks:
 | Layer | Who holds it | TTL | How to clear |
 |---|---|---|---|
 | Service | M365 Admin Center → Exchange Online → client | Up to **72h** for updates (24h for fresh deploys) | Wait, or redeploy with a fresh `<Id>` |
-| Client | Office app's Wef folder on each machine | Until app restart, sometimes longer | Delete the folder |
+| Client | Office app's Wef folder on each machine | Until app restart, sometimes longer | Clear the cached manifests (see below) |
 
 Microsoft's own FAQ:
 > It can take up to 72 hours for add-in updates, changes from turn on or turn off to reflect for users.
@@ -87,23 +88,78 @@ Admin Center → Integrated apps → your add-in → check the listed version.
 
 ### Force a client-side refresh
 
-Quit Excel/PowerPoint first, then:
+A stale **sideloaded** manifest is stored differently per platform:
 
-**macOS:**
+- **macOS** — a file `<addin-id>.manifest-*.xml` in each app's
+  `Documents/wef` folder, alongside every other add-in.
+- **Windows** — a **registry** value under
+  `HKCU:\SOFTWARE\Microsoft\Office\16.0\Wef\Developer` (there is no
+  per-add-in file to delete; clearing the `Wef` *folder* is a different,
+  blunter operation — see the caveat below).
+
+Use the helper scripts. They target **only** your add-in's `<Id>` and do
+direct `rm`/registry edits — they do **not** shell out to
+`office-addin-dev-settings` (its removal path has burned us on customer
+calls):
+
+- macOS: [`scripts/clear-addin-cache.sh`](../scripts/clear-addin-cache.sh)
+- Windows: [`scripts/clear-addin-cache.ps1`](../scripts/clear-addin-cache.ps1)
+
+Quit Excel/Word/PowerPoint first. The scripts are **ID-first** — pass the
+add-in `<Id>` directly (handy when iterating across new/multiple IDs); the
+manifest path is an optional convenience that just reads `<Id>` for you.
+
 ```bash
-rm -rf ~/Library/Containers/com.microsoft.Excel/Data/Library/Caches/
-rm -rf ~/Library/Containers/com.microsoft.Powerpoint/Data/Library/Caches/
-rm -rf ~/Library/Containers/com.microsoft.Excel/Data/Documents/wef
-rm -rf ~/Library/Containers/com.microsoft.Powerpoint/Data/Documents/wef
+# macOS — list everything, do nothing:
+./scripts/clear-addin-cache.sh
+
+# Dry-run by ID (preferred), or via the manifest:
+./scripts/clear-addin-cache.sh --id <GUID>
+./scripts/clear-addin-cache.sh ~/path/to/manifest.xml
+
+# Actually remove (only this ID's files):
+./scripts/clear-addin-cache.sh --id <GUID> --apply
 ```
 
-**Windows:**
-```cmd
-rd /s /q "%LOCALAPPDATA%\Microsoft\Office\16.0\Wef"
+```powershell
+# Windows — same flow, registry-scoped:
+.\scripts\clear-addin-cache.ps1                  # list, do nothing
+.\scripts\clear-addin-cache.ps1 -Id <GUID>       # dry-run
+.\scripts\clear-addin-cache.ps1 -Id <GUID> -Apply
 ```
 
-Relaunch. If still stale, the service-side cache hasn't caught up. Wait, or
-use a fresh `<Id>` (below).
+Both **dry-run by default** — nothing is removed without `--apply` /
+`-Apply`. No-args lists every registered add-in so you confirm the ID
+first. Other add-ins are never affected.
+
+**You must fully restart the Office app after clearing.** Removing the
+file/registry entry does nothing until the app re-reads it on launch — and
+a *backgrounded* app counts as still running. Quit **and reopen** Excel /
+Word / PowerPoint, confirming no lingering process first:
+`pkill -f "Microsoft Excel"` (macOS) / check Task Manager (Windows). The
+script also prints this reminder when it finishes.
+
+**Deleting local/sideloaded manifests by ID is safe and works.** In
+practice, removing just the one add-in's file (macOS) or registry value
+(Windows) cleanly drops that add-in and leaves the rest loading normally —
+we do this routinely. Microsoft's "don't delete individual files" warning
+is about a *different* cache (below), not these local dev/sideload entries;
+don't let it scare you off the surgical path here.
+
+> **Centrally-deployed (Admin Center) staleness on Windows** is a
+> *different* cache: `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\<guid>\…`,
+> stored under opaque hashes, **not** by add-in ID. Microsoft's official
+> guidance is conservative — clear that folder's contents as a whole
+> because *"deleting individual manifest files can cause all add-ins to
+> stop loading."* In practice targeted deletion there can work too, but
+> the filenames aren't ID-mapped so it's hard to be surgical — which is
+> why these scripts deliberately do **not** touch it. If a
+> centrally-deployed update is
+> stale, prefer waiting out the service TTL or redeploying with a fresh
+> `<Id>` (below) over hand-deleting that cache.
+
+If it's still stale after the restart, the service-side cache hasn't caught
+up. Wait, or use a fresh `<Id>` (below).
 
 Microsoft's cache-clear doc: https://learn.microsoft.com/en-us/office/dev/add-ins/testing/clear-cache
 
@@ -129,6 +185,64 @@ faster). Edit `manifest.xml`, replace the text inside `<Id>` with a new UUID
 
 ---
 
+## Sideload a manifest for local debugging
+
+For iterating on a manifest **without going through Admin Center deployment**
+(no 24–72h cache wait), point Office at a local manifest file directly. The
+manifest stays wherever it is on disk; you just tell Office where to find it.
+Pick the recipe for the customer's OS.
+
+Use the helper scripts — they read the `<Id>` from the manifest and
+install it the right way per platform (macOS: a `<Id>.manifest.xml` file in
+each app's `Documents/wef`; Windows: a registry value under
+`HKCU:\SOFTWARE\Microsoft\Office\16.0\Wef\Developer` named by the `<Id>`).
+Both do direct file/registry writes — **not** `office-addin-dev-settings`.
+
+- macOS install: [`scripts/sideload-addin.sh`](../scripts/sideload-addin.sh)
+- Windows install: [`scripts/sideload-addin.ps1`](../scripts/sideload-addin.ps1)
+- Remove (either OS): `clear-addin-cache.{sh,ps1}` — see
+  [Force a client-side refresh](#force-a-client-side-refresh)
+
+```bash
+# macOS — installs directly:
+./scripts/sideload-addin.sh ~/path/to/manifest.xml
+```
+
+```powershell
+# Windows — installs directly:
+.\scripts\sideload-addin.ps1 C:\path\to\manifest.xml
+```
+
+Sideloading is additive and idempotent, so it installs directly — **no
+dry-run** (unlike the destructive `clear-addin-cache`, which stays dry-run
+by default). The install names the entry by the add-in `<Id>`, so removal
+later is the exact inverse: `clear-addin-cache.{sh,ps1} --id <GUID>
+--apply` (the sideload script prints the precise remove command on
+completion).
+
+Then **fully quit and reopen** Excel / Word / PowerPoint — check Task
+Manager (Windows) / `pkill -f "Microsoft Excel"` (macOS) first; a
+backgrounded app won't re-read the registry or rescan the folder. The
+add-in appears under **Insert → My Add-ins** (Windows also shows it on the
+**Home** tab / **Shared Folder** group); pin it.
+
+**Notes (both platforms):**
+- This is per-user and per-machine — it doesn't touch tenant deployment. It's
+  purely for the customer to debug/iterate on their own box.
+- A locally sideloaded manifest **wins over** a centrally deployed one with
+  the same `<Id>`, so this is also a fast way to test a manifest fix before
+  re-uploading to Admin Center.
+- Pair this with [browser devtools](#opening-browser-devtools-on-the-add-in)
+  to see console/network while iterating.
+- If a stale copy keeps loading, also clear the cache — see
+  [Force a client-side refresh](#force-a-client-side-refresh).
+
+Microsoft's sideloading references:
+- Windows: https://learn.microsoft.com/en-us/office/dev/add-ins/testing/create-a-network-shared-folder-catalog-for-task-pane-and-content-add-ins
+- macOS: https://learn.microsoft.com/en-us/office/dev/add-ins/testing/sideload-an-office-add-in-on-mac
+
+---
+
 ## Admin consent
 
 If the user sees a sign-in popup that closes immediately or loops, the tenant
@@ -136,6 +250,25 @@ hasn't granted admin consent to the Claude app. Run
 [`:consent`](consent.md) to generate the consent URL for a Global Admin to
 approve. The symptom in error pastes: `user_canceled` in the raw error (the
 broker maps any unclassifiable close to that).
+
+---
+
+## Silent SSO / Entra token failures
+
+- **`AADSTS50194: …not configured as a multi-tenant application` /
+  `Use a tenant-specific endpoint`** — your `graph_client_id` (or the
+  `entra_scope` resource app) is a single-tenant app, and the add-in build is
+  old enough to still request tokens against the `/common` authority. Newer
+  builds resolve a tenant-specific authority automatically when
+  `graph_client_id` is set. Fix: have users update to the latest add-in
+  version. There is no manifest workaround on an old build.
+- **`entra_scope requires graph_client_id`** — `entra_scope` was set without
+  `graph_client_id`. Custom-scope access tokens must be issued by your own
+  Entra app, not the default; set both. The build script also rejects this
+  pairing.
+- **Silent SSO fails, then an interactive popup works** — expected on first
+  run before a service principal exists in the tenant. Once admin consent is
+  granted (see above) the silent path succeeds.
 
 ---
 

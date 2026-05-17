@@ -58,7 +58,7 @@ In Cowork, open **Settings → Plugins → Add plugin** and either:
 
 ```bash
 # Add the marketplace
-claude plugin marketplace add anthropics/claude-for-financial-services
+claude plugin marketplace add anthropics/financial-services
 
 # Core skills + connectors (install first)
 claude plugin install financial-analysis@claude-for-financial-services
