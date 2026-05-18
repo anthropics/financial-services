@@ -176,6 +176,7 @@ These are reference templates — they get better when you tune them to how your
 | pptx-author | — | Produce a `.pptx` file headlessly (Managed Agent mode) |
 | xlsx-author | — | Produce a `.xlsx` file headlessly (Managed Agent mode) |
 | ppt-template-creator | `/ppt-template` | Create reusable PPT template skills |
+| xls-formatting-creator | `/xls-formatting-creator` | Extract Excel house-style formatting conventions into a reusable skill |
 | skill-creator | — | Guide for creating new skills |
 
 </details>
