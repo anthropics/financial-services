@@ -17,6 +17,8 @@ jobs:
         with:
           python-version: '3.11'
       - name: install deps
-        run: pip install pyyaml
+        run: pip install pyyaml pytest
       - name: run check.py
         run: python3 scripts/check.py
+      - name: run check.py test suite
+        run: python3 -m pytest scripts/tests/ -v
