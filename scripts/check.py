@@ -88,6 +88,20 @@ for pat in json_globs:
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
 
+# --- 2b. hooks.json schema --- must be {"hooks": {...}}, never [] ----------
+for hjf in sorted(PLUGINS.glob("**/hooks/hooks.json")):
+    checked += 1
+    try:
+        data = json.loads(hjf.read_text())
+    except json.JSONDecodeError as e:
+        err(f"hooks.json parse: {rel(hjf)}: {e}")
+        continue
+    if not isinstance(data, dict) or "hooks" not in data:
+        err(
+            f'hooks.json: {rel(hjf)}: must be {{"hooks": {{...}}}}, '
+            f"got {type(data).__name__}"
+        )
+
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
     checked += 1
