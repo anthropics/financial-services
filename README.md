@@ -254,6 +254,8 @@ Everything here is markdown and YAML. Fork, edit, PR. For new content:
 - New agent → `plugins/agent-plugins/<slug>/` (with `agents/<slug>.md` + `skills/`) and a matching `managed-agent-cookbooks/<slug>/`.
 - Run `python3 scripts/check.py` before pushing — it lints every manifest, verifies all cross-file references resolve, and fails if any bundled skill has drifted from its vertical source.
 
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full guide, including the acceptance criteria and PR template for **third-party MCP connectors and partner-built plugins**.
+
 ## License
 
 [Apache License 2.0](./LICENSE)
