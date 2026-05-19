@@ -96,7 +96,7 @@ Each template under [`managed-agent-cookbooks/`](./managed-agent-cookbooks) refe
 | **Connectors** | [MCP servers](https://modelcontextprotocol.io/) that wire Claude to your data — terminals, research platforms, document stores. | `plugins/vertical-plugins/financial-analysis/.mcp.json` |
 | **Managed-agent wrappers** | `agent.yaml` + depth-1 subagents + steering examples for headless deployment. | `managed-agent-cookbooks/<slug>/` |
 
-Everything is file-based — markdown and JSON, no build step.
+Everything is file-based — Markdown and JSON, with no build step.
 
 ## Vertical Plugins
 
