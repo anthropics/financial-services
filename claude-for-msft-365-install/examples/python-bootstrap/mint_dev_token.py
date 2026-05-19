@@ -21,9 +21,14 @@ def b64u(n: int) -> str:
     raw = n.to_bytes((n.bit_length() + 7) // 8, "big")
     return base64.urlsafe_b64encode(raw).rstrip(b"=").decode()
 
-if not os.path.exists(PRIV):
+
+def ensure_dev_key(priv_path: str = PRIV, jwks_path: str = JWKS):
+    if os.path.exists(priv_path):
+        with open(priv_path, "rb") as f:
+            return serialization.load_pem_private_key(f.read(), password=None)
+
     key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-    with open(PRIV, "wb") as f:
+    with open(priv_path, "wb") as f:
         f.write(key.private_bytes(
             serialization.Encoding.PEM,
             serialization.PrivateFormat.PKCS8,
@@ -32,17 +37,25 @@ if not os.path.exists(PRIV):
     nums = key.public_key().public_numbers()
     jwk = {"kty": "RSA", "kid": "dev", "alg": "RS256", "use": "sig",
            "n": b64u(nums.n), "e": b64u(nums.e)}
-    with open(JWKS, "w") as f:
+    with open(jwks_path, "w") as f:
         json.dump({"keys": [jwk]}, f, indent=2)
+    return key
 
-ap = argparse.ArgumentParser()
-ap.add_argument("--oid", default="alice")
-ap.add_argument("--group", action="append", default=[])
-args = ap.parse_args()
 
-with open(PRIV, "rb") as f:
-    priv = serialization.load_pem_private_key(f.read(), password=None)
+def mint_token(oid: str, groups: list[str], priv_path: str = PRIV, jwks_path: str = JWKS) -> str:
+    priv = ensure_dev_key(priv_path, jwks_path)
+    claims = {"aud": AUDIENCE, "iss": ISSUER, "oid": oid,
+              "groups": groups, "exp": int(time.time()) + 3600}
+    return jwt.encode(claims, priv, algorithm="RS256", headers={"kid": "dev"})
 
-claims = {"aud": AUDIENCE, "iss": ISSUER, "oid": args.oid,
-          "groups": args.group, "exp": int(time.time()) + 3600}
-print(jwt.encode(claims, priv, algorithm="RS256", headers={"kid": "dev"}))
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--oid", default="alice")
+    ap.add_argument("--group", action="append", default=[])
+    args = ap.parse_args()
+    print(mint_token(args.oid, args.group))
+
+
+if __name__ == "__main__":
+    main()

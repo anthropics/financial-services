@@ -149,7 +149,8 @@ def extract_numbers(content: str) -> list[NumberInstance]:
                 num_val = float(value_str.replace(',', ''))
                 if 1900 <= num_val <= 2099 and not unit and not currency:
                     continue
-            except ValueError:
+            # Regex admits numeric-looking strings only; keep guard for future pattern changes.
+            except ValueError:  # pragma: no cover
                 pass
 
             # Build full value string

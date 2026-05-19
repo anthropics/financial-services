@@ -1,0 +1,17 @@
+[run]
+branch = True
+
+[report]
+show_missing = True
+fail_under = 100
+# CLI guard blocks only dispatch to main(); unit tests cover main() directly
+# or cover callable helpers used by the CLI.
+exclude_also =
+    if __name__ == .__main__.:
+# Vendored duplicates are generated copies of the vertical-plugin source scripts.
+# The source copies are covered by focused unit tests; generated copies are drift-checked by scripts/check.py.
+omit =
+    tests/*
+    plugins/agent-plugins/model-builder/skills/dcf-model/scripts/validate_dcf.py
+    plugins/agent-plugins/pitch-agent/skills/dcf-model/scripts/validate_dcf.py
+    plugins/agent-plugins/pitch-agent/skills/ib-check-deck/scripts/extract_numbers.py
