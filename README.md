@@ -59,7 +59,7 @@ Then pick the agents and verticals you want from the marketplace list. Alternati
 
 ```bash
 # Add the marketplace
-claude plugin marketplace add anthropics/financial-services-plugins
+claude plugin marketplace add anthropics/financial-services
 
 # Core skills + connectors (install first)
 claude plugin install financial-analysis@claude-for-financial-services
