@@ -6,7 +6,7 @@ Admin tooling for configuring the Claude Office add-in to call your own cloud
 ## Install
 
 ```bash
-claude plugin marketplace add anthropics/financial-services
+claude plugin marketplace add anthropics/financial-services-plugins
 claude plugin install claude-for-msft-365-install@claude-for-financial-services
 ```
 
@@ -29,7 +29,7 @@ For per-user MCP servers, skills, or dynamic config, host a bootstrap endpoint
 and point the add-in at it:
 
 ```bash
-claude plugin marketplace add anthropics/financial-services   # if not already added
+claude plugin marketplace add anthropics/financial-services-plugins   # if not already added
 claude plugin install claude-for-msft-365-install@claude-for-financial-services
 ```
 
