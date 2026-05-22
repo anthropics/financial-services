@@ -1,4 +1,5 @@
 {
+  "enabledMcpjsonServers": ["playwright"],
   "hooks": {
     "SessionStart": [
       {
