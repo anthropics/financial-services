@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kloud eSIM Limited — Financial Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0f1117;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  .header {
+    margin-bottom: 28px;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .header p {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 4px;
+  }
+  .badge {
+    display: inline-block;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 8px;
+  }
+
+  /* KPI row */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .kpi-label {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .kpi-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #f8fafc;
+    line-height: 1;
+  }
+  .kpi-value.green { color: #34d399; }
+  .kpi-value.red   { color: #f87171; }
+  .kpi-value.amber { color: #fbbf24; }
+  .kpi-sub {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 6px;
+  }
+
+  /* Chart grid */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .chart-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media (max-width: 900px) {
+    .chart-grid, .chart-grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .card h2 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+  .chart-wrap {
+    position: relative;
+  }
+
+  /* Table */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+  }
+  thead th {
+    text-align: left;
+    color: #64748b;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-bottom: 1px solid #334155;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  tbody tr:hover { background: #0f1117; }
+  tbody td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #1e293b;
+    color: #cbd5e1;
+  }
+  tbody td:last-child { text-align: right; }
+  .pill {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .pill-red    { background: #7f1d1d; color: #fca5a5; }
+  .pill-amber  { background: #78350f; color: #fcd34d; }
+  .pill-green  { background: #14532d; color: #86efac; }
+  .pill-blue   { background: #1e3a5f; color: #93c5fd; }
+
+  /* Progress bar */
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { font-size: 0.78rem; color: #94a3b8; min-width: 140px; }
+  .bar-track { flex: 1; height: 8px; background: #0f1117; border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-amount { font-size: 0.78rem; color: #e2e8f0; min-width: 70px; text-align: right; }
+
+  .divider { border: none; border-top: 1px solid #334155; margin: 4px 0 12px; }
+
+  .note {
+    font-size: 0.72rem;
+    color: #475569;
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Kloud eSIM Limited — Financial Overview</h1>
+  <p>Revolut Business account · GBP Main · Sort code 23-01-20</p>
+  <span class="badge">2 Jan 2026 – 21 May 2026 (≈ 4.7 months)</span>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-label">Total Revenue</div>
+    <div class="kpi-value">£28,966</div>
+    <div class="kpi-sub">excl. £996 owner top-ups</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Cost of Goods</div>
+    <div class="kpi-value red">£16,521</div>
+    <div class="kpi-sub">Cmlink + Firoam eSIM credits</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Gross Profit</div>
+    <div class="kpi-value green">£12,445</div>
+    <div class="kpi-sub">43% gross margin</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Total OpEx</div>
+    <div class="kpi-value red">£12,201</div>
+    <div class="kpi-sub">Salaries, commissions, fees</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Operating Profit</div>
+    <div class="kpi-value amber">£244</div>
+    <div class="kpi-sub">0.8% net margin</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Closing Balance</div>
+    <div class="kpi-value green">£1,241</div>
+    <div class="kpi-sub">inc. owner top-ups</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Money In</div>
+    <div class="kpi-value">£29,962</div>
+    <div class="kpi-sub">All inflows</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Money Out</div>
+    <div class="kpi-value red">£28,721</div>
+    <div class="kpi-sub">All outflows</div>
+  </div>
+</div>
+
+<!-- Revenue + Donut -->
+<div class="chart-grid">
+  <div class="card">
+    <h2>Monthly Revenue vs COGS</h2>
+    <div class="chart-wrap" style="height:240px">
+      <canvas id="revenueChart"></canvas>
+    </div>
+    <p class="note">* May covers only 1–21 May. Revenue trend is strongly upward entering May.</p>
+  </div>
+  <div class="card">
+    <h2>Cost Breakdown</h2>
+    <div class="chart-wrap" style="height:220px">
+      <canvas id="costDonut"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Expenses + Gross margin -->
+<div class="chart-grid-3">
+  <div class="card" style="grid-column: span 2;">
+    <h2>Expense Categories</h2>
+    <div class="bar-row">
+      <span class="bar-label">Salaries (Air wallex)</span>
+      <div class="bar-track"><div class="bar-fill" style="width:73%;background:#f87171"></div></div>
+      <span class="bar-amount">£8,973</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Sponsorship (Ibraheem)</span>
+      <div class="bar-track"><div class="bar-fill" style="width:16%;background:#fb923c"></div></div>
+      <span class="bar-amount">£2,000</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Agent Commissions</span>
+      <div class="bar-track"><div class="bar-fill" style="width:6%;background:#fbbf24"></div></div>
+      <span class="bar-amount">£712</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Revolut Fees</span>
+      <div class="bar-track"><div class="bar-fill" style="width:1.4%;background:#60a5fa"></div></div>
+      <span class="bar-amount">£170</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Travel (Trainline)</span>
+      <div class="bar-track"><div class="bar-fill" style="width:1%;background:#a78bfa"></div></div>
+      <span class="bar-amount">£127</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Campaigns</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0.9%;background:#34d399"></div></div>
+      <span class="bar-amount">£110</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Postage</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0.5%;background:#94a3b8"></div></div>
+      <span class="bar-amount">£57</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Other (Wise, misc)</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0.4%;background:#64748b"></div></div>
+      <span class="bar-amount">£52</span>
+    </div>
+    <hr class="divider">
+    <div class="bar-row">
+      <span class="bar-label" style="color:#f8fafc;font-weight:600">Total OpEx</span>
+      <div class="bar-track"></div>
+      <span class="bar-amount" style="color:#f87171;font-weight:700">£12,201</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Margin Waterfall</h2>
+    <div class="chart-wrap" style="height:220px">
+      <canvas id="waterfallChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction types + Top agents -->
+<div class="chart-grid">
+  <div class="card">
+    <h2>Key Transactions</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Counterparty</th>
+          <th>Category</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Air wallex — Pak salary (Jan)</td><td><span class="pill pill-red">Salary</span></td><td>£3,000</td></tr>
+        <tr><td>Ibraheem Sulaimaan — sponsorship</td><td><span class="pill pill-amber">Marketing</span></td><td>£2,000</td></tr>
+        <tr><td>Air wallex — Pak salary (Feb)</td><td><span class="pill pill-red">Salary</span></td><td>£1,800</td></tr>
+        <tr><td>Air wallex — Waqas (Mar part)</td><td><span class="pill pill-red">Salary</span></td><td>£1,000</td></tr>
+        <tr><td>Air wallex — Waqas (Apr)</td><td><span class="pill pill-red">Salary</span></td><td>£900</td></tr>
+        <tr><td>Ayaz Akram — Cmi top-up (Jan)</td><td><span class="pill pill-blue">COGS</span></td><td>£500</td></tr>
+        <tr><td>Khuram Shehzad — commission</td><td><span class="pill pill-amber">Commission</span></td><td>£220</td></tr>
+        <tr><td>Labbaik Hajj Umrah — commission</td><td><span class="pill pill-amber">Commission</span></td><td>£207</td></tr>
+        <tr><td>Haramain Hajj Tours — commission</td><td><span class="pill pill-amber">Commission</span></td><td>£93</td></tr>
+        <tr><td>Hassan Bulbul — commission</td><td><span class="pill pill-amber">Commission</span></td><td>£83</td></tr>
+        <tr><td>Aderonke Olatunji — refund</td><td><span class="pill pill-blue">Refund</span></td><td>£62</td></tr>
+        <tr><td>Trainline (x2)</td><td><span class="pill pill-green">Travel</span></td><td>£127</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Revenue Sources</h2>
+    <div class="chart-wrap" style="height:200px">
+      <canvas id="revenueSourceChart"></canvas>
+    </div>
+    <p class="note">Stripe = online eSIM sales. KloudStack = B2B/wholesale. Direct = individual customers &amp; resellers. Owner = personal top-ups (non-revenue).</p>
+  </div>
+</div>
+
+<!-- Observations -->
+<div class="card" style="margin-top:16px">
+  <h2>Key Observations</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:4px">
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#fbbf24;margin-bottom:4px">⚠ Wage pressure</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">£8,973 in salaries over 4.7 months consumes 72% of gross profit. Payments are irregular — salary timing causes cash-flow squeeze.</div>
+    </div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#34d399;margin-bottom:4px">↑ Revenue growing</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">May (first 21 days) already at £8,900 vs £4,700–5,900 in prior months. If the trend holds, monthly revenue is breaking through a new level.</div>
+    </div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#f87171;margin-bottom:4px">✕ Thin net margin</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">Operating profit of ~£244 over 4.7 months is essentially break-even. The £2,000 sponsorship payment in May nearly wiped out the net position in one transaction.</div>
+    </div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#60a5fa;margin-bottom:4px">ℹ Owner injections</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">£996 from Urfan Mahmood Azad (labelled "bills") is personal capital injection, not trading revenue. Removing it, the business barely breaks even on its own cash flow.</div>
+    </div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#a78bfa;margin-bottom:4px">⚡ COGS volatile</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">Cmlink/Firoam purchases vary widely month-to-month (£1,300 in Jan vs £5,200 in May) tracking revenue growth. Margin held consistent at ~43%.</div>
+    </div>
+    <div>
+      <div style="font-size:0.85rem;font-weight:600;color:#fb923c;margin-bottom:4px">→ Next steps</div>
+      <div style="font-size:0.8rem;color:#94a3b8;line-height:1.5">Salary restructuring or revenue growth to £10k+/month would move the business to sustainable profitability. Commission network (Hajj/Umrah agents) is a scalable channel.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const GRID_COLOR = '#334155';
+const LABEL_COLOR = '#64748b';
+
+Chart.defaults.color = LABEL_COLOR;
+Chart.defaults.borderColor = GRID_COLOR;
+
+// 1. Monthly Revenue vs COGS
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May*'],
+    datasets: [
+      {
+        label: 'Revenue',
+        data: [5900, 4800, 5200, 4700, 8900],
+        backgroundColor: '#3b82f6',
+        borderRadius: 4,
+        order: 1,
+      },
+      {
+        label: 'COGS',
+        data: [1300, 3415, 3703, 2402, 5170],
+        backgroundColor: '#f87171',
+        borderRadius: 4,
+        order: 1,
+      },
+      {
+        label: 'Gross Profit',
+        data: [4600, 1385, 1497, 2298, 3730],
+        backgroundColor: '#34d399',
+        borderRadius: 4,
+        order: 1,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { boxWidth: 10, font: { size: 11 } } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: £${ctx.parsed.y.toLocaleString()}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { color: GRID_COLOR }, ticks: { font: { size: 11 } } },
+      y: {
+        grid: { color: GRID_COLOR },
+        ticks: {
+          font: { size: 11 },
+          callback: v => '£' + (v/1000).toFixed(0) + 'k'
+        }
+      }
+    }
+  }
+});
+
+// 2. Cost donut
+new Chart(document.getElementById('costDonut'), {
+  type: 'doughnut',
+  data: {
+    labels: ['eSIM Credits (COGS)', 'Salaries', 'Sponsorship', 'Commissions', 'Fees & Other'],
+    datasets: [{
+      data: [16521, 8973, 2000, 712, 466],
+      backgroundColor: ['#f87171','#fb923c','#fbbf24','#a78bfa','#60a5fa'],
+      borderWidth: 2,
+      borderColor: '#1e293b',
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` £${ctx.parsed.toLocaleString()} (${((ctx.parsed/28721)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+
+// 3. Waterfall / margin chart
+new Chart(document.getElementById('waterfallChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Revenue', 'Gross Profit', 'Op. Profit'],
+    datasets: [{
+      data: [28966, 12445, 244],
+      backgroundColor: ['#3b82f6', '#34d399', '#fbbf24'],
+      borderRadius: 6,
+      barPercentage: 0.5,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` £${ctx.parsed.y.toLocaleString()}`
+        }
+      }
+    },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+      y: {
+        grid: { color: GRID_COLOR },
+        ticks: {
+          font: { size: 11 },
+          callback: v => '£' + (v/1000).toFixed(0) + 'k'
+        }
+      }
+    }
+  }
+});
+
+// 4. Revenue sources donut
+new Chart(document.getElementById('revenueSourceChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Stripe (online sales)', 'KloudStack (B2B)', 'Direct / individuals', 'Owner top-ups'],
+    datasets: [{
+      data: [24872, 2600, 1545, 996],
+      backgroundColor: ['#3b82f6','#6366f1','#34d399','#475569'],
+      borderWidth: 2,
+      borderColor: '#1e293b',
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '62%',
+    plugins: {
+      legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 6 } },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` £${ctx.parsed.toLocaleString()} (${((ctx.parsed/30013)*100).toFixed(1)}%)`
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
