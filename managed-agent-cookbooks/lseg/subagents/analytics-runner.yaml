@@ -1,0 +1,34 @@
+name: lseg-analytics-runner
+model: claude-opus-4-7
+system:
+  text: |
+    You run quantitative analytics (spread decomposition, carry metrics, vol analysis,
+    scenario stress tests) using LSEG MCP tools and structured input data.
+    Return only schema-validated JSON; no free text.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: lseg_lfa, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: lseg_lfa, url: "${LSEG_MCP_URL}" }
+skills: []
+callable_agents: []
+output_schema:
+  type: object
+  required: [analysis_type, findings]
+  additionalProperties: false
+  properties:
+    analysis_type: { type: string, maxLength: 64 }
+    findings:
+      type: array
+      maxItems: 100
+      items:
+        type: object
+        required: [label, value]
+        additionalProperties: false
+        properties:
+          label:  { type: string, maxLength: 256 }
+          value:  {}
+          notes:  { type: string, maxLength: 512 }

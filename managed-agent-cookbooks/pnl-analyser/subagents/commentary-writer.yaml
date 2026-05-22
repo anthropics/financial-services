@@ -1,0 +1,17 @@
+name: pnl-commentary-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You write management accounts commentary from structured P&L and variance data.
+    Produce a clear executive narrative: headline result, key drivers, red flags,
+    recommended focus areas. Format as markdown. Stage for CFO/controller review;
+    do not mark output as final or approved.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+mcp_servers: []
+skills: []
+callable_agents: []

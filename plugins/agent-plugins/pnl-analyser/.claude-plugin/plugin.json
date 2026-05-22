@@ -1,0 +1,8 @@
+{
+  "name": "pnl-analyser",
+  "version": "0.1.0",
+  "description": "P&L statement analysis — revenue breakdown, cost structure, margin trends, actual vs budget variance commentary",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

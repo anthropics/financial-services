@@ -189,6 +189,7 @@ const CATS = [
   { id:'research',  label:'Research & Modeling',        color:'#8b5cf6' },
   { id:'fundadmin', label:'Fund Admin & Finance Ops',   color:'#10b981' },
   { id:'ops',       label:'Operations',                 color:'#f59e0b' },
+  { id:'partner',   label:'Partner Integrations',       color:'#06b6d4' },
 ];
 
 const AGENTS = [
@@ -233,6 +234,14 @@ const AGENTS = [
     chips:['Build a DCF model from these financial statements','Review this model for hardcoded values and errors','Create sensitivity tables for the key value drivers','Set up a 3-statement model framework'],
   },
   {
+    id:'pnl-analyser', name:'P&L Analyser', icon:'📉', cat:'fundadmin',
+    desc:'Dissects P&L statements — margin trends, cost drivers, actual vs budget variance bridges.',
+    long:'Parses uploaded P&L statements, management accounts, or trial balances to produce a structured income statement, root-cause variance bridge (actual vs budget/prior period), and CFO-ready management commentary. Flags losses, margin compression, and one-off items.',
+    tags:['P&L','Variance','Margins'],
+    hint:'Upload: P&L statement, management accounts, Excel model, trial balance',
+    chips:['Analyse this P&L statement','What is driving the margin compression?','Bridge actual vs budget for this period','Summarise the key profit and loss drivers'],
+  },
+  {
     id:'valuation-reviewer', name:'Valuation Reviewer', icon:'💎', cat:'fundadmin',
     desc:'Reviews GP packages, validates assumptions, stages LP reporting.',
     long:'Validates GP valuation packages: methodology, comparable selection, discount rates, arithmetic. Identifies issues and prepares the LP reporting narrative for sign-off.',
@@ -271,6 +280,22 @@ const AGENTS = [
     tags:['KYC','AML','Compliance'],
     hint:'Upload: passport, utility bill, company docs, onboarding forms',
     chips:['Extract entity details from this onboarding document','Evaluate this KYC file against standard AML rules','What documentation gaps exist in this pack?','Summarise the risk factors in this client profile'],
+  },
+  {
+    id:'lseg', name:'LSEG Analytics', icon:'📡', cat:'partner',
+    desc:'Bond pricing, FX carry, equity research, swap curves, options vol — powered by LSEG data.',
+    long:'Orchestrates LSEG financial analytics to price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards. Covers fixed income, FX, equities, and macro across G10 and EM markets.',
+    tags:['Fixed Income','FX','Macro'],
+    hint:'Upload: bond portfolio, FX positions, market data exports',
+    chips:['Analyse bond relative value vs peers','Evaluate FX carry trade opportunities','Build a macro and rates dashboard','Analyse the options volatility surface'],
+  },
+  {
+    id:'spglobal', name:'S&P Global', icon:'📰', cat:'partner',
+    desc:'Company tearsheets, earnings previews, and M&A transaction summaries via S&P Capital IQ.',
+    long:'Generates formatted company tearsheets for four audience types (equity research, IB/M&A, corp dev, sales/BD), structured earnings previews with consensus estimates and analyst sentiment, and M&A transaction summaries — all grounded in S&P Capital IQ data.',
+    tags:['Tearsheets','Earnings','M&A'],
+    hint:'Upload: existing research, company profiles, deal documents',
+    chips:['Generate a tearsheet for this company','Give me an earnings preview','Summarise recent transactions in this sector','Create an M&A target profile'],
   },
 ];
 
@@ -343,7 +368,7 @@ function renderWelcome() {
   w.innerHTML = `
     <div class="welcome-hero">
       <h1>Your Financial Agent Workspace</h1>
-      <p>Ten specialist agents covering every stage of the deal — from pitch to close, from earnings to month-end. Upload documents in any format and get institutional-quality output.</p>
+      <p>Thirteen specialist agents covering every stage of the deal — from pitch to close, earnings to month-end, P&amp;L analysis to KYC, with LSEG and S&amp;P Global data integrations. Upload documents in any format and get institutional-quality output.</p>
     </div>
     <div class="agent-grid">
       ${AGENTS.map(ag => {
