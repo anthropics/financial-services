@@ -1,0 +1,26 @@
+# P&L Analyser — managed-agent cookbook
+
+name: pnl-analyser
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/pnl-analyser/agents/pnl-analyser.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+
+mcp_servers: []
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/pnl-analyser }
+
+callable_agents:
+  - { manifest: ./subagents/statement-reader.yaml }
+  - { manifest: ./subagents/variance-runner.yaml }
+  - { manifest: ./subagents/commentary-writer.yaml }   # only leaf with Write

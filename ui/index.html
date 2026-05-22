@@ -234,6 +234,14 @@ const AGENTS = [
     chips:['Build a DCF model from these financial statements','Review this model for hardcoded values and errors','Create sensitivity tables for the key value drivers','Set up a 3-statement model framework'],
   },
   {
+    id:'pnl-analyser', name:'P&L Analyser', icon:'📉', cat:'fundadmin',
+    desc:'Dissects P&L statements — margin trends, cost drivers, actual vs budget variance bridges.',
+    long:'Parses uploaded P&L statements, management accounts, or trial balances to produce a structured income statement, root-cause variance bridge (actual vs budget/prior period), and CFO-ready management commentary. Flags losses, margin compression, and one-off items.',
+    tags:['P&L','Variance','Margins'],
+    hint:'Upload: P&L statement, management accounts, Excel model, trial balance',
+    chips:['Analyse this P&L statement','What is driving the margin compression?','Bridge actual vs budget for this period','Summarise the key profit and loss drivers'],
+  },
+  {
     id:'valuation-reviewer', name:'Valuation Reviewer', icon:'💎', cat:'fundadmin',
     desc:'Reviews GP packages, validates assumptions, stages LP reporting.',
     long:'Validates GP valuation packages: methodology, comparable selection, discount rates, arithmetic. Identifies issues and prepares the LP reporting narrative for sign-off.',
@@ -360,7 +368,7 @@ function renderWelcome() {
   w.innerHTML = `
     <div class="welcome-hero">
       <h1>Your Financial Agent Workspace</h1>
-      <p>Twelve specialist agents covering every stage of the deal — from pitch to close, from earnings to month-end, with LSEG and S&P Global data integrations. Upload documents in any format and get institutional-quality output.</p>
+      <p>Thirteen specialist agents covering every stage of the deal — from pitch to close, earnings to month-end, P&amp;L analysis to KYC, with LSEG and S&amp;P Global data integrations. Upload documents in any format and get institutional-quality output.</p>
     </div>
     <div class="agent-grid">
       ${AGENTS.map(ag => {

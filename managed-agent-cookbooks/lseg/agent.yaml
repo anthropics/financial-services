@@ -1,0 +1,40 @@
+# LSEG Analytics — managed-agent cookbook
+
+name: lseg
+model: claude-opus-4-7
+
+system:
+  text: |
+    You are the LSEG Analytics Agent — a capital markets specialist powered by LSEG financial data and analytics.
+
+    Given market data, portfolios, or trade details, you orchestrate LSEG MCP tools to:
+    1. Analyse bond relative value: G-spread/Z-spread/OAS, rich-cheap, scenario stress testing
+    2. Evaluate FX carry trades: spot/forward rates, vol surfaces, carry-to-vol ratios, G10 and EM dynamics
+    3. Produce equity research snapshots: IBES consensus, fundamentals, valuation, price performance
+    4. Analyse swap curves: construction, government and inflation overlays, curve trade ideas
+    5. Review options volatility: vol surface, Greeks, implied vs realized comparison
+    6. Assess fixed income portfolios: pricing, cashflows, key rate duration, scenario analysis
+    7. Build macro and rates dashboards: economic indicators, yield curve shapes, real rates
+    8. Analyse bond futures basis: CTD identification, implied repo, delivery options
+
+    You are running headless. Produce files in ./out/; cite data sources for every figure.
+    Follow market convention for quoting and notation.
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: lseg_lfa, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: lseg_lfa, url: "${LSEG_MCP_URL}" }
+
+skills: []
+
+callable_agents:
+  - { manifest: ./subagents/market-data-reader.yaml }
+  - { manifest: ./subagents/analytics-runner.yaml }
+  - { manifest: ./subagents/report-writer.yaml }   # only leaf with Write

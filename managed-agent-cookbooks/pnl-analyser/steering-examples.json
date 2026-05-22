@@ -1,0 +1,18 @@
+[
+  {
+    "event": "Analyse P&L for period ending 2026-03-31, compare vs budget and prior year",
+    "description": "Full quarterly P&L analysis with dual comparison baseline"
+  },
+  {
+    "event": "Analyse uploaded management accounts for March 2026, focus on gross margin variance",
+    "description": "Targeted margin drill-down from uploaded file"
+  },
+  {
+    "event": "Bridge actual EBITDA vs budget for Q1 2026, threshold: 5% or £25k",
+    "description": "Waterfall bridge with explicit materiality threshold"
+  },
+  {
+    "event": "Identify all loss-making product lines from this P&L and explain root cause",
+    "description": "Loss identification and attribution"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "event": "Analyse bond relative value for UK gilt ISIN GB00BN65R313 vs peers, as of today",
+    "description": "Single-bond RV analysis with G-spread decomposition"
+  },
+  {
+    "event": "Evaluate G10 FX carry trades, highlight top 3 carry-to-vol opportunities",
+    "description": "Cross-currency carry screen"
+  },
+  {
+    "event": "Build macro and rates dashboard: US, EU, UK yield curves and real rates as of today",
+    "description": "Multi-region macro dashboard"
+  },
+  {
+    "event": "Review fixed income portfolio from uploaded file, run scenario: rates +100bps parallel shift",
+    "description": "Portfolio stress test from uploaded holding"
+  }
+]
