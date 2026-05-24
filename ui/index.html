@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinanceAI — Your Financial Agent Workspace</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Inter',sans-serif;background:#080c14;color:#e2e8f0;font-size:14px;line-height:1.5}
+
+/* ── Layout ── */
+#app{display:flex;height:100vh}
+
+/* ── Sidebar ── */
+#sidebar{width:252px;min-width:252px;background:#0c1220;border-right:1px solid #1a2438;display:flex;flex-direction:column;overflow:hidden}
+.sidebar-header{padding:18px 16px 14px;border-bottom:1px solid #1a2438;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.logo-text{font-size:1rem;font-weight:700;color:#f8fafc;letter-spacing:-.02em}
+.logo-sub{font-size:.62rem;color:#334155;margin-left:auto;background:#1a2438;padding:2px 7px;border-radius:10px}
+.agent-nav{flex:1;overflow-y:auto;padding:6px 0 12px}
+.agent-nav::-webkit-scrollbar{width:3px}
+.agent-nav::-webkit-scrollbar-thumb{background:#1e2d42;border-radius:2px}
+.nav-group{margin-bottom:2px}
+.nav-cat{font-size:.63rem;font-weight:700;color:#3d5068;text-transform:uppercase;letter-spacing:.08em;padding:10px 14px 4px;display:flex;align-items:center;gap:6px}
+.nav-cat::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--c);flex-shrink:0}
+.agent-item{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;transition:background .12s,color .12s;border-left:2px solid transparent;color:#6b7f96}
+.agent-item:hover{background:#111d2e;color:#c8d8ea}
+.agent-item.active{background:#111d2e;border-left-color:var(--c);color:#f1f5f9}
+.agent-item-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.agent-item-name{font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-footer{padding:10px 14px;border-top:1px solid #1a2438;flex-shrink:0}
+.sidebar-footer p{font-size:.68rem;color:#253447;text-align:center}
+
+/* ── Main ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#080c14}
+#content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── Welcome ── */
+.welcome{flex:1;overflow-y:auto;padding:36px 28px}
+.welcome::-webkit-scrollbar{width:5px}
+.welcome::-webkit-scrollbar-thumb{background:#1e2d42;border-radius:3px}
+.welcome-hero{max-width:640px;margin:0 auto 36px;text-align:center}
+.welcome-hero h1{font-size:1.85rem;font-weight:800;letter-spacing:-.03em;line-height:1.2;background:linear-gradient(135deg,#f8fafc 0%,#4a6fa5 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.welcome-hero p{font-size:.88rem;color:#4a6280;line-height:1.65}
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;max-width:1080px;margin:0 auto}
+.agent-card{background:#0c1220;border:1px solid #1a2438;border-radius:12px;padding:18px;cursor:pointer;transition:border-color .18s,transform .14s,background .18s;display:flex;flex-direction:column;gap:9px}
+.agent-card:hover{border-color:var(--c);background:#0f1828;transform:translateY(-2px)}
+.agent-card-top{display:flex;align-items:flex-start;gap:11px}
+.agent-card-icon{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);flex-shrink:0}
+.agent-card-name{font-size:.88rem;font-weight:700;color:#f1f5f9;line-height:1.2}
+.agent-card-cat{font-size:.62rem;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.agent-card-desc{font-size:.75rem;color:#4a6280;line-height:1.55}
+.agent-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid #1a2438;margin-top:auto}
+.agent-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{background:#1a2438;color:#4a6280;font-size:.63rem;padding:2px 7px;border-radius:4px}
+.card-btn{background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border:1px solid color-mix(in srgb,var(--c) 35%,transparent);border-radius:6px;padding:4px 11px;font-size:.72rem;font-weight:700;cursor:pointer;transition:background .14s;white-space:nowrap}
+.card-btn:hover{background:color-mix(in srgb,var(--c) 28%,transparent)}
+
+/* ── Workspace ── */
+.workspace{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ws-header{padding:14px 22px;border-bottom:1px solid #1a2438;background:#0c1220;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.ws-icon{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;background:color-mix(in srgb,var(--c) 14%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);flex-shrink:0}
+.ws-info{flex:1;min-width:0}
+.ws-name{font-size:1rem;font-weight:700;color:#f8fafc;line-height:1.2}
+.ws-cat{font-size:.65rem;font-weight:700;color:var(--c);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.ws-desc{font-size:.75rem;color:#4a6280;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ws-actions{display:flex;gap:7px;flex-shrink:0}
+.btn-ghost{background:#1a2438;border:1px solid #253447;color:#6b7f96;border-radius:7px;padding:5px 11px;font-size:.72rem;cursor:pointer;transition:all .14s}
+.btn-ghost:hover{background:#253447;color:#e2e8f0}
+
+/* ── Chat ── */
+.chat-area{flex:1;overflow-y:auto;padding:14px 22px;display:flex;flex-direction:column;gap:14px}
+.chat-area::-webkit-scrollbar{width:5px}
+.chat-area::-webkit-scrollbar-thumb{background:#1e2d42;border-radius:3px}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:40px;min-height:200px}
+.empty-icon{font-size:2.2rem;opacity:.35}
+.empty-title{font-size:.92rem;font-weight:600;color:#3d5068}
+.empty-sub{font-size:.76rem;color:#253447;max-width:340px;line-height:1.55}
+
+.message{display:flex;gap:9px;max-width:820px;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.message.user{align-self:flex-end;flex-direction:row-reverse}
+.msg-avatar{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;margin-top:2px}
+.message.user .msg-avatar{background:#1d4ed8;color:#bfdbfe;font-size:11px;font-weight:700}
+.message.ai .msg-avatar{background:color-mix(in srgb,var(--c) 18%,#1a2438);font-size:14px;border:1px solid color-mix(in srgb,var(--c) 28%,transparent)}
+.msg-bubble{padding:9px 13px;border-radius:11px;max-width:calc(100% - 40px);font-size:.83rem;line-height:1.62}
+.message.user .msg-bubble{background:#1d4ed8;color:#eff6ff;border-bottom-right-radius:3px}
+.message.ai .msg-bubble{background:#0f1828;color:#d4e0ee;border:1px solid #1a2438;border-bottom-left-radius:3px}
+.file-tag{margin-top:5px;font-size:.7rem;opacity:.65;display:flex;align-items:center;gap:4px}
+
+/* Markdown */
+.message.ai .msg-bubble h1,.message.ai .msg-bubble h2,.message.ai .msg-bubble h3{color:#e8f0fc;margin:11px 0 5px;font-size:.9rem}
+.message.ai .msg-bubble p{margin-bottom:7px}
+.message.ai .msg-bubble p:last-child{margin-bottom:0}
+.message.ai .msg-bubble ul,.message.ai .msg-bubble ol{padding-left:17px;margin-bottom:7px}
+.message.ai .msg-bubble li{margin-bottom:3px}
+.message.ai .msg-bubble code{background:#080c14;border:1px solid #1a2438;border-radius:4px;padding:1px 5px;font-size:.78em;font-family:'SF Mono','Fira Code',monospace}
+.message.ai .msg-bubble pre{background:#080c14;border:1px solid #1a2438;border-radius:8px;padding:11px;overflow-x:auto;margin:7px 0}
+.message.ai .msg-bubble pre code{background:none;border:none;padding:0}
+.message.ai .msg-bubble table{width:100%;border-collapse:collapse;margin:7px 0;font-size:.78rem}
+.message.ai .msg-bubble th,.message.ai .msg-bubble td{border:1px solid #1a2438;padding:5px 9px;text-align:left}
+.message.ai .msg-bubble th{background:#080c14;color:#6b7f96;font-weight:600}
+.message.ai .msg-bubble strong{color:#e8f0fc}
+.message.ai .msg-bubble a{color:var(--c)}
+.message.ai .msg-bubble blockquote{border-left:3px solid var(--c);padding-left:11px;color:#6b7f96;margin:7px 0}
+.message.ai .msg-bubble hr{border:none;border-top:1px solid #1a2438;margin:10px 0}
+
+/* Typing */
+.typing-indicator{display:flex;align-items:center;gap:4px;padding:4px 0}
+.dot{width:6px;height:6px;border-radius:50%;background:#3d5068;animation:bounce 1.3s infinite}
+.dot:nth-child(2){animation-delay:.18s}
+.dot:nth-child(3){animation-delay:.36s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* ── Suggestions ── */
+.suggestions{display:flex;gap:6px;flex-wrap:wrap;padding:7px 22px 0;flex-shrink:0}
+.chip{background:#0f1828;border:1px solid #1a2438;color:#6b7f96;border-radius:20px;padding:4px 12px;font-size:.7rem;cursor:pointer;transition:all .14s;white-space:nowrap}
+.chip:hover{background:#1a2438;border-color:var(--c);color:var(--c)}
+
+/* ── Upload ── */
+.upload-bar{padding:7px 22px;background:#0c1220;border-top:1px solid #1a2438;flex-shrink:0}
+.upload-zone{border:1.5px dashed #1e2d42;border-radius:8px;padding:9px 14px;cursor:pointer;transition:all .14s;display:flex;align-items:center;gap:9px}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--c);background:color-mix(in srgb,var(--c) 5%,transparent)}
+.uz-text{font-size:.74rem;color:#3d5068}
+.uz-text strong{color:var(--c);font-weight:600}
+.file-preview{display:flex;align-items:center;gap:9px;width:100%}
+.fp-icon{font-size:17px}
+.fp-info{flex:1;min-width:0}
+.fp-name{font-size:.77rem;font-weight:600;color:#d4e0ee;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-size{font-size:.68rem;color:#3d5068}
+.fp-remove{background:none;border:none;color:#3d5068;cursor:pointer;font-size:15px;padding:2px;line-height:1;transition:color .14s}
+.fp-remove:hover{color:#ef4444}
+
+/* ── Input ── */
+.input-bar{padding:10px 22px 14px;background:#0c1220;border-top:1px solid #1a2438;display:flex;gap:9px;align-items:flex-end;flex-shrink:0}
+.input-wrap{flex:1;background:#0f1828;border:1px solid #1e2d42;border-radius:11px;padding:9px 12px;display:flex;align-items:flex-end;gap:7px;transition:border-color .14s}
+.input-wrap:focus-within{border-color:var(--c)}
+#msgInput{flex:1;background:none;border:none;outline:none;color:#d4e0ee;font-size:.83rem;line-height:1.5;resize:none;max-height:130px;font-family:inherit}
+#msgInput::placeholder{color:#3d5068}
+#msgInput::-webkit-scrollbar{width:3px}
+#msgInput::-webkit-scrollbar-thumb{background:#1e2d42;border-radius:2px}
+.send-btn{width:34px;height:34px;border-radius:8px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s;background:var(--c);color:#fff}
+.send-btn:hover{filter:brightness(1.18)}
+.send-btn:disabled{background:#1e2d42;color:#3d5068;cursor:not-allowed;filter:none}
+
+#fileInput{display:none}
+
+/* ── Responsive ── */
+@media(max-width:680px){
+  #sidebar{display:none}
+  .agent-grid{grid-template-columns:1fr}
+  .welcome{padding:20px 16px}
+  .ws-header{padding:10px 14px}
+  .chat-area{padding:10px 14px}
+  .input-bar{padding:8px 14px 12px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">💹</div>
+        <div class="logo-text">FinanceAI</div>
+        <div class="logo-sub">BETA</div>
+      </div>
+    </div>
+    <nav class="agent-nav" id="agentNav"></nav>
+    <div class="sidebar-footer"><p>Kloud eSIM · Finance Intelligence</p></div>
+  </aside>
+  <main id="main">
+    <div id="content"></div>
+  </main>
+</div>
+<input type="file" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.txt,.png,.jpg,.jpeg,.webp">
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════
+const CATS = [
+  { id:'coverage',  label:'Coverage & Advisory',       color:'#3b82f6' },
+  { id:'research',  label:'Research & Modeling',        color:'#8b5cf6' },
+  { id:'fundadmin', label:'Fund Admin & Finance Ops',   color:'#10b981' },
+  { id:'ops',       label:'Operations',                 color:'#f59e0b' },
+  { id:'partner',   label:'Partner Integrations',       color:'#06b6d4' },
+];
+
+const AGENTS = [
+  {
+    id:'pitch-agent', name:'Pitch Agent', icon:'📊', cat:'coverage',
+    desc:'End-to-end pitch — comps, DCF, LBO, football field, branded deck.',
+    long:'Given a target and situation, builds the full Excel model (trading comps, precedents, DCF, LBO) and populates your pitch deck template. Every chart traces to a named range.',
+    tags:['M&A','Equity','Debt'],
+    hint:'Upload: filings, data packs, existing models',
+    chips:['Analyse this company for a sell-side M&A mandate','Build a trading comps analysis for this peer set','What valuation methodology is most appropriate here?','Summarise key metrics from this filing'],
+  },
+  {
+    id:'meeting-prep-agent', name:'Meeting Prep Agent', icon:'📋', cat:'coverage',
+    desc:'Comprehensive briefing pack before every client meeting.',
+    long:'Prepares company snapshot, recent developments, key talking points, potential objections, and suggested agenda — all before you walk in the room.',
+    tags:['Client','Advisory'],
+    hint:'Upload: prior meeting notes, client documents, financials',
+    chips:['Prepare a briefing for a CFO meeting','What questions should I prioritise in a strategic review?','Draft an agenda for a quarterly business review','Summarise the key risks to discuss with this client'],
+  },
+  {
+    id:'market-researcher', name:'Market Researcher', icon:'🔍', cat:'research',
+    desc:'Sector or theme → overview, landscape, comps, ideas shortlist.',
+    long:'Produces institutional-quality research: industry overview, competitive positioning, peer comps spread, and an investment ideas shortlist with thesis hooks.',
+    tags:['Research','Sector','Comps'],
+    hint:'Upload: research reports, data exports, company filings',
+    chips:['Write a sector primer on the eSIM / connectivity space','Map the competitive landscape for this market','Which peers are most relevant for this company?','Identify 3–5 investment ideas expressing this theme'],
+  },
+  {
+    id:'earnings-reviewer', name:'Earnings Reviewer', icon:'📈', cat:'research',
+    desc:'Earnings call + filings → model update → post-earnings note.',
+    long:'Processes an earnings event end-to-end: actuals vs consensus, guidance changes, management tone, updated estimates, and a draft post-earnings note.',
+    tags:['Equity Research','Earnings'],
+    hint:'Upload: earnings transcript, 10-Q/8-K, existing model',
+    chips:['Analyse this earnings transcript for key surprises','How did results compare to consensus expectations?','What guidance changes are most material here?','Draft a post-earnings note from this filing'],
+  },
+  {
+    id:'model-builder', name:'Model Builder', icon:'⚙️', cat:'research',
+    desc:'DCF, LBO, 3-statement, comps — rigorous models with full audit trails.',
+    long:'Builds or reviews financial models from scratch. Every output cell traces to an input. Follows blue/black/green conventions with full formula audit.',
+    tags:['DCF','LBO','3-Statement'],
+    hint:'Upload: historical financials, Excel model, data export',
+    chips:['Build a DCF model from these financial statements','Review this model for hardcoded values and errors','Create sensitivity tables for the key value drivers','Set up a 3-statement model framework'],
+  },
+  {
+    id:'pnl-analyser', name:'P&L Analyser', icon:'📉', cat:'fundadmin',
+    desc:'Dissects P&L statements — margin trends, cost drivers, actual vs budget variance bridges.',
+    long:'Parses uploaded P&L statements, management accounts, or trial balances to produce a structured income statement, root-cause variance bridge (actual vs budget/prior period), and CFO-ready management commentary. Flags losses, margin compression, and one-off items.',
+    tags:['P&L','Variance','Margins'],
+    hint:'Upload: P&L statement, management accounts, Excel model, trial balance',
+    chips:['Analyse this P&L statement','What is driving the margin compression?','Bridge actual vs budget for this period','Summarise the key profit and loss drivers'],
+  },
+  {
+    id:'valuation-reviewer', name:'Valuation Reviewer', icon:'💎', cat:'fundadmin',
+    desc:'Reviews GP packages, validates assumptions, stages LP reporting.',
+    long:'Validates GP valuation packages: methodology, comparable selection, discount rates, arithmetic. Identifies issues and prepares the LP reporting narrative for sign-off.',
+    tags:['Valuation','LP Reporting'],
+    hint:'Upload: GP valuation package, LP statement, comps data',
+    chips:['Review this GP valuation package for issues','Are the comparable multiples appropriate?','Summarise key valuation assumptions in this document','Flag methodology concerns in this LP report'],
+  },
+  {
+    id:'gl-reconciler', name:'GL Reconciler', icon:'⚖️', cat:'fundadmin',
+    desc:'Finds breaks, traces root cause, formats exception report for sign-off.',
+    long:'Reconciles GL to subledger or bank statement. Identifies all variances over threshold, classifies root cause, and produces the exception report for controller sign-off.',
+    tags:['Reconciliation','Accounting'],
+    hint:'Upload: GL export, subledger data, trial balance, bank statement',
+    chips:['Identify all breaks in this GL vs subledger data','Trace root cause of these variances','Analyse this bank statement and categorise transactions','Draft an exception report from this recon data'],
+  },
+  {
+    id:'month-end-closer', name:'Month-End Closer', icon:'📅', cat:'fundadmin',
+    desc:'Accruals, roll-forwards, variance commentary for month-end close.',
+    long:'Manages the close process: calculates accruals, prepares BS roll-forwards, writes P&L variance commentary, and assembles the close pack for review.',
+    tags:['Month-End','Accruals'],
+    hint:'Upload: trial balance, prior month close, GL export',
+    chips:['Calculate accruals from this accounts data','Write variance commentary for these P&L movements','Prepare a month-end close checklist','Roll forward the balance sheet from last period'],
+  },
+  {
+    id:'statement-auditor', name:'Statement Auditor', icon:'🔎', cat:'fundadmin',
+    desc:'Audits LP statements before distribution — flags errors and gaps.',
+    long:'Verifies NAV calculations, checks allocation methodology, reconciles to fund-level financials, and flags any errors before statements go out to LPs.',
+    tags:['Audit','LP Statements'],
+    hint:'Upload: LP statement PDF, fund financials, NAV report',
+    chips:['Audit this LP statement for errors','Verify the NAV calculation in this document','Check the allocation methodology is consistent','Flag discrepancies between these two statements'],
+  },
+  {
+    id:'kyc-screener', name:'KYC Screener', icon:'🛡️', cat:'ops',
+    desc:'Parses onboarding docs, runs KYC rules engine, flags compliance gaps.',
+    long:'Extracts entity details, evaluates KYC/AML rules, flags potential sanctions/PEP matches, identifies documentation gaps, and formats the compliance packet for sign-off.',
+    tags:['KYC','AML','Compliance'],
+    hint:'Upload: passport, utility bill, company docs, onboarding forms',
+    chips:['Extract entity details from this onboarding document','Evaluate this KYC file against standard AML rules','What documentation gaps exist in this pack?','Summarise the risk factors in this client profile'],
+  },
+  {
+    id:'lseg', name:'LSEG Analytics', icon:'📡', cat:'partner',
+    desc:'Bond pricing, FX carry, equity research, swap curves, options vol — powered by LSEG data.',
+    long:'Orchestrates LSEG financial analytics to price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards. Covers fixed income, FX, equities, and macro across G10 and EM markets.',
+    tags:['Fixed Income','FX','Macro'],
+    hint:'Upload: bond portfolio, FX positions, market data exports',
+    chips:['Analyse bond relative value vs peers','Evaluate FX carry trade opportunities','Build a macro and rates dashboard','Analyse the options volatility surface'],
+  },
+  {
+    id:'spglobal', name:'S&P Global', icon:'📰', cat:'partner',
+    desc:'Company tearsheets, earnings previews, and M&A transaction summaries via S&P Capital IQ.',
+    long:'Generates formatted company tearsheets for four audience types (equity research, IB/M&A, corp dev, sales/BD), structured earnings previews with consensus estimates and analyst sentiment, and M&A transaction summaries — all grounded in S&P Capital IQ data.',
+    tags:['Tearsheets','Earnings','M&A'],
+    hint:'Upload: existing research, company profiles, deal documents',
+    chips:['Generate a tearsheet for this company','Give me an earnings preview','Summarise recent transactions in this sector','Create an M&A target profile'],
+  },
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+const S = { agentId: null, messages: [], file: null, streaming: false };
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+const getAgent = id => AGENTS.find(a => a.id === id);
+const getCat   = id => CATS.find(c => c.id === id);
+const color    = id => getCat(getAgent(id)?.cat)?.color ?? '#3b82f6';
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+function fileIcon(type, name) {
+  if (type === 'application/pdf') return '📄';
+  if (type.startsWith('image/')) return '🖼️';
+  if (type.includes('sheet') || /\.xlsx?$/i.test(name)) return '📊';
+  if (type.includes('csv') || name.endsWith('.csv')) return '📋';
+  return '📁';
+}
+function md(text) {
+  return DOMPurify.sanitize(marked.parse(text ?? ''));
+}
+
+// ═══════════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════════
+function renderSidebar() {
+  const nav = document.getElementById('agentNav');
+  nav.innerHTML = '';
+  CATS.forEach(cat => {
+    const agents = AGENTS.filter(a => a.cat === cat.id);
+    if (!agents.length) return;
+    const g = document.createElement('div');
+    g.className = 'nav-group';
+    const lbl = document.createElement('div');
+    lbl.className = 'nav-cat';
+    lbl.style.setProperty('--c', cat.color);
+    lbl.textContent = cat.label;
+    g.appendChild(lbl);
+    agents.forEach(ag => {
+      const item = document.createElement('div');
+      item.className = 'agent-item' + (S.agentId === ag.id ? ' active' : '');
+      item.style.setProperty('--c', cat.color);
+      item.innerHTML = `<span class="agent-item-icon">${ag.icon}</span><span class="agent-item-name">${ag.name}</span>`;
+      item.onclick = () => selectAgent(ag.id);
+      g.appendChild(item);
+    });
+    nav.appendChild(g);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// WELCOME
+// ═══════════════════════════════════════════════════════
+function renderWelcome() {
+  const el = document.getElementById('content');
+  el.className = '';
+  el.style.cssText = 'flex:1;overflow:hidden;display:flex;flex-direction:column';
+
+  const w = document.createElement('div');
+  w.className = 'welcome';
+  w.innerHTML = `
+    <div class="welcome-hero">
+      <h1>Your Financial Agent Workspace</h1>
+      <p>Thirteen specialist agents covering every stage of the deal — from pitch to close, earnings to month-end, P&amp;L analysis to KYC, with LSEG and S&amp;P Global data integrations. Upload documents in any format and get institutional-quality output.</p>
+    </div>
+    <div class="agent-grid">
+      ${AGENTS.map(ag => {
+        const c = getCat(ag.cat);
+        return `
+          <div class="agent-card" style="--c:${c.color}" data-id="${ag.id}">
+            <div class="agent-card-top">
+              <div class="agent-card-icon">${ag.icon}</div>
+              <div>
+                <div class="agent-card-name">${ag.name}</div>
+                <div class="agent-card-cat">${c.label}</div>
+              </div>
+            </div>
+            <div class="agent-card-desc">${ag.long}</div>
+            <div class="agent-card-footer">
+              <div class="agent-tags">${ag.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+              <button class="card-btn">Launch →</button>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+
+  el.appendChild(w);
+  el.querySelectorAll('.agent-card').forEach(c => c.onclick = () => selectAgent(c.dataset.id));
+}
+
+// ═══════════════════════════════════════════════════════
+// WORKSPACE
+// ═══════════════════════════════════════════════════════
+function renderWorkspace() {
+  const ag = getAgent(S.agentId);
+  if (!ag) return;
+  const c  = color(S.agentId);
+  const ct = getCat(ag.cat);
+  const el = document.getElementById('content');
+  el.className = 'workspace';
+  el.style.cssText = '';
+  el.style.setProperty('--c', c);
+
+  el.innerHTML = `
+    <div class="ws-header">
+      <div class="ws-icon">${ag.icon}</div>
+      <div class="ws-info">
+        <div class="ws-name">${ag.name}</div>
+        <div class="ws-cat">${ct.label}</div>
+        <div class="ws-desc">${ag.desc}</div>
+      </div>
+      <div class="ws-actions">
+        <button class="btn-ghost" id="clearBtn">Clear</button>
+      </div>
+    </div>
+
+    <div class="chat-area" id="chatArea"></div>
+
+    <div class="suggestions" id="chips">
+      ${ag.chips.map(s => `<span class="chip">${s}</span>`).join('')}
+    </div>
+
+    <div class="upload-bar">
+      <div class="upload-zone" id="uploadZone">
+        <span>📎</span>
+        <span class="uz-text"><strong>Drop a file</strong> or click to browse — ${ag.hint}</span>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <div class="input-wrap">
+        <textarea id="msgInput" rows="1" placeholder="Message ${ag.name}…"></textarea>
+      </div>
+      <button class="send-btn" id="sendBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>`;
+
+  // Wire events
+  document.getElementById('clearBtn').onclick = clearChat;
+  document.getElementById('sendBtn').onclick   = doSend;
+  const inp = document.getElementById('msgInput');
+  inp.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } };
+  inp.oninput   = function () { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 130) + 'px'; };
+
+  const uz = document.getElementById('uploadZone');
+  uz.onclick    = () => document.getElementById('fileInput').click();
+  uz.ondragover = e => { e.preventDefault(); uz.classList.add('drag-over'); };
+  uz.ondragleave= () => uz.classList.remove('drag-over');
+  uz.ondrop     = e => { e.preventDefault(); uz.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
+
+  document.getElementById('fileInput').onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); e.target.value = ''; };
+
+  document.getElementById('chips').querySelectorAll('.chip').forEach(ch => {
+    ch.onclick = () => { const i = document.getElementById('msgInput'); if (i) { i.value = ch.textContent; doSend(); } };
+  });
+
+  renderMsgs();
+  inp.focus();
+}
+
+// ═══════════════════════════════════════════════════════
+// FILE
+// ═══════════════════════════════════════════════════════
+function handleFile(file) {
+  const ok = /\.(pdf|csv|xlsx?|txt|png|jpe?g|webp|gif)$/i.test(file.name) ||
+    ['application/pdf','text/csv','text/plain','image/png','image/jpeg','image/webp','image/gif',
+     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/vnd.ms-excel'].includes(file.type);
+  if (!ok) { alert('Unsupported file type. Please upload PDF, Excel, CSV, image, or text files.'); return; }
+
+  if (/\.xlsx?$/i.test(file.name) || file.type.includes('sheet') || file.type.includes('excel')) {
+    const r = new FileReader();
+    r.onload = e => {
+      const wb  = XLSX.read(e.target.result, { type: 'array' });
+      const csv = wb.SheetNames.map(n => `Sheet: ${n}\n${XLSX.utils.sheet_to_csv(wb.Sheets[n])}`).join('\n\n');
+      const b64 = btoa(unescape(encodeURIComponent(csv)));
+      S.file = { name: file.name, size: file.size, type: 'text/plain', data: b64 };
+      showPreview();
+    };
+    r.readAsArrayBuffer(file);
+  } else {
+    const r = new FileReader();
+    r.onload = e => {
+      const [, b64] = e.target.result.split(',');
+      S.file = { name: file.name, size: file.size, type: file.type || 'text/plain', data: b64 };
+      showPreview();
+    };
+    r.readAsDataURL(file);
+  }
+}
+
+function showPreview() {
+  const f  = S.file;
+  const uz = document.getElementById('uploadZone');
+  if (!uz) return;
+  uz.onclick = null;
+  uz.style.cursor = 'default';
+  uz.innerHTML = `
+    <div class="file-preview">
+      <span class="fp-icon">${fileIcon(f.type, f.name)}</span>
+      <div class="fp-info">
+        <div class="fp-name">${f.name}</div>
+        <div class="fp-size">${fmtBytes(f.size)} · Ready to attach</div>
+      </div>
+      <button class="fp-remove" id="rmFile">✕</button>
+    </div>`;
+  document.getElementById('rmFile').onclick = e => {
+    e.stopPropagation();
+    S.file = null;
+    resetUploadZone();
+  };
+}
+
+function resetUploadZone() {
+  const ag = getAgent(S.agentId);
+  const uz = document.getElementById('uploadZone');
+  if (!uz || !ag) return;
+  uz.style.cursor = 'pointer';
+  uz.innerHTML = `<span>📎</span><span class="uz-text"><strong>Drop a file</strong> or click to browse — ${ag.hint}</span>`;
+  uz.onclick = () => document.getElementById('fileInput').click();
+}
+
+// ═══════════════════════════════════════════════════════
+// MESSAGES
+// ═══════════════════════════════════════════════════════
+function renderMsgs() {
+  const area = document.getElementById('chatArea');
+  if (!area) return;
+
+  if (!S.messages.length) {
+    const ag = getAgent(S.agentId);
+    area.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">${ag?.icon ?? '🤖'}</div>
+        <div class="empty-title">Ready — ${ag?.name ?? 'Agent'}</div>
+        <div class="empty-sub">${ag?.long ?? ''}</div>
+      </div>`;
+    return;
+  }
+
+  area.innerHTML = '';
+  S.messages.forEach((msg, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = `message ${msg.role}`;
+
+    const av = document.createElement('div');
+    av.className = 'msg-avatar';
+    av.textContent = msg.role === 'user' ? 'U' : (getAgent(S.agentId)?.icon ?? '🤖');
+
+    const bub = document.createElement('div');
+    bub.className = 'msg-bubble';
+    bub.dataset.idx = i;
+
+    if (msg.role === 'ai') {
+      bub.innerHTML = msg.content
+        ? md(msg.content)
+        : '<div class="typing-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+    } else {
+      bub.textContent = msg.content;
+      if (msg.fileName) {
+        const ft = document.createElement('div');
+        ft.className = 'file-tag';
+        ft.innerHTML = `📎 ${msg.fileName}`;
+        bub.appendChild(ft);
+      }
+    }
+
+    wrap.appendChild(av);
+    wrap.appendChild(bub);
+    area.appendChild(wrap);
+  });
+
+  area.scrollTop = area.scrollHeight;
+}
+
+function patchLastAI(text) {
+  const area = document.getElementById('chatArea');
+  if (!area) return;
+  const bubbles = area.querySelectorAll('.message.ai .msg-bubble');
+  const last = bubbles[bubbles.length - 1];
+  if (last) { last.innerHTML = md(text); area.scrollTop = area.scrollHeight; }
+}
+
+// ═══════════════════════════════════════════════════════
+// SEND
+// ═══════════════════════════════════════════════════════
+async function doSend() {
+  const inp = document.getElementById('msgInput');
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text || S.streaming) return;
+
+  const attachedFile = S.file;
+
+  S.messages.push({ role: 'user', content: text, fileName: attachedFile?.name ?? null });
+  inp.value = '';
+  inp.style.height = 'auto';
+  S.file = null;
+  resetUploadZone();
+
+  S.messages.push({ role: 'ai', content: '' });
+  renderMsgs();
+
+  const sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) sendBtn.disabled = true;
+  S.streaming = true;
+
+  const chips = document.getElementById('chips');
+  if (chips) chips.style.display = 'none';
+
+  try {
+    const apiMsgs = S.messages.slice(0, -1).map(m => ({
+      role: m.role === 'ai' ? 'assistant' : 'user',
+      content: m.content,
+    }));
+
+    const body = { agentId: S.agentId, messages: apiMsgs };
+    if (attachedFile) {
+      body.fileData = attachedFile.data;
+      body.fileType = attachedFile.type;
+      body.fileName = attachedFile.name;
+    }
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) throw new Error(`Server error: HTTP ${res.status}`);
+
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '', aiText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const raw = line.slice(6).trim();
+        if (raw === '[DONE]') break;
+        try {
+          const { text: t, error: e } = JSON.parse(raw);
+          if (e) throw new Error(e);
+          if (t) { aiText += t; S.messages[S.messages.length - 1].content = aiText; patchLastAI(aiText); }
+        } catch {}
+      }
+    }
+
+    if (!aiText) {
+      S.messages[S.messages.length - 1].content = '⚠️ No response received. Please try again.';
+      renderMsgs();
+    }
+  } catch (err) {
+    S.messages[S.messages.length - 1].content = `⚠️ **Error:** ${err.message}\n\nMake sure the \`ANTHROPIC_API_KEY\` environment variable is set in your Netlify project settings.`;
+    renderMsgs();
+  } finally {
+    S.streaming = false;
+    const sb = document.getElementById('sendBtn');
+    if (sb) sb.disabled = false;
+    document.getElementById('msgInput')?.focus();
+  }
+}
+
+function clearChat() {
+  S.messages = [];
+  S.file = null;
+  renderMsgs();
+  resetUploadZone();
+  const chips = document.getElementById('chips');
+  if (chips) chips.style.display = 'flex';
+}
+
+// ═══════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════
+function selectAgent(id) {
+  S.agentId   = id;
+  S.messages  = [];
+  S.file      = null;
+  S.streaming = false;
+  renderSidebar();
+  renderWorkspace();
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+renderSidebar();
+renderWelcome();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+[
+  {
+    "event": "Generate an investment banking tearsheet for Palantir Technologies",
+    "description": "IB/M&A audience tearsheet"
+  },
+  {
+    "event": "Give me an earnings preview for Salesforce ahead of Q1 2026 results",
+    "description": "Upcoming earnings preview with consensus and sentiment"
+  },
+  {
+    "event": "Summarise M&A transactions in the data infrastructure sector over the last 12 months",
+    "description": "Sector deal activity summary for market mapping"
+  },
+  {
+    "event": "Generate an equity research tearsheet for Nvidia",
+    "description": "Buy-side/sell-side analyst investment thesis snapshot"
+  }
+]

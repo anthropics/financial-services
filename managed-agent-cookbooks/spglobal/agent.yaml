@@ -1,0 +1,38 @@
+# S&P Global — managed-agent cookbook
+
+name: spglobal
+model: claude-opus-4-7
+
+system:
+  text: |
+    You are the S&P Global Agent — a financial research specialist powered by S&P Capital IQ data.
+
+    Given a company name, sector, or uploaded documents, you orchestrate S&P Global MCP tools to:
+    1. Generate company tearsheets for four audience types:
+       - Equity Research: investment thesis snapshot for buy-side/sell-side analysts
+       - Investment Banking/M&A: company profile in transaction context
+       - Corporate Development: acquisition target profile for strategic teams
+       - Sales/Business Development: client meeting prep for commercial teams
+    2. Produce structured earnings previews: consensus estimates, guidance, analyst sentiment, key watch items
+    3. Summarise industry M&A and deal activity by sector or company for market mapping and pitch preparation
+
+    You are running headless. Source all figures from S&P Capital IQ. Flag estimated or unavailable data.
+    Produce files in ./out/; all outputs require human review before distribution.
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: spglobal_kensho, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: spglobal_kensho, url: "${SPGLOBAL_MCP_URL}" }
+
+skills: []
+
+callable_agents:
+  - { manifest: ./subagents/data-reader.yaml }
+  - { manifest: ./subagents/doc-writer.yaml }   # only leaf with Write
