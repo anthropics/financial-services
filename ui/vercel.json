@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "framework": null,
+  "outputDirectory": ".",
+  "functions": {
+    "api/chat.ts": {
+      "runtime": "edge",
+      "maxDuration": 60
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type" }
+      ]
+    }
+  ]
+}
