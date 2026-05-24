@@ -1,5 +1,5 @@
 ---
-description: Setup wizard — provision Vertex/Bedrock/gateway, admin consent, generate manifest
+description: Setup wizard — provision Vertex/Bedrock/Foundry/gateway, admin consent, generate manifest(s)
 ---
 
 # Claude in Office — Direct Cloud Setup
@@ -46,6 +46,21 @@ an LLM gateway (LiteLLM, Portkey, Kong, etc.)?**
 Bedrock and per-user config (bootstrap endpoint or extension attrs) need
 `entra_sso=1` — the add-in acquires the user's Entra ID token to authenticate
 those flows. See the Entra SSO section in [manifest](manifest.md).
+
+## Step 1b — Which Office apps?
+
+Ask: **Excel/Word/PowerPoint, Outlook, or both?** Outlook is a separate
+manifest and has one extra prerequisite.
+
+If they're deploying Outlook:
+- **Bedrock is not currently supported for Outlook.** If they picked `bedrock`
+  in Step 1, Outlook is off the table for now — generate only the `office`
+  manifest.
+- **Microsoft Graph admin consent is required.** Run
+  [consent](consent.md#outlook--microsoft-graph-consent) — a Global Admin opens
+  one URL and clicks Accept. Do this before generating the manifest so you can
+  ask whether they're using Anthropic's app (no `graph_client_id` needed) or
+  their own Entra app (capture `graph_client_id`).
 
 Branch to the matching section below.
 
@@ -250,16 +265,18 @@ Write the split into the setup log so Step 4 and Step 5 each know their subset.
 ## Step 4 — Generate the manifest
 
 Read `${CLAUDE_PLUGIN_ROOT}/commands/manifest.md` and follow it with the
-**org-wide** values from Step 3. The command wraps:
+**org-wide** values from Step 3. Generate one file per host from Step 1b:
 
 ```bash
-node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" manifest.xml <key>=<value> ...
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" office  manifest.xml         <key>=<value> ...
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml <key>=<value> ...
 ```
 
-Then validate:
+Then validate each:
 
 ```bash
 npx -y office-addin-manifest validate manifest.xml
+npx -y office-addin-manifest validate manifest-outlook.xml
 ```
 
 ## Step 5 — Per-user config

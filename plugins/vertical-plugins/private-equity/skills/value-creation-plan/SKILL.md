@@ -1,6 +1,9 @@
-# Value Creation Plan
-
+---
+name: value-creation-plan
 description: Structure post-acquisition value creation plans with revenue, cost, and operational levers mapped to an EBITDA bridge. Includes 100-day priorities, KPI targets, and accountability frameworks. Use when planning post-close execution, preparing operating partner materials, or building a board-ready value creation roadmap. Triggers on "value creation plan", "100-day plan", "post-close plan", "EBITDA bridge", "operating plan", or "value creation levers".
+---
+
+# Value Creation Plan
 
 ## Workflow
 

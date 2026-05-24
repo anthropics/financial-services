@@ -13,20 +13,48 @@ Checks:
 Exit 0 if clean, 1 otherwise. Requires: pyyaml.
 """
 import json
+import subprocess
 import sys
 from pathlib import Path
-
-try:
-    import yaml
-except ImportError:
-    print("ERROR: requires pyyaml (pip install pyyaml)", file=sys.stderr)
-    sys.exit(2)
 
 ROOT = Path(__file__).resolve().parents[1]
 PLUGINS = ROOT / "plugins"
 MANAGED = ROOT / "managed-agent-cookbooks"
 errors: list[str] = []
 checked = 0
+
+
+def ensure_hooks_installed() -> None:
+    """Point git at .githooks so the version-bump pre-commit runs.
+
+    Native equivalent of Husky's `prepare`, piggybacked on the script
+    everyone already runs before committing. Best-effort: never fatal.
+    """
+    want = ".githooks"
+    try:
+        cur = subprocess.run(
+            ["git", "-C", str(ROOT), "config", "--get", "core.hooksPath"],
+            capture_output=True, text=True,
+        ).stdout.strip()
+        if cur != want:
+            subprocess.run(
+                ["git", "-C", str(ROOT), "config", "core.hooksPath", want],
+                check=True, capture_output=True,
+            )
+            print(f"[check.py] installed git hooks (core.hooksPath -> {want})")
+    except (subprocess.SubprocessError, OSError):
+        pass  # not a git checkout / git unavailable — ignore
+
+
+# Install hooks before anything that can exit early (e.g. missing pyyaml),
+# so a fresh checkout still gets the version-bump hook wired up.
+ensure_hooks_installed()
+
+try:
+    import yaml
+except ImportError:
+    print("ERROR: requires pyyaml (pip install pyyaml)", file=sys.stderr)
+    sys.exit(2)
 
 
 def err(msg: str) -> None:

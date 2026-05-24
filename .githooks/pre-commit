@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Auto patch-bump any plugin with staged changes so it ends up exactly one
+# patch ahead of main — bumped once per branch, not once per commit.
+#
+# Install (one-time per clone):  git config core.hooksPath .githooks
+# (scripts/check.py self-installs this for you on first run.)
+#
+# Bypass for a single commit:    git commit --no-verify
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "[pre-commit] python3 not found; skipping version-bump." >&2
+  exit 0
+fi
+
+python3 "$REPO_ROOT/scripts/version_bump.py" --apply
