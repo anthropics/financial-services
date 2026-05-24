@@ -57,7 +57,7 @@ json.dump(yaml.safe_load(t), sys.stdout)
 ' "$1"
 }
 
-SKILL_CACHE_FILE="$(mktemp -t skillcache)"
+SKILL_CACHE_FILE="$(mktemp "${TMPDIR:-/tmp}/skillcacheXXXXXX")"
 trap 'rm -f "$SKILL_CACHE_FILE"' EXIT
 upload_skill() {
   local path="$1" key cached
@@ -70,7 +70,7 @@ upload_skill() {
     printf '%s' "$cached"; return
   fi
   local resp id zip
-  zip="$(mktemp -t skill).zip"
+  zip="$(mktemp "${TMPDIR:-/tmp}/skillXXXXXX").zip"
   (cd "$(dirname "$path")" && zip -qr "$zip" "$(basename "$path")")
   # /v1/skills uses its own beta header and multipart, not the managed-agents JSON path
   resp=$(curl -sS "$API/v1/skills" \
@@ -178,7 +178,7 @@ create_agent() {
 }
 
 if [[ $DRY_RUN -eq 1 ]]; then
-  DRY_OUT="$(mktemp)"
+  DRY_OUT="$(mktemp "${TMPDIR:-/tmp}/dryoutXXXXXX")"
   create_agent "$DIR/agent.yaml" >/dev/null
   echo "# --dry-run: resolved POST /v1/agents bodies (subagents first, orchestrator last)"
   jq -s '.' "$DRY_OUT"

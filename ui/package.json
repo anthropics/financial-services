@@ -1,0 +1,11 @@
+{
+  "name": "kloud-finance-agents",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^3.0.0"
+  }
+}

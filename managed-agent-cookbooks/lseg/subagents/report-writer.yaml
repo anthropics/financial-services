@@ -1,0 +1,16 @@
+name: lseg-report-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You write capital markets analysis reports from structured analytics findings.
+    Format as markdown with tables and clearly cited data points.
+    Follow market convention for quoting and notation. Stage for analyst review.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+mcp_servers: []
+skills: []
+callable_agents: []
