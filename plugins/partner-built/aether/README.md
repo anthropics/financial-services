@@ -60,14 +60,17 @@ claude plugins add aether
 
 ## Requirements & Authentication
 
-The MCP server is distributed on npm as [`@evidinvest/aether-mcp`](https://www.npmjs.com/package/@evidinvest/aether-mcp)
-and run via `npx` (see [`.mcp.json`](.mcp.json)). Authentication options:
+This is a **remote MCP server** over Streamable HTTP at
+`https://api.aether.evidinvest.com/mcp` (see [`.mcp.json`](.mcp.json)) — works in both
+Claude Cowork and Claude Code, nothing to install. Authentication:
 
-- **API key** — set `AETHER_API_KEY` (get one at <https://aether.evidinvest.com/developer/keys>).
+- **OAuth device code** — on first connect the client walks you through sign-in at
+  <https://aether.evidinvest.com>; the token is cached and refreshed automatically.
   Verified accounts include a **3-month free trial** (5,000 calls/hr on Aether's first-party tools).
-- **OAuth device code** — omit the key and the server prints a sign-in URL on first run; the
-  token is cached and refreshed automatically.
-- **Anonymous** — set `AETHER_NO_AUTH=1` to call without an account (rate-limited).
+- **Anonymous** — connect without signing in to try it out, rate-limited to 5 calls/hour.
+
+A self-hosted / stdio option (`npx @evidinvest/aether-mcp` with `AETHER_API_KEY`) is also
+available — see the [aether-developer repo](https://github.com/EvidInvest/aether-developer).
 
 ## Why Aether
 

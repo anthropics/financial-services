@@ -1,11 +1,8 @@
 {
   "mcpServers": {
     "aether": {
-      "command": "npx",
-      "args": ["-y", "@evidinvest/aether-mcp@latest"],
-      "env": {
-        "AETHER_API_KEY": "${AETHER_API_KEY}"
-      }
+      "type": "http",
+      "url": "https://api.aether.evidinvest.com/mcp"
     }
   }
 }
