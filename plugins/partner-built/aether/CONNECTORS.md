@@ -1,14 +1,15 @@
 # Connectors
 
 This plugin connects to a single MCP server, **Aether** (`@evidinvest/aether-mcp`), which
-proxies to `https://api.aether.evidinvest.com`. No additional connectors are required.
-Commands reference tools by their exact names below.
+proxies to `https://api.aether.evidinvest.com`. No additional connectors are required. The
+server advertises **11 tools** in three families. Commands reference tools by their exact
+names below.
 
 ## Tool Categories
 
 | Category | Tools | Description |
 |----------|-------|-------------|
-| Search | `financial_search`, `regulation_search` | First-party retrieval over SEC filings and EU regulation |
+| Search | `financial_search`, `transcript_search`, `regulation_search` | First-party retrieval over SEC filings, earnings transcripts, and EU regulation |
 | Marketplace — read | `list_partners`, `partner_search`, `partner_proxy_search` | Discover and query third-party seller data |
 | Marketplace — sell | `seller_signup`, `seller_publish_document`, `seller_register_endpoint`, `seller_list_my_documents`, `seller_list_my_endpoints` | Publish documents or register paid endpoints as a seller |
 
@@ -27,6 +28,20 @@ filing URLs, and tickers.
 | `fields` | string[] | Optional field projection. |
 | `profile` | enum | `bm25` \| `hybrid` \| `hybrid_rerank` \| `hybrid_rerank_tickerprior` (default — the production winner: hybrid + cross-encoder rerank + ticker-prior). |
 | `return_format` | enum | `section` (default — full SEC section the match belongs to) \| `chunk` (matching window only) \| `both`. |
+
+### `transcript_search`
+Hybrid retrieval over earnings-call transcripts (CEO/CFO commentary + analyst Q&A). Returns
+ranked verbatim speaker turns with citations. Use for forward-looking color (guidance,
+narrative) that filings don't capture.
+
+| Param | Type | Notes |
+|-------|------|-------|
+| `query` | string | **Required.** |
+| `ticker` | string | Optional ticker filter (e.g. `NVDA`). |
+| `lookback_quarters` | number | Keep calls within the last N quarters (default: no filter). |
+| `speaker_role` | string | Optional: `CEO` \| `CFO` \| `Analyst` \| `Operator`. |
+| `limit` | number | Default 10, max 50. |
+| `profile` | enum | `bm25` \| `hybrid` (default). |
 
 ### `regulation_search`
 Search a 29-act EU financial-regulation corpus (~13,000 citable chunks). Returns ranked,
