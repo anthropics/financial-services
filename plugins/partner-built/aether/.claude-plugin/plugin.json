@@ -1,0 +1,25 @@
+{
+  "name": "aether",
+  "displayName": "Aether",
+  "version": "0.1.0",
+  "description": "Agent-native search over SEC filings (10-K/10-Q/8-K), earnings-call transcripts, and a 29-act EU financial-regulation corpus — as-filed and citable, never analyst-adjusted. Includes a two-sided data marketplace for third-party research.",
+  "author": {
+    "name": "EvidInvest (Aether)",
+    "email": "hao.huang@ebdsweden.com"
+  },
+  "homepage": "https://aether.evidinvest.com",
+  "repository": "https://github.com/EvidInvest/aether-developer",
+  "license": "Apache-2.0",
+  "keywords": [
+    "sec",
+    "edgar",
+    "filings",
+    "10-K",
+    "earnings-transcripts",
+    "eu-regulation",
+    "mifid",
+    "mica",
+    "financial-search",
+    "agent-native"
+  ]
+}
