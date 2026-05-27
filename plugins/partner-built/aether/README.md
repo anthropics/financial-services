@@ -1,8 +1,8 @@
 # Aether — Agent-Native Financial Search
 
-Search SEC filings, earnings-call transcripts, and EU financial regulation in natural
-language, and get back **as-filed, citable** text — never analyst-adjusted. Aether is a
-financial-vertical search engine purpose-built for agents, exposed over MCP.
+Search SEC filings and EU financial regulation in natural language, and get back
+**as-filed, citable** text — never analyst-adjusted. Aether is a financial-vertical
+search engine purpose-built for agents, exposed over MCP.
 
 ## What This Plugin Does
 
@@ -14,8 +14,6 @@ at a time.
 The corpus today:
 
 - **SEC filings** — 10-K / 10-Q / 8-K for the S&P 500 across ~10 years, ~1.4M retrieval chunks.
-- **Earnings-call transcripts** — CEO / CFO commentary and analyst Q&A, for forward-looking
-  color that filings don't capture.
 - **EU financial regulation** — a 29-act corpus (~13,000 citable units) spanning MiFID II,
   MiFIR, MAR, EMIR, MiCA, DORA, CRR/CRD IV, UCITS/AIFMD, PSD2, Solvency II, SFDR/Taxonomy/CSRD,
   the 2024 AML package, and more.
@@ -27,7 +25,6 @@ The corpus today:
 | Command | Description |
 |---------|-------------|
 | `/sec-deep-dive` | Pull the most relevant 10-K/10-Q/8-K sections on a topic for a company, with as-filed quotes and filing citations |
-| `/earnings-color` | Surface CEO/CFO/analyst commentary on a topic from earnings-call transcripts, quoted verbatim with speaker + date |
 | `/regulation-lookup` | Find the controlling EU-regulation text for a question, returned as citable Article-paragraphs / recitals |
 | `/supply-chain-exposure` | Find public companies disclosing exposure to a supply-chain risk, grouped by ticker |
 
@@ -36,7 +33,6 @@ The corpus today:
 | Skill | Domain Knowledge |
 |-------|-----------------|
 | `sec-filings-research` | Retrieval profiles, `section` vs `chunk` returns, as-filed discipline, citation hygiene |
-| `earnings-transcript-research` | Speaker-role and lookback filtering, separating guidance from reported results |
 | `eu-regulation-research` | CELEX map, consolidated vs OJ text, doc-type/article/AML-topic filters, citation breadcrumbs |
 
 ## Integrations
@@ -44,7 +40,7 @@ The corpus today:
 This plugin connects to the **Aether MCP Server**, which serves these tool families:
 
 - **Search** — `financial_search` (SEC filings + supply-chain relationships),
-  `transcript_search` (earnings calls), `regulation_search` (EU financial regulation).
+  `regulation_search` (EU financial regulation).
 - **Marketplace (read)** — `list_partners`, `partner_search` (indexed seller documents),
   `partner_proxy_search` (paid server-to-server seller queries).
 - **Marketplace (sell)** — `seller_signup`, `seller_publish_document`,
@@ -75,5 +71,5 @@ and run via `npx` (see [`.mcp.json`](.mcp.json)). Authentication options:
   the section, filing URL, and ticker attached — not a vendor's normalized model.
 - **First agent-native financial search.** Built for tool-calling agents, not a human UI bolted
   onto an API.
-- **One server, three corpora.** US disclosure, earnings narrative, and EU regulation behind a
-  single MCP connector, plus an open marketplace for third-party data.
+- **One server, multiple corpora.** US disclosure and EU regulation behind a single MCP
+  connector, plus an open marketplace for third-party data.

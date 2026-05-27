@@ -122,7 +122,7 @@
       "name": "aether",
       "displayName": "Aether",
       "source": "./plugins/partner-built/aether",
-      "description": "Agent-native search over SEC filings (10-K/10-Q/8-K), earnings-call transcripts, and a 29-act EU financial-regulation corpus — as-filed and citable, never analyst-adjusted, plus a third-party data marketplace."
+      "description": "Agent-native search over SEC filings (10-K/10-Q/8-K) and a 29-act EU financial-regulation corpus — as-filed and citable, never analyst-adjusted, plus a third-party data marketplace."
     },
     {
       "name": "claude-for-msft-365-install",
