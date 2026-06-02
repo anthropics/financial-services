@@ -1,0 +1,11 @@
+{
+  "name": "morningstar",
+  "description": "Morningstar plugin for screening, summarizing, and comparing funds and ETFs using the Morningstar MCP server.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Morningstar",
+    "url": "https://www.morningstar.com"
+  },
+  "homepage": "https://www.morningstar.com",
+  "repository": "https://github.com/morningstar/morningstar-mcp-server"
+}

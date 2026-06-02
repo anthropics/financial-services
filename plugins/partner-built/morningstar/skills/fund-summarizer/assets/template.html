@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{FUND_NAME}} ({{TICKER}}) — Fund Summary</title>
+    <style>
+        :root {
+            --c-mstar: #FC0412;
+            --c-primary: #0F3D7C;
+            --c-text: #3D3B39;
+            --c-muted: #7F7D7A;
+            --c-bg: #F6F5F4;
+            --c-card: #FFFFFF;
+            --c-border: #ECEBEA;
+            --c-pos: #039649;
+            --c-neg: #E42513;
+            --c-fund: #2364B9;
+            --c-bench: #B2013C;
+            --c-grid: #DAD9D8;
+            --c-alloc-equity: #2364B9;
+            --c-alloc-fi: #F47206;
+            --c-alloc-alt: #B2013C;
+            --c-alloc-cash: #039649;
+            --c-alloc-other: #F5C72C;
+            --c-alloc-nc: #ECEBEA;
+            --c-scale-high: #039649;
+            --c-scale-above: #039649;
+            --c-scale-average: #7F7D7A;
+            --c-scale-below: #E42513;
+            --c-scale-low: #E42513;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "MORN Intrinsic", "Aptos Light", Aptos, Calibri, Georgia, serif;
+            font-size: 13px;
+            background: var(--c-bg);
+            color: var(--c-text);
+            line-height: 1.5;
+        }
+
+        /* --- Shared text patterns --- */
+        .label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--c-muted);
+        }
+
+        .value {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .value-lg {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--c-primary);
+        }
+
+        .val-positive {
+            color: var(--c-pos);
+        }
+
+        .val-negative {
+            color: var(--c-neg);
+        }
+
+        .muted {
+            color: var(--c-muted);
+            font-size: 11px;
+        }
+
+        /* --- Info Tooltips --- */
+        .info-tip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .info-tip .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            border: 1px solid var(--c-muted);
+            font-size: 9px;
+            font-weight: 700;
+            font-style: normal;
+            color: var(--c-muted);
+            cursor: help;
+            flex-shrink: 0;
+        }
+
+        .info-tip .info-bubble {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            z-index: 100;
+            width: 240px;
+            padding: 10px 12px;
+            background: var(--c-card);
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--c-text);
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .info-tip:hover .info-bubble {
+            display: block;
+        }
+
+        /* --- Header --- */
+        .header {
+            background: var(--c-mstar);
+            color: white;
+            padding: 2% 5%;
+            display: flex;
+            align-items: baseline;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .header-top {
+            width: 100%;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            opacity: 0.75;
+            margin-bottom: -6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-logo {
+            height: 20px;
+            width: auto;
+            opacity: 1;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .header .ticker {
+            font-size: 14px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        /* --- Layout --- */
+        .main {
+            padding: 18px 24px 36px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--c-card);
+            border-radius: 6px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+            margin-bottom: 16px;
+            padding: 16px 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--c-mstar);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .section-subtitle {
+            font-size: 11px;
+            color: var(--c-muted);
+            margin-top: -6px;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* --- Panels (Overview cards) --- */
+        .panel-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel {
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--c-primary);
+            opacity: 0.4;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .panel-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--c-primary);
+            margin-bottom: 8px;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .field .label {
+            font-size: 9px;
+            letter-spacing: 0.06em;
+        }
+
+        .field.highlight {
+            background: var(--c-bg);
+            padding: 6px 8px;
+            border-radius: 4px;
+            margin: -2px -8px 2px;
+            grid-column: 1 / -1;
+        }
+
+        .field.highlight .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--c-primary);
+        }
+
+        /* --- Manager --- */
+        .manager {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .manager-avatar {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            background: var(--c-bg);
+            border: 2px solid var(--c-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--c-primary);
+        }
+
+        .manager-name {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .manager-meta {
+            font-size: 11px;
+            color: var(--c-muted);
+        }
+
+        /* --- Cards (Analysis) --- */
+        .panel,
+        .card,
+        .pillar,
+        .detail-card,
+        .profile-panel,
+        .fi-stat {
+            border: 1px solid var(--c-border);
+            border-radius: 6px;
+        }
+
+        .card {
+            text-align: center;
+            padding: 14px;
+        }
+
+        .card .label {
+            margin-bottom: 8px;
+        }
+
+        .card .value-lg {
+            font-size: 20px;
+        }
+
+        .card .muted {
+            margin-top: 4px;
+        }
+
+        .star-rating {
+            font-size: 20px;
+            color: #000;
+            letter-spacing: 2px;
+        }
+
+        .star-rating svg {
+            display: block;
+            width: 132px;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        .analysis-section {
+            padding: 18px 22px;
+        }
+
+        .analysis-section .section-title {
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+        .analysis-section .card {
+            min-height: 130px;
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .analysis-section .card .label {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .analysis-section .card .value-lg {
+            font-size: 34px;
+            line-height: 1;
+        }
+
+        .analysis-section .card .muted {
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .analysis-section .star-rating {
+            font-size: 30px;
+            line-height: 1;
+        }
+
+        .analysis-section .mprs-visual-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .analysis-section .mprs-visual-wrap svg {
+            display: block;
+            width: 132px;
+            height: auto;
+        }
+
+        .analysis-section .medalist-icon-wrap svg {
+            width: auto;
+            height: 37px;
+        }
+
+        /* --- Rating icons --- */
+        .medalist-icon-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 6px;
+        }
+
+        .medalist-icon-wrap svg {
+            width: auto;
+            height: 37px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .pillar-icon-wrap {
+            min-height: 28px;
+            margin-bottom: 8px;
+        }
+
+        .pillar-icon-wrap svg {
+            display: block;
+            width: 100%;
+            max-width: 130px;
+            height: auto;
+        }
+
+        .price-score-num {
+            display: block;
+            text-align: left;
+            font-size: 20px;
+            font-weight: 300;
+            font-family: var(--font);
+            color: var(--c-text);
+            line-height: 1;
+        }
+
+        /* --- Tables --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead th {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--c-muted);
+            padding: 8px 12px;
+            text-align: right;
+            border-bottom: 2px solid var(--c-primary);
+        }
+
+        thead th:first-child {
+            text-align: left;
+        }
+
+        tbody td {
+            padding: 8px 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--c-border);
+            font-variant-numeric: tabular-nums;
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .row-fund td {
+            font-weight: 700;
+        }
+
+        .row-excess td {
+            font-style: italic;
+        }
+
+        .table-sm {
+            font-size: 11px;
+        }
+
+        .table-sm thead th,
+        .table-sm tbody td {
+            padding: 6px 10px;
+        }
+
+        .table-footnote {
+            font-size: 10px;
+            color: var(--c-muted);
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .footnote {
+            max-width: 1100px;
+            margin: 16px auto 0;
+            font-size: 10px;
+            line-height: 1.45;
+            color: var(--c-muted);
+        }
+
+        /* --- Holdings stats & title --- */
+        .stat-row {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--c-border);
+        }
+
+        .stat-row .stat {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .holdings-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--c-primary);
+            margin-bottom: 12px;
+        }
+
+        .holdings-title .pct {
+            font-size: 18px;
+        }
+
+        /* --- Risk metric deltas --- */
+        .metric-fund {
+            display: block;
+            font-weight: 600;
+        }
+
+        .metric-delta {
+            display: block;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+
+        .delta-positive {
+            color: var(--c-pos);
+        }
+
+        .delta-positive::before {
+            content: '▲ ';
+        }
+
+        .delta-negative {
+            color: var(--c-neg);
+        }
+
+        .delta-negative::before {
+            content: '▼ ';
+        }
+
+        .delta-neutral {
+            color: var(--c-muted);
+        }
+
+        /* --- Charts --- */
+        .chart-wrap {
+            width: 100%;
+            min-height: 180px;
+            max-height: 300px;
+            position: relative;
+        }
+
+        .chart-wrap svg {
+            width: 100%;
+            height: auto;
+        }
+
+        /* SVG chart interactivity */
+        .chart-point .hover-target {
+            opacity: 0;
+            cursor: crosshair;
+        }
+
+        .chart-point .data-dot {
+            opacity: 0;
+            transition: opacity 0.12s;
+            pointer-events: none;
+        }
+
+        .chart-point .chart-tooltip-box,
+        .slice-group .chart-tooltip-box {
+            opacity: 0;
+            transition: opacity 0.1s;
+            pointer-events: none;
+        }
+
+        .chart-point:hover .hover-target {
+            opacity: 1;
+        }
+
+        .chart-point:hover .data-dot {
+            opacity: 1;
+        }
+
+        .chart-point:hover .chart-tooltip-box,
+        .slice-group:hover .chart-tooltip-box {
+            opacity: 1;
+        }
+
+        .slice-arc {
+            transition: opacity 0.15s, filter 0.15s;
+            cursor: pointer;
+        }
+
+        .slice-group:hover .slice-arc {
+            opacity: 0.85;
+            filter: saturate(1.3);
+        }
+
+        .chart-wrap.donut {
+            max-width: 280px;
+            max-height: 280px;
+            min-height: 180px;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .chart-legend span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-legend i {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+            display: inline-block;
+        }
+
+        /* --- Pillar cards --- */
+        .pillar {
+            padding: 14px;
+        }
+
+        .pillar .label {
+            margin-bottom: 6px;
+        }
+
+        .pillar p {
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .pillar-score-scale {
+            margin: 8px 0 14px;
+        }
+
+        .pillar-scale-track {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 2px;
+        }
+
+        .pillar-scale-point {
+            position: relative;
+            color: var(--c-muted);
+            font-size: 9px;
+            line-height: 1.15;
+            text-align: center;
+            min-width: 0;
+        }
+
+        .pillar-scale-segment {
+            display: block;
+            height: 14px;
+            border: 1px solid var(--c-grid);
+            background: var(--c-bg);
+        }
+
+        .pillar-scale-point:first-child .pillar-scale-segment {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .pillar-scale-point:last-child .pillar-scale-segment {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .pillar-scale-label {
+            display: block;
+            margin-top: 4px;
+            min-height: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .pillar-scale-point.is-active {
+            color: var(--c-text);
+            font-weight: 700;
+        }
+
+        .pillar-scale-point.is-active .pillar-scale-segment {
+            border-color: transparent;
+        }
+
+        .pillar-scale-point.is-high .pillar-scale-segment {
+            background: var(--c-scale-high);
+        }
+
+        .pillar-scale-point.is-above-average .pillar-scale-segment {
+            background: var(--c-scale-above);
+        }
+
+        .pillar-scale-point.is-average .pillar-scale-segment {
+            background: var(--c-scale-average);
+        }
+
+        .pillar-scale-point.is-below-average .pillar-scale-segment {
+            background: var(--c-scale-below);
+        }
+
+        .pillar-scale-point.is-low .pillar-scale-segment {
+            background: var(--c-scale-low);
+        }
+
+        .analyst-summary {
+            font-size: 13px;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .analyst-summary ul {
+            padding-left: 18px;
+            margin-top: 8px;
+        }
+
+        .analyst-summary li {
+            margin-bottom: 4px;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin: 16px 0 0;
+            border-bottom: 2px solid var(--c-border);
+        }
+
+        .tab-btn {
+            padding: 8px 18px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            color: var(--c-muted);
+            cursor: pointer;
+            border: none;
+            background: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .tab-btn.active {
+            color: var(--c-primary);
+            border-bottom-color: var(--c-primary);
+        }
+
+        .tab-panel {
+            display: none;
+            padding-top: 16px;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            font-size: 12px;
+            color: var(--c-muted);
+            padding: 1% 10%;
+            text-align: center;
+        }
+
+        /* --- Print --- */
+        @media print {
+            body {
+                background: white;
+                font-size: 11px;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .main {
+                padding: 10px 0;
+                max-width: 100%;
+            }
+
+            .section {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+                margin-bottom: 14px;
+                padding: 14px 16px;
+            }
+
+            .header {
+                padding: 14px 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .chart-wrap {
+                min-height: 200px;
+            }
+
+            .footer {
+                page-break-before: avoid;
+            }
+
+            .grid-2,
+            .grid-4 {
+                page-break-inside: avoid;
+            }
+
+            .tabs {
+                display: none;
+            }
+
+            .tab-panel {
+                display: block !important;
+                padding-top: 12px;
+            }
+
+            .tab-panel::before {
+                content: attr(id);
+                display: block;
+                font-size: 10px;
+                font-weight: 700;
+                text-transform: uppercase;
+                color: #7F7D7A;
+                margin-bottom: 6px;
+            }
+        }
+
+        @page {
+            size: letter;
+            margin: 0.5in;
+        }
+
+        /* --- Detail Sections (Portfolio Detail) --- */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .detail-card {
+            padding: 14px 16px;
+        }
+
+        .detail-card.wide {
+            grid-column: 1 / -1;
+        }
+
+        .detail-card.is-empty {
+            display: none;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .profile-panel {
+            padding: 12px 14px;
+            min-width: 0;
+        }
+
+        .profile-panel.wide {
+            grid-column: 1 / -1;
+        }
+
+        .profile-panel.is-empty {
+            display: none;
+        }
+
+        .detail-card .section-subtitle {
+            font-size: 11px;
+            color: var(--c-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 0 0 10px;
+            font-style: normal;
+        }
+
+        .section-note {
+            font-size: 10px;
+            color: var(--c-muted);
+            font-style: italic;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        /* Flow row (chronological) */
+        .flow-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--c-border);
+        }
+
+        .flow-row .field {
+            flex: 1;
+        }
+
+        /* Fixed Income stat cards */
+        .fi-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+
+        .fi-stat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px 16px;
+        }
+
+        .fi-stat .label {
+            font-size: 9px;
+        }
+
+        .fi-stat .value {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--c-text);
+        }
+
+        /* Region bars */
+        .region-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .region-bar {
+            flex: 1;
+            height: 14px;
+            background: transparent;
+            border-radius: 2px;
+            overflow: hidden;
+            min-width: 80px;
+            border-bottom: 1.5px solid var(--c-grid);
+        }
+
+        .region-bar span {
+            display: block;
+            height: calc(100% - 1px);
+            background: var(--c-fund);
+            border-radius: 2px 2px 0 0;
+        }
+
+        .region-bar.bench span {
+            background: var(--c-bench);
+        }
+
+        .region-value {
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Risk statistics */
+        .metric-benchmark {
+            display: block;
+            font-size: 10px;
+            color: var(--c-muted);
+            margin-top: 1px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <div class="header-top"><img src="data:image/png;base64,{{LOGO_BASE64}}" alt="Morningstar Logo"
+                class="header-logo">Fund Summarizer</div>
+        <h1>{{FUND_NAME}}</h1>
+        <span class="ticker">{{TICKER}}</span>
+    </div>
+
+    <div class="footer">AI-generated analysis using Morningstar's data and research. Not investment advice; for
+        informational use only.
+    </div>
+
+    <div class="main">
+
+        <!-- OVERVIEW -->
+        <div class="section">
+            <div class="section-title">Overview</div>
+            <div class="grid-2">
+
+                <div class="panel">
+                    <div class="panel-title">Fund Identity</div>
+                    <div class="field highlight">
+                        <span class="label">Name</span>
+                        <span class="value">{{FUND_STANDARD_NAME}}</span>
+                    </div>
+                    <div class="panel-grid">
+                        <div class="field"><span class="label">Investment Type</span><span
+                                class="value">{{INVESTMENT_TYPE}}</span></div>
+                        <div class="field"><span class="label">Base Currency</span><span
+                                class="value">{{BASE_CURRENCY}}</span></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Cost & Yield</div>
+                    <div class="field highlight">
+                        <span class="label info-tip">Net Expense Ratio<i class="info-icon">i</i><span
+                                class="info-bubble">The Prospectus Adjusted Operating Expense Ratio is the percentage of
+                                fund assets paid for operating expenses and management fees. The ratio does reflect fee
+                                waivers in effect during the time period, and does not include interest and dividends on
+                                borrowed securities.</span></span>
+                        <span class="value">{{EXPENSE_RATIO}}</span>
+                    </div>
+                    <div class="panel-grid">
+                        <div class="field"><span class="label">Fee Level</span><span class="value">{{FEE_LEVEL}}</span>
+                        </div>
+                        <div class="field"><span class="label">Fee Level (Dist.)</span><span
+                                class="value">{{FEE_LEVEL_DISTRIBUTION}}</span></div>
+                        <div class="field"><span class="label">12-Mo Yield</span><span
+                                class="value">{{TWELVE_MONTH_YIELD}}</span></div>
+                        <div class="field"><span class="label">Turnover</span><span
+                                class="value">{{TURNOVER_RATIO}}</span></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Structure & Access</div>
+                    <div class="field highlight">
+                        <span class="label">Active / Index</span>
+                        <span class="value">{{ACTIVE_INDEX_LABEL}}</span>
+                    </div>
+                    <div class="panel-grid">
+                        <div class="field"><span class="label">Fund Size</span><span class="value">{{FUND_SIZE}}</span>
+                        </div>
+                        <div class="field"><span class="label">Closed to New</span><span
+                                class="value">{{CLOSED_TO_NEW}}</span></div>
+                        <div class="field"><span class="label">Inception Date</span><span
+                                class="value">{{INCEPTION_DATE}}</span></div>
+                        <div class="field"><span class="label">Min. Purchase</span><span
+                                class="value">{{MIN_INITIAL_PURCHASE}}</span></div>
+                        <div class="field"><span class="label">Oldest Share Class Inception Date</span><span
+                                class="value">{{OLDEST_SHARE_CLASS_INCEPTION}}</span></div>
+                    </div>
+                </div>
+
+                <div class="panel-stack">
+                    <div class="panel">
+                        <div class="panel-title">Classification & Benchmark</div>
+                        <div class="field highlight">
+                            <span class="label">Morningstar Category</span>
+                            <span class="value">{{CATEGORY}}</span>
+                        </div>
+                        <div class="panel-grid">
+                            <div class="field"><span class="label">Primary Prospectus Benchmark</span><span
+                                    class="value">{{PROSPECTUS_BENCHMARK}}</span></div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-title">Management</div>
+                        <div class="manager">
+                            <div class="manager-avatar">{{MANAGER_INITIALS}}</div>
+                            <div>
+                                <div class="manager-name">{{MANAGER_NAME}}</div>
+                                <div class="manager-meta">Since {{MANAGER_START_DATE}} · Ownership:
+                                    {{MANAGER_OWNERSHIP}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">Fund Flows & Price</div>
+                    <div class="field highlight">
+                        <span class="label">NAV</span>
+                        <span class="value">${{NAV}}</span>
+                    </div>
+                    <div class="flow-row">
+                        <div class="field"><span class="label">SEC 30-Day Yield</span><span
+                                class="value">{{SEC_YIELD}}</span></div>
+                        <div class="field"><span class="label">Est. Net Flow 1M</span><span
+                                class="value">{{EST_NET_FLOW_1M}}</span></div>
+                        <div class="field"><span class="label">Est. Net Flow 3M</span><span
+                                class="value">{{EST_NET_FLOW_3M}}</span></div>
+                        <div class="field"><span class="label">Est. Net Flow 1Y</span><span
+                                class="value">{{EST_NET_FLOW_1Y}}</span></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ANALYSIS -->
+        <div class="section analysis-section">
+            <div class="section-title">Analysis</div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="label info-tip">Medalist Rating<i class="info-icon">i</i><span class="info-bubble">A
+                            forward-looking assessment of whether a fund is likely to outperform its peers after fees,
+                            based on evaluation of its people, process, and parent company.</span></div>
+                    <div class="medalist-icon-wrap">{{MEDALIST_ICON}}</div>
+                    <div class="muted">{{MEDALIST_ANALYST_PCT}}% Analyst-Driven</div>
+                    {{MEDALIST_DISCLOSURE_TYPE_DISPLAY}}
+                </div>
+                <div class="card">
+                    <div class="label info-tip">Morningstar Rating<i class="info-icon">i</i><span class="info-bubble">A
+                            backward-looking measure of how well a fund has performed on a risk-adjusted basis relative
+                            to its category peers over 3, 5, and 10 year periods.</span></div>
+                    <div class="star-rating">{{STAR_RATING_ICON}}</div>
+                </div>
+                <div class="card">
+                    <div class="label">Morningstar Portfolio Risk Score</div>
+                    <div class="mprs-visual-wrap">{{MPRS_VISUAL}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RATINGS BREAKDOWN -->
+        <div class="section">
+            <div class="section-title">Ratings Breakdown</div>
+            <div class="analyst-summary">{{ANALYST_SUMMARY}}</div>
+            <div class="grid-4">
+                <div class="pillar">
+                    <div class="label">Process</div>
+                    <div class="pillar-icon-wrap">{{PROCESS_ICON}}</div>
+                    {{PROCESS_SCORE_SCALE}}
+                    {{PROCESS_SUMMARY_HTML}}
+                </div>
+                <div class="pillar">
+                    <div class="label">People</div>
+                    <div class="pillar-icon-wrap">{{PEOPLE_ICON}}</div>
+                    {{PEOPLE_SCORE_SCALE}}
+                    {{PEOPLE_SUMMARY_HTML}}
+                </div>
+                <div class="pillar">
+                    <div class="label">Parent</div>
+                    <div class="pillar-icon-wrap">{{PARENT_ICON}}</div>
+                    {{PARENT_SCORE_SCALE}}
+                    {{PARENT_SUMMARY_HTML}}
+                </div>
+                <div class="pillar">
+                    <div class="label">Price</div>
+                    {{PRICE_SCORE}}
+                    {{PRICE_SCORE_SCALE}}
+                    {{PRICE_SUMMARY_HTML}}
+                </div>
+            </div>
+        </div>
+
+        <!-- RETURNS -->
+        <div class="section">
+            <div class="section-title">Returns</div>
+            <div class="chart-legend">
+                <span><i style="background:var(--c-fund);"></i>{{FUND_NAME}}</span>
+                {{BENCHMARK_LEGEND_ENTRY}}
+            </div>
+            <div class="chart-wrap">{{RETURNS_CHART_SVG}}</div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="trailing">Trailing Returns</button>
+                <button class="tab-btn" data-tab="annual">Annual Returns</button>
+            </div>
+
+            <div class="tab-panel active" id="tab-trailing">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>YTD</th>
+                            <th>1 Yr</th>
+                            <th>2 Yr</th>
+                            <th>3 Yr</th>
+                            <th>5 Yr</th>
+                            <th>10 Yr</th>
+                        </tr>
+                    </thead>
+                    <tbody>{{TRAILING_RETURNS_ROWS}}</tbody>
+                </table>
+            </div>
+
+            <div class="tab-panel" id="tab-annual">
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            {{ANNUAL_RETURNS_HEADERS}}
+                        </tr>
+                    </thead>
+                    <tbody>{{ANNUAL_RETURNS_ROWS}}</tbody>
+                </table>
+            </div>
+            {{BENCHMARK_CURRENCY_NOTE}}
+        </div>
+
+        <!-- HOLDINGS -->
+        <div class="section">
+            <div class="section-title">Holdings</div>
+            <div class="grid-2">
+
+                <div style="display:flex;flex-direction:column;">
+                    <div class="chart-wrap donut">{{DONUT_CHART_SVG}}</div>
+                    <table class="table-sm" style="margin-top:14px;">
+                        <thead>
+                            <tr>
+                                <th>Asset Class</th>
+                                <th>Fund</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Equity</td>
+                                <td>{{ALLOC_EQUITY_FUND}}</td>
+                            </tr>
+                            <tr>
+                                <td>Fixed Income</td>
+                                <td>{{ALLOC_BOND_FUND}}</td>
+                            </tr>
+                            <tr>
+                                <td>Alternative</td>
+                                <td>{{ALLOC_ALT_FUND}}</td>
+                            </tr>
+                            <tr>
+                                <td>Cash</td>
+                                <td>{{ALLOC_CASH_FUND}}</td>
+                            </tr>
+                            <tr>
+                                <td>Other</td>
+                                <td>{{ALLOC_OTHER_FUND}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <div class="stat-row">
+                        <div class="stat"><span class="label">Total Holdings</span><span
+                                class="value-lg">{{NUM_HOLDINGS}}</span></div>
+                        <div class="stat"><span class="label info-tip">Ownership Breadth<i class="info-icon">i</i><span
+                                    class="info-bubble">Observes how frequently a portfolio's security-level exposures
+                                    appear across Morningstar's latest portfolio data. A score of 10 (maximum) indicates
+                                    a portfolio full of the most widely-held holdings, while 0.1 (minimum) indicates a
+                                    portfolio full of esoteric holdings.</span></span><span
+                                class="value-lg">{{OWNERSHIP_BREADTH}}</span></div>
+                        <div class="stat"><span class="label info-tip">Daily Liquidity Frequency<i
+                                    class="info-icon">i</i><span class="info-bubble">The percentage of the portfolio's
+                                    absolute weight classified as "Intermittent" (Least Liquid). This includes
+                                    restricted structures like interval funds, investments requiring advanced notice for
+                                    redemption, or illiquid instrument types.</span></span><span
+                                class="value-lg">{{LIQUIDITY_INTERMITTENT}}</span></div>
+                    </div>
+                    <div class="holdings-title"><span class="pct">{{PCT_TOP_10}}</span> in Top 10 Holdings</div>
+                    <table class="table-sm">
+                        <thead>
+                            <tr>
+                                <th>Holding</th>
+                                <th style="text-align:right">% of Portfolio</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{TOP_HOLDINGS_ROWS}}</tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Portfolio Detail Sections -->
+            <div class="detail-grid">
+                <div class="detail-card {{STYLE_BOX_SECTION_CLASS}}">
+                    <div class="section-subtitle">Morningstar Style Box</div>
+                    <table class="table-sm">
+                        <thead>
+                            <tr>
+                                <th>Style Box</th>
+                                <th>Fund</th>
+                            </tr>
+                        </thead>
+                        <tbody>{{STYLE_BOX_ROWS}}</tbody>
+                    </table>
+                </div>
+
+                <div class="detail-card wide {{FIXED_INCOME_SECTION_CLASS}}">
+                    <div class="section-subtitle">Fixed Income Profile</div>
+                    <div class="profile-grid">
+                        <div class="profile-panel {{FIXED_INCOME_STATS_SECTION_CLASS}}">
+                            <div class="fi-stats">
+                                <div class="fi-stat"><span class="label">Average Effective Duration</span><span
+                                        class="value">{{FI_DURATION}}</span></div>
+                                <div class="fi-stat"><span class="label">Average Credit Quality</span><span
+                                        class="value">{{FI_CREDIT_QUALITY}}</span></div>
+                            </div>
+                        </div>
+                        <div class="profile-panel wide {{FIXED_INCOME_REGION_SECTION_CLASS}}">
+                            <div class="section-subtitle">Fixed-Income Regional Exposure</div>
+                            <table class="table-sm">
+                                <thead>{{FIXED_INCOME_REGION_HEADER}}</thead>
+                                <tbody>{{FIXED_INCOME_REGION_ROWS_HTML}}</tbody>
+                            </table>
+                            {{FIXED_INCOME_SECTION_NOTE}}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-card wide {{EQUITY_PROFILE_SECTION_CLASS}}">
+                    <div class="section-subtitle">Equity Profile</div>
+                    <div class="profile-grid">
+                        <div class="profile-panel wide {{REGIONAL_EXPOSURE_SECTION_CLASS}}">
+                            <div class="section-subtitle">Equity Regional Exposure</div>
+                            <table class="table-sm">
+                                <thead>{{REGIONAL_EXPOSURE_HEADER}}</thead>
+                                <tbody>{{REGIONAL_EXPOSURE_ROWS_HTML}}</tbody>
+                            </table>
+                            {{REGIONAL_EXPOSURE_SECTION_NOTE}}
+                        </div>
+
+                        <div class="profile-panel {{MARKET_CAP_SECTION_CLASS}}">
+                            <div class="section-subtitle">Equity Market Cap Breakdown</div>
+                            <table class="table-sm">
+                                <thead>{{MARKET_CAP_HEADER}}</thead>
+                                <tbody>{{MARKET_CAP_ROWS_HTML}}</tbody>
+                            </table>
+                            {{MARKET_CAP_SECTION_NOTE}}
+                        </div>
+
+                        <div class="profile-panel {{EQUITY_PORTFOLIO_STATS_SECTION_CLASS}}">
+                            <div class="section-subtitle">Equity Portfolio Statistics</div>
+                            <table class="table-sm">
+                                <thead>{{EQUITY_PORTFOLIO_STATS_HEADER}}</thead>
+                                <tbody>{{EQUITY_PORTFOLIO_STATS_ROWS_HTML}}</tbody>
+                            </table>
+                            {{EQUITY_PORTFOLIO_STATS_SECTION_NOTE}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RISK & CAPTURE -->
+        <div class="section">
+            <div class="section-title">Risk & Capture</div>
+            <div class="section-subtitle">vs. {{PROSPECTUS_BENCHMARK}}</div>
+
+            <div class="grid-2">
+                <div>
+                    <table id="risk-capture-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>1 Yr</th>
+                                <th>3 Yr</th>
+                                <th>5 Yr</th>
+                                <th>10 Yr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-metric="sharpe">
+                                <td>Sharpe Ratio</td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                            </tr>
+                            <tr data-metric="upside">
+                                <td>Upside Capture</td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                            </tr>
+                            <tr data-metric="downside">
+                                <td>Downside Capture</td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="table-footnote">Capture delta = fund value - 100 (benchmark level). &gt;100 upside =
+                        outperformed in rallies; &lt;100 downside = protected in drawdowns.</div>
+                </div>
+
+                <div>
+                    <table id="risk-stats-table">
+                        <thead>
+                            <tr>
+                                <th>Risk Statistic</th>
+                                <th>1 Yr</th>
+                                <th>3 Yr</th>
+                                <th>5 Yr</th>
+                                <th>10 Yr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-metric="stddev">
+                                <td>Std Deviation</td>
+                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
+                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
+                            </tr>
+                            <tr data-metric="alpha">
+                                <td>Alpha</td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                            </tr>
+                            <tr data-metric="beta">
+                                <td>Beta</td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                            </tr>
+                            <tr data-metric="rsquared">
+                                <td>R-Squared</td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                                <td><span class="metric-fund"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{MEDALIST_DISCLOSURE_FOOTNOTE}}
+
+    <div class="footer">
+        Report generated {{REPORT_DATE}} | Data as of {{DATA_AS_OF_DATE}}
+
+    </div>
+    <script type="application/json" id="data-risk">{{ RISK_DATA_JSON }}</script>
+
+    <script>
+        const safeJson = (id, fallback) => {
+            try {
+                return JSON.parse(document.getElementById(id).textContent || JSON.stringify(fallback));
+            } catch (error) {
+                console.warn(`Could not parse ${id}`, error);
+                return fallback;
+            }
+        };
+
+        const RISK_DATA = safeJson('data-risk', {});
+        const riskFmt = v => { if (v == null || Math.abs(v) < 0.005) return '\u2014'; return (v > 0 ? '+' : '') + v.toFixed(2); };
+        const riskCls = (v, inv) => { if (v == null || Math.abs(v) < 0.005) return 'delta-neutral'; if (inv) return v < 0 ? 'delta-positive' : 'delta-negative'; return v > 0 ? 'delta-positive' : 'delta-negative'; };
+
+        // Risk & Capture table
+        (function () {
+            if (!RISK_DATA || !RISK_DATA.fund) return;
+            const table = document.getElementById('risk-capture-table');
+            if (!table) return;
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const m = row.dataset.metric, cells = row.querySelectorAll('td');
+                const fv = RISK_DATA.fund[m] || [];
+                [0, 1, 2, 3].forEach((p, i) => {
+                    const cell = cells[i + 1]; if (!cell) return;
+                    const fs = cell.querySelector('.metric-fund'), ds = cell.querySelector('.metric-delta');
+                    if (fv[p] == null) { fs.textContent = '\u2014'; ds.textContent = ''; return; }
+                    fs.textContent = fv[p].toFixed(2);
+                    if (m === 'sharpe') { ds.textContent = ''; return; }
+                    const d = fv[p] - 100;
+                    ds.textContent = riskFmt(d);
+                    ds.className = 'metric-delta ' + riskCls(d, m === 'downside');
+                });
+            });
+        })();
+
+        // Risk Statistics table (stddev, alpha, beta, r-squared)
+        (function () {
+            if (!RISK_DATA || !RISK_DATA.fund) return;
+            const table = document.getElementById('risk-stats-table');
+            if (!table) return;
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const m = row.dataset.metric, cells = row.querySelectorAll('td');
+                const fv = RISK_DATA.fund[m] || [], bv = (RISK_DATA.benchmark && RISK_DATA.benchmark[m]) || [];
+                [0, 1, 2, 3].forEach((p, i) => {
+                    const cell = cells[i + 1]; if (!cell) return;
+                    const fs = cell.querySelector('.metric-fund'), bs = cell.querySelector('.metric-benchmark');
+                    if (fv[p] == null) { fs.textContent = '\u2014'; if (bs) bs.textContent = ''; return; }
+                    fs.textContent = fv[p].toFixed(2);
+                    if (m === 'stddev' && bs && bv[p] != null) {
+                        const d = fv[p] - bv[p];
+                        bs.textContent = riskFmt(d);
+                        bs.className = 'metric-delta ' + riskCls(d, true);
+                    } else if (bs) {
+                        bs.textContent = '';
+                    }
+                });
+            });
+        })();
+
+        // Excess row coloring
+        document.querySelectorAll('.row-excess td').forEach(td => {
+            const t = td.textContent.trim();
+            if (t.startsWith('+')) td.classList.add('val-positive');
+            else if (t.startsWith('-') || t.startsWith('\u2212')) td.classList.add('val-negative');
+        });
+
+        // Tab toggle
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const parent = btn.closest('.section');
+                parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                parent.querySelector('#tab-' + btn.dataset.tab).classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+
+</html>
