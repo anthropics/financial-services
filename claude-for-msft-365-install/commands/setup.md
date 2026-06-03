@@ -150,19 +150,32 @@ aws iam create-role --role-name ClaudeBedrockAccess \
     }]
   }'
 
-# Bedrock invoke permissions.
+# Bedrock invoke + inference-profile discovery permissions.
 aws iam put-role-policy --role-name ClaudeBedrockAccess \
   --policy-name BedrockInvoke \
   --policy-document '{
     "Version": "2012-10-17",
-    "Statement": [{
-      "Effect": "Allow",
-      "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
-      "Resource": [
-        "arn:aws:bedrock:*::foundation-model/anthropic.*",
-        "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/us.anthropic.*"
-      ]
-    }]
+    "Statement": [
+      {
+        "Sid": "BedrockInvoke",
+        "Effect": "Allow",
+        "Action": ["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+        "Resource": [
+          "arn:aws:bedrock:*::foundation-model/anthropic.*",
+          "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/us.anthropic.*",
+          "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/eu.anthropic.*",
+          "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/au.anthropic.*",
+          "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/apac.anthropic.*",
+          "arn:aws:bedrock:*:'"${ACCOUNT}"':inference-profile/global.anthropic.*"
+        ]
+      },
+      {
+        "Sid": "BedrockDiscoverProfiles",
+        "Effect": "Allow",
+        "Action": ["bedrock:ListInferenceProfiles", "bedrock:GetInferenceProfile"],
+        "Resource": "*"
+      }
+    ]
   }'
 
 echo "aws_role_arn: arn:aws:iam::${ACCOUNT}:role/ClaudeBedrockAccess"
@@ -171,6 +184,91 @@ echo "aws_role_arn: arn:aws:iam::${ACCOUNT}:role/ClaudeBedrockAccess"
 If `create-open-id-connect-provider` errors with `EntityAlreadyExists`, a
 provider for that issuer already exists — that's fine, the role will trust it.
 The ARN is deterministic (`arn:aws:iam::<account>:oidc-provider/<issuer>`).
+
+The policy grants two things beyond raw invoke:
+
+- **`bedrock:ListInferenceProfiles` + `bedrock:GetInferenceProfile`** (their own
+  statement, `Resource: "*"` — these are list/control-plane actions that don't
+  take resource-level ARNs). The add-in calls these at sign-in to discover which
+  Anthropic profiles your policy permits and to select a region-appropriate one,
+  so the role needs them for sign-in to succeed.
+- **Five inference-profile prefixes**, not just `us.`. Four are **geographic**
+  cross-region inference profiles named by region group; the fifth, `global.`,
+  is **geography-agnostic** (a global cross-region inference profile). The
+  add-in invokes the geographic one matching your region group when a profile
+  exists there for your model, and the `global.` profile only as a fallback
+  (see the selection rule below):
+
+  | Prefix | Region group |
+  |---|---|
+  | `us.anthropic.*` | US Regions (e.g. `us-east-1`, `us-west-2`) |
+  | `eu.anthropic.*` | EU Regions (e.g. `eu-central-1`, `eu-west-1`) |
+  | `apac.anthropic.*` | Asia-Pacific Regions (e.g. `ap-northeast-1`, `ap-southeast-1`) |
+  | `au.anthropic.*` | Australia Regions (e.g. `ap-southeast-2`) |
+  | `global.anthropic.*` | **Geography-agnostic — not tied to a single region group.** A global cross-region inference profile, used as a fallback when no geographic profile exists for the target model and the source region supports global CRIS (e.g. `eu-west-1`). |
+
+  **Which profile is the correct invocation target?** It's a fallback rule:
+
+  1. A **geographic** profile (`eu.`/`apac.`/`au.`, matching your region
+     group) is correct **when one exists for the target model**.
+  2. A **`global.`-prefixed** profile is correct **only when no geographic
+     profile exists for that model *and* the source region supports global
+     cross-region inference** — for example, `eu-west-1` supports global CRIS,
+     so an EU deployment whose model has no `eu.` profile resolves to
+     `global.anthropic.<model>`.
+
+  Unlike the four geographic prefixes — each of which corresponds to a
+  specific region group — `global.anthropic.*` is geography-agnostic and
+  applies regardless of region group. Permitting it lets the add-in fall back
+  to a global profile when no geographic profile exists for your model.
+
+  **IAM is your control plane for cost and residency.** Because the add-in
+  discovers and selects from the profiles your policy permits, the `Resource`
+  list is how you enforce both:
+
+  - **Cost:** restrict the model family you allow (e.g. keep only Sonnet
+    profiles, omit Opus) and the add-in will discover and use a permitted model
+    instead of a more expensive one.
+  - **Data residency:** keep only your region group's prefix (e.g. `eu.`) and
+    drop the others, so the add-in can't select an out-of-group profile. Add
+    `global.` only if you want the global-CRIS fallback and your residency
+    policy allows cross-geography routing.
+
+  **Geographic/global profiles are cross-region — not "in-region."** The
+  `eu.`/`apac.`/`au.` prefixes are *geographic cross-region inference profiles*:
+  a request can be routed to any region **within that geography** (e.g. an
+  `eu.` profile may serve from any EU region, not only the one in `aws_region`),
+  and `global.` can route **worldwide**. That satisfies "data stays in the EU"
+  but **not** "data stays in one specific region." If your requirement is strict
+  **in-region** residency (inference never leaves, say, `eu-central-1`), a
+  cross-region profile is the wrong tool — you need a model that's available
+  **in-region** in that region and must invoke it directly (its on-demand
+  foundation-model ID), not via a `*.anthropic.*` inference profile. In-region
+  availability is per-model and per-region; verify it from the model card's
+  "Regional Availability" table before relying on it. Note the add-in's
+  discovery flow targets inference profiles, so a strict single-region setup may
+  not be expressible through this template's profile-based policy alone.
+
+  **This policy is intentionally permissive — tailor it before production.**
+  As shipped it allows **all five** prefixes and the full `anthropic.*` model
+  family so the template works out-of-the-box in any region. That is broader
+  than most deployments need. Treat it as a starting point and **remove what you
+  don't use**: keep only your region group's prefix (drop the others, and drop
+  `global.` unless you want worldwide fallback), and narrow the model family to
+  what you intend to pay for. The one thing you must **not** remove when
+  trimming is the `foundation-model/anthropic.*` resource (see below) — without
+  it, cross-region invocation fails.
+
+  **If you trim, keep the `foundation-model/anthropic.*` resource.** Invoking a
+  cross-region inference profile requires **both** the `inference-profile/...`
+  ARN **and** the underlying `foundation-model/...` ARN in the invoke statement
+  — Bedrock authorizes the call against the foundation model in each region the
+  profile routes to. The account-less, region-wildcard
+  `arn:aws:bedrock:*::foundation-model/anthropic.*` entry covers every
+  destination region, so leave it in place. Deleting it while keeping only an
+  inference-profile prefix is a common self-inflicted cause of an
+  `AccessDeniedException` / 403 at invoke time. You can narrow which prefixes
+  you allow; don't drop the foundation-model resource.
 
 Capture: `aws_role_arn`, `aws_region`. Add `entra_sso=1` when generating the
 manifest — Bedrock needs the Entra ID token as the STS web identity.
@@ -347,6 +445,17 @@ access page, confirm at least one Claude 4.5+ model shows **Access granted**
 
 If it says "Available to request", they request, accept terms, wait for grant
 (usually minutes, sometimes longer).
+
+Model access isn't the only gate. Even with access **granted**, sign-in fails
+with **403** if the Bedrock IAM policy's `Resource` list doesn't permit a model
+the add-in can discover and invoke — and that blocks sign-in for **every** user.
+The policy generated in Step 1b grants `bedrock:ListInferenceProfiles` and the
+five `*.anthropic.*` inference-profile prefixes (`us.`/`eu.`/`au.`/`apac.` plus
+the geography-agnostic `global.`) so the add-in can find a permitted,
+region-appropriate profile. If you narrowed the policy for cost or residency
+(see Step 1b), make sure it still permits at least one profile your region can
+invoke. For the full failure mode and corrective steps, see
+[debug → Sign-in 403](debug.md#sign-in-403-model-not-permitted-by-the-iam-policy).
 
 Log the verified model name to the setup log. Don't proceed until you have a
 200, a confirmed "Enabled", or a confirmed "Access granted" — whichever
