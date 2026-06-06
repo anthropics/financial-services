@@ -24,7 +24,7 @@ const KEYS = {
   gcp_project_id: { pattern: /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/, hint: "GCP project ID" },
   gcp_region: { pattern: /./, hint: "GCP region, e.g. us-east5 or global" },
   google_client_id: { pattern: /\.apps\.googleusercontent\.com$/, hint: "OAuth 2.0 client ID" },
-  google_client_secret: { pattern: /^GOCSPX-/, hint: "OAuth 2.0 client secret" },
+  google_client_secret: { pattern: /^GOCSPX-/, hint: "OAuth 2.0 client secret", secret: true },
   aws_role_arn: {
     pattern: /^arn:aws:iam::\d{12}:role\//,
     hint: "e.g. arn:aws:iam::123456789012:role/ClaudeBedrockAccess",
@@ -37,6 +37,7 @@ const KEYS = {
   azure_api_key: {
     pattern: /^[A-Za-z0-9]{20,}$/,
     hint: "From Azure Portal → your Foundry resource → Keys and Endpoint → KEY 1",
+    secret: true,
   },
   graph_client_id: {
     pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
@@ -46,11 +47,11 @@ const KEYS = {
   gateway_token: { pattern: /./, hint: "gateway API key", secret: true },
   gateway_auth_header: { pattern: /^(x-api-key|authorization)$/i, hint: "auth header scheme (default: x-api-key)" },
   gateway_api_format: { pattern: /^(anthropic|bedrock|vertex)$/i, hint: "anthropic | bedrock | vertex" },
-  mcp_servers: { pattern: /^\[.*\]$/, hint: "JSON array of {url, label, headers?, discover?}" },
-  inference_headers: { pattern: /^\{.*\}$/, hint: "JSON object of extra headers to attach to every model request" },
+  mcp_servers: { pattern: /^\[.*\]$/, hint: "JSON array of {url, label, headers?, discover?}", secret: true },
+  inference_headers: { pattern: /^\{.*\}$/, hint: "JSON object of extra headers to attach to every model request", secret: true },
   bootstrap_url: { pattern: /^https:\/\//, hint: "HTTPS endpoint returning per-user config" },
   otlp_endpoint: { pattern: /^https:\/\//, hint: "OTLP/HTTP traces collector URL" },
-  otlp_headers: { pattern: /./, hint: "comma-separated k=v pairs for the OTLP exporter" },
+  otlp_headers: { pattern: /./, hint: "comma-separated k=v pairs for the OTLP exporter", secret: true },
   otlp_resource_attributes: {
     pattern: /^([^=,\s]+=[^,]*)(,[^=,\s]+=[^,]*)*$/,
     hint: "comma-separated k=v pairs added to the OTEL Resource (same format as OTEL_RESOURCE_ATTRIBUTES)",
@@ -84,6 +85,19 @@ const KEYS = {
 };
 
 const NEEDS_ENTRA = ["aws_role_arn", "graph_client_id", "entra_scope"];
+const REDACTED = "<redacted>";
+
+function valueForLog(key, value) {
+  return KEYS[key]?.secret ? REDACTED : value;
+}
+
+function paramsForLog(params) {
+  const safe = new URLSearchParams();
+  for (const [key, value] of params) {
+    safe.set(key, valueForLog(key, value));
+  }
+  return safe.toString();
+}
 
 async function main() {
   const [host, out, ...pairs] = process.argv.slice(2);
@@ -112,7 +126,7 @@ async function main() {
     const spec = KEYS[k];
     if (!spec) throw new Error(`unknown key: ${k}\n  valid: ${Object.keys(KEYS).join(", ")}`);
     if (!v) throw new Error(`empty value for ${k}`);
-    if (!spec.pattern.test(v)) console.warn(`warn: ${k}=${v} — expected ${spec.hint}`);
+    if (!spec.pattern.test(v)) console.warn(`warn: ${k}=${valueForLog(k, v)} — expected ${spec.hint}`);
     if (spec.secret) {
       console.warn(
         `note: ${k} in the manifest applies to every user. If it varies per user, set it via update-user-attrs instead.`,
@@ -152,7 +166,7 @@ async function main() {
   }
 
   writeFileSync(out, xml);
-  console.log(`Wrote ${out} (${host}, params: ${params})`);
+  console.log(`Wrote ${out} (${host}, params: ${paramsForLog(params)})`);
 }
 
 main().catch((err) => {
