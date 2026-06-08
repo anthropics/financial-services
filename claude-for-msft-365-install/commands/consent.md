@@ -52,6 +52,15 @@ https://login.microsoftonline.com/organizations/v2.0/adminconsent?client_id=c299
 Without this, every user hits a "Need admin approval" wall the first time
 Claude tries to read mail.
 
+> **Scope note (least privilege):** the URL above requests `Mail.ReadWrite`, which
+> also permits modifying and deleting messages — broader than reading mail for
+> context. This is the scope the add-in ships configured for, so don't narrow it
+> blindly. If your deployment only reads mail (summarize, extract, draft to
+> clipboard), confirm with your Anthropic representative whether `Mail.Read`
+> covers your licensed features; if so, substitute `Mail.Read` for
+> `Mail.ReadWrite` in this URL **and** in your BYO Entra app's granted permissions
+> so the grant matches what's actually used.
+
 **If their policy forbids consenting to a third-party app:** they can register
 their own single-tenant Entra app with the same delegated Graph permissions
 (Mail.ReadWrite, Calendars.Read, People.Read, User.Read, offline_access), grant

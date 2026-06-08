@@ -129,6 +129,14 @@ Without `entra_sso=1` there's no Authorization header — the request is
 anonymous from the add-in's side. That's fine if the endpoint sits behind
 network isolation, mTLS, or another auth layer the add-in doesn't see.
 
+> **Note:** bootstrap requests originate from the Office WebView on each user's
+> workstation — not from your server network. A VPC/subnet perimeter that only
+> controls server-to-server traffic does **not** protect this endpoint. Here
+> "network isolation" means client-presented mTLS, or a VPN/NAC that every client
+> machine must join before Office starts. If neither applies, the endpoint is
+> effectively reachable by anything on the user's network — set `entra_sso=1` and
+> validate the JWT (below). It costs one manifest flag and one consent click.
+
 With `entra_sso=1`, validate the JWT before trusting it:
 
 | Claim | Check |

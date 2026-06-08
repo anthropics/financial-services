@@ -97,6 +97,7 @@ After 30+ days, optionally:
 
 ## Important Notes
 
+- **No trades are placed.** The execution plan and trade sheet are recommendations for advisor review — this skill does not execute, route, or place orders. Verify live prices, wash-sale windows across all accounts, and client constraints before any trade is entered in your OMS.
 - Wash sale rules are strict — violations disallow the loss AND adjust cost basis
 - Substantially identical means same security, not same asset class — ETFs tracking different indexes are generally fine
 - Always coordinate across all household accounts including retirement accounts

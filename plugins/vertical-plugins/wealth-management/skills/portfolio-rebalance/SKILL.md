@@ -73,6 +73,7 @@ Optimize which assets are held in which account types:
 
 ## Important Notes
 
+- **No trades are placed.** This skill produces a recommended trade list for advisor review — it does not execute, route, or place orders. Verify live prices, available cash, margin, and the client's IPS constraints before any trade is entered in your OMS.
 - Don't rebalance for rebalancing's sake — small drift within bands is fine
 - Tax costs can outweigh rebalancing benefits in taxable accounts — calculate the breakeven
 - Consider pending cash flows (contributions, withdrawals, RMDs) before trading

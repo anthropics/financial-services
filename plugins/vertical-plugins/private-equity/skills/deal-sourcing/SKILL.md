@@ -20,6 +20,12 @@ Research and identify potential target companies based on the user's criteria:
 
 ### Step 2: CRM Check
 
+> **Get consent before reading personal data.** This step and the voice-matching in
+> Step 3 read the user's own Gmail (including "sent" mail) and Slack. Ask the user to
+> confirm before searching — e.g. "OK to search your Gmail and Slack for prior contact
+> and to match your writing style? [Y/N]". If they decline, skip the searches and draft
+> in a neutral professional style.
+
 Before outreach, check if the company or founder already exists in the firm's CRM:
 
 - Search the user's email (Gmail) for prior correspondence with the company or founder

@@ -16,11 +16,11 @@ If a company name or ticker is provided, use it. Otherwise ask:
 
 ### Step 2: Check for Available PPT Template Skills
 
-**First, check for existing ppt-template skills** in the skills directory:
+**First, check for existing ppt-template skills** in the skills directory. Use the
+Glob tool (not a shell command) to list any matching skills:
 
-```bash
-ls skills/ | grep -E "ppt-template|brand-guidelines"
-```
+- `skills/*ppt-template*`
+- `skills/*brand-guidelines*`
 
 If template skills exist (e.g., `techcorp-ppt-template`, `gs-brand-guidelines`):
 1. List available templates to the user

@@ -221,7 +221,10 @@ For each company featured in the key takeaways or notable deals, generate a logo
 The `simple-icons` package bundles high-quality SVG icons for thousands of well-known brands. It works entirely offline — no API keys, no network calls. Install it alongside `sharp` for SVG → PNG conversion:
 
 ```bash
-npm install simple-icons sharp
+# Supply-chain hygiene: pin to specific, reviewed versions instead of floating
+# "latest" — a compromised future release would otherwise be pulled and run in
+# this session. sharp ships native binaries; review release notes before bumping.
+npm install simple-icons@16.23.0 sharp@0.34.5
 ```
 
 **Lookup strategy:**
