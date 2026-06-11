@@ -1,0 +1,8 @@
+{
+  "name": "moodys-skills",
+  "description": "Skills for Moodys MCP tools",
+  "version": "0.1.0",
+  "author": {
+    "name": "Moody's"
+  }
+}

@@ -1,0 +1,143 @@
+<!--
+  Shared citations asset — canonical CSS + reference HTML snippets.
+
+  This file is the SINGLE SOURCE OF TRUTH for the visual contract of citations
+  across the HTML report skills (earnings-brief, peer-analysis,
+  issuer-brief, sector-brief).
+
+  Parent skills MUST:
+    1. Read this file alongside skills/shared/citations/SKILL.md before emitting
+       any [n] reference, end-of-document Citations block, or per-section recap.
+    2. At EMIT TIME, copy the CONTENTS (not the <style> wrapper) of
+       <style id="shared-citations-css">…</style> below into the parent template's
+       reserved CSS-comment marker region (the markers live INSIDE the parent's
+       <style> tag, so they are CSS comments, not HTML comments):
+           /* BEGIN shared-citations-css ... */
+           /* END shared-citations-css */
+       Parent templates do NOT carry a duplicated copy of these rules — they ship
+       only the marker comments. Do not edit CSS values per-skill. If a parent
+       skill needs to restyle citations, change THIS file and the next emit picks
+       it up automatically.
+    3. Use the markup snippets in <template> tags below as the literal markup
+       contract — copy them and substitute the placeholders. Do NOT vary class
+       names, attribute order, or the heading text "Citations".
+
+  Parent templates may keep skill-specific CSS variable aliases (e.g. mapping
+  --gray-* to --g*) above the marker region; the canonical CSS expects --accent,
+  --navy, --g100, --g200, --g400, --g700 to resolve.
+-->
+
+<!-- =============================================================== -->
+<!-- 1. Canonical CSS — copy verbatim into the parent template <style> -->
+<!-- =============================================================== -->
+<style id="shared-citations-css">
+.cite-ref { font-size: 11px; color: var(--accent); font-weight: 600; text-decoration: none; }
+a.cite-ref { cursor: pointer; }
+a.cite-ref:hover { text-decoration: underline; }
+span.cite-ref { cursor: default; }
+
+.sources-section { padding-top: 32px; margin-top: 4px; }
+.sources-heading {
+  font-size: 14px; font-weight: 700; color: var(--navy);
+  padding-bottom: 7px; border-bottom: 2px solid var(--navy); margin-bottom: 12px;
+}
+.source-item {
+  padding: 5px 0; border-bottom: 1px solid var(--g200);
+  font-size: 11px; color: var(--g700); line-height: 1.6;
+}
+.source-num { font-weight: 700; color: var(--navy); margin-right: 6px; }
+.source-title { color: var(--accent); }
+.source-meta { color: var(--g400); margin-left: 4px; }
+
+.section-citations {
+  margin-top: 16px; padding: 10px 14px;
+  background: var(--g100); border: 1px solid var(--g200);
+  border-radius: 2px; font-size: 11px; color: var(--g700); line-height: 1.7;
+}
+.section-citations .cite-label {
+  font-weight: 700; font-size: 10.5px; color: var(--navy);
+  letter-spacing: .5px; display: block; margin-bottom: 4px; text-transform: uppercase;
+}
+.section-citations .cite-item { display: block; padding: 1px 0; }
+.section-citations .cite-num { font-weight: 700; color: var(--accent); margin-right: 4px; }
+.section-citations a { color: var(--accent); text-decoration: none; }
+.section-citations a:hover { text-decoration: underline; }
+.section-citations .cite-meta { color: var(--g400); margin-left: 4px; }
+</style>
+
+<!-- =============================================================== -->
+<!-- 2. Reference HTML snippets — markup contract for parent skills    -->
+<!-- =============================================================== -->
+
+<!-- 2a. Inline reference markup -->
+<!-- Use the anchor variant when the source for [n] has a URL. -->
+<template id="cite-ref-anchor">
+<a href="{source_url}" target="_blank" class="cite-ref">[n]</a>
+</template>
+
+<!-- Use the span variant ONLY when the source has no URL. -->
+<template id="cite-ref-span">
+<span class="cite-ref">[n]</span>
+</template>
+
+<!-- 2b. End-of-document Citations block -->
+<!-- Every report renders exactly ONE of these. {prefix} is the parent skill's
+     prefix: ecs, pa, pib, sa. The displayed heading is always literal "Citations". -->
+<template id="sources-section">
+<div class="sources-section">
+  <div class="sources-heading">Citations</div>
+  <div id="{prefix}-sources">
+    <!-- one .source-item row per source, in [1], [2], … order -->
+  </div>
+</div>
+</template>
+
+<!-- 2c. Source row variants (rendered inside #{prefix}-sources) -->
+<!-- Canonical row — source has a URL. -->
+<template id="source-item-with-url">
+<div class="source-item">
+  <span class="source-num">[1]</span>
+  <a href="{url}" target="_blank" class="source-title">{Title}</a>
+  <span class="source-meta">({source} • {date})</span>
+</div>
+</template>
+
+<!-- URL-less variant — swap <a> for <span> so .source-title styling still applies. -->
+<template id="source-item-no-url">
+<div class="source-item">
+  <span class="source-num">[1]</span>
+  <span class="source-title">{Title}</span>
+  <span class="source-meta">({source} • {date})</span>
+</div>
+</template>
+
+<!-- No source/date — omit the .source-meta span entirely.
+     If only one of source/date is present, render only that field inside (). -->
+<template id="source-item-no-meta">
+<div class="source-item">
+  <span class="source-num">[1]</span>
+  <a href="{url}" target="_blank" class="source-title">{Title}</a>
+</div>
+</template>
+
+<!-- 2d. Optional per-section recap (opt-in)
+     Place immediately below a section's content. Numbers MUST match the global
+     [n] sequence used inline and in the end-of-document Citations block —
+     a recap NEVER starts a new numbering sequence. Omit entirely if the
+     section has no citations. -->
+<template id="section-citations-recap">
+<div class="section-citations">
+  <span class="cite-label">Citations</span>
+  <span class="cite-item"><span class="cite-num">[1]</span><a href="{url}" target="_blank">{Title}</a><span class="cite-meta"> ({source} • {date})</span></span>
+  <span class="cite-item"><span class="cite-num">[2]</span><a href="{url}" target="_blank">{Title}</a><span class="cite-meta"> ({source} • {date})</span></span>
+</div>
+</template>
+
+<!-- 2e. Per-section recap target placeholder
+     Parent skills using opt-in recaps embed an empty target div inside each
+     section, identified by a stable id (e.g. #ecs-cite-a, #pib-cite-b). The
+     LLM later fills the target with a .section-citations recap (snippet 2d)
+     or leaves it empty if the section has no citations. -->
+<template id="section-citations-target">
+<div id="{prefix}-cite-{slot}"></div>
+</template>

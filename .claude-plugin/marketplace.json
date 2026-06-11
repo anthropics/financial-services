@@ -119,6 +119,12 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "moodys",
+      "displayName": "Moody's",
+      "source": "./plugins/partner-built/moodys",
+      "description": "Skills for Moodys MCP tools"
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Earnings Call Transcripts Summary</title>
+  <style>
+    :root {
+      --navy:      #00205b;
+      --accent:    #0066cc;
+      --gray-100:  #f5f6f8;
+      --gray-200:  #e8eaed;
+      --gray-400:  #9aa0ab;
+      --gray-700:  #444c58;
+      --g100:      var(--gray-100);
+      --g200:      var(--gray-200);
+      --g400:      var(--gray-400);
+      --g700:      var(--gray-700);
+      --text:      #1a1e27;
+      --positive:  #1a7a4a;
+      --negative:  #c0392b;
+      --neutral:   #7a6500;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      background: #f0f2f5;
+      line-height: 1.65;
+    }
+    .page { max-width: 900px; margin: 32px auto 64px; background: #fff; box-shadow: 0 2px 16px rgba(0,0,0,.13); }
+    .cover { display: grid; grid-template-rows: auto; overflow: hidden; }
+    .cover-top { display: grid; grid-template-columns: 1fr; min-height: 340px; }
+    .cover-top.has-cover-image { grid-template-columns: 1fr 160px 16px; }
+    .cover-top:not(.has-cover-image) .cover-strip,
+    .cover-top:not(.has-cover-image) .cover-bar-top { display: none; }
+    .cover-bottom { display: none; }
+    .cover-bottom.has-cover-image { display: grid; grid-template-columns: 1fr 16px; height: 220px; }
+    .cover-left {
+      background: var(--navy); color: #fff; padding: 44px 44px 40px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .cover-logo { font-size: 16px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: #fff; margin-bottom: 52px; }
+    .cover-title { font-size: 40px; font-weight: 300; line-height: 1.15; letter-spacing: -.5px; color: #fff; margin-bottom: 28px; }
+    .cover-title strong { font-weight: 700; }
+    .cover-meta {
+      padding-top: 16px; border-top: 1px solid rgba(255,255,255,.18);
+      display: flex; gap: 24px; font-size: 11px; color: #8fa8d0; flex-wrap: wrap;
+    }
+    .cover-meta strong { color: #fff; }
+    .cover-companies { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+    .company-chip {
+      background: rgba(255,255,255,.15); color: #ffffff; font-size: 13px; font-weight: 600;
+      padding: 6px 16px; border-radius: 4px; border: 1px solid rgba(255,255,255,.35); letter-spacing: .2px;
+    }
+    .cover-companies-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #8fa8d0; margin-bottom: 10px;
+    }
+    .cover-strip { overflow: hidden; background: var(--navy); }
+    .cover-strip img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+    .cover-bar-top { background: #1a6edc; }
+    .cover-landscape { overflow: hidden; background: var(--navy); }
+    .cover-landscape img { width: 100%; height: 100%; object-fit: cover; object-position: center center; display: block; }
+    .cover-bar-bottom { background: #1a6edc; }
+    .toc-page { padding: 44px 56px 36px; border-bottom: 3px solid var(--navy); }
+    .toc-heading {
+      font-size: 11px; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase; color: var(--navy);
+      margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--navy);
+    }
+    .toc-list { list-style: none; }
+    .toc-list li {
+      display: flex; align-items: baseline; padding: 5px 0; border-bottom: 1px dotted var(--gray-200);
+      font-size: 12.5px; color: var(--gray-700);
+    }
+    .toc-list li:last-child { border-bottom: none; }
+    .toc-num { font-weight: 700; color: var(--navy); width: 90px; flex-shrink: 0; font-size: 12px; }
+    .toc-label { flex: 1; }
+    .toc-dots {
+      flex: 1; border-bottom: 1px dotted var(--gray-400); margin: 0 8px; min-width: 40px;
+      align-self: flex-end; margin-bottom: 4px;
+    }
+    .toc-list a { color: inherit; text-decoration: none; }
+    .toc-list a:hover { color: var(--accent); }
+    .report-body { padding: 0 56px 48px; }
+    .section { padding-top: 36px; margin-top: 4px; }
+    .section-heading {
+      font-size: 15px; font-weight: 700; color: var(--navy); padding-bottom: 8px;
+      border-bottom: 2px solid var(--navy); margin-bottom: 14px;
+    }
+    .section-content p { margin-bottom: 10px; color: var(--gray-700); }
+    .section-content ul { padding-left: 20px; margin-bottom: 10px; }
+    .section-content li { margin-bottom: 6px; color: var(--gray-700); }
+    .section-content .subsection-title {
+      font-size: 13px; font-weight: 700; color: var(--text); margin-top: 16px; margin-bottom: 6px; display: block;
+    }
+    .credit-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 8px; border-radius: 3px;
+      font-size: 12px; font-weight: 700; margin-bottom: 10px;
+    }
+    .credit-badge.positive { background: #e6f5ec; color: var(--positive); border: 1px solid #a8d8b9; }
+    .credit-badge.negative { background: #fdf0ee; color: var(--negative); border: 1px solid #f0b8b1; }
+    .credit-badge.neutral  { background: #fdf8e1; color: var(--neutral);  border: 1px solid #e0d070; }
+    .credit-badge.positive::before { content: "▲ "; }
+    .credit-badge.negative::before { content: "▼ "; }
+    .credit-badge.neutral::before  { content: "● "; }
+    .yoy-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12.5px; }
+    .yoy-table thead tr { background: var(--navy); color: #fff; }
+    .yoy-table thead th {
+      padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase;
+    }
+    .yoy-table thead th:nth-child(2) { text-align: center; width: 110px; }
+    .yoy-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+    .yoy-table tbody tr:nth-child(even) { background: var(--gray-100); }
+    .yoy-table tbody td { padding: 9px 12px; vertical-align: top; color: var(--gray-700); }
+    .yoy-table .company-name { font-weight: 600; color: var(--navy); white-space: nowrap; }
+    .yoy-table .yoy-change { text-align: center; font-weight: 700; font-size: 13px; white-space: nowrap; }
+    .yoy-change.up    { color: var(--positive); }
+    .yoy-change.down  { color: var(--negative); }
+    .yoy-change.flat  { color: var(--neutral); }
+    .yoy-change.na    { color: var(--gray-400); font-weight: 400; font-size: 12px; }
+    /* BEGIN shared-citations-css (inlined at emit time from skills/shared/citations/assets/template.html) */
+    /* END shared-citations-css */
+    .report-footer {
+      background: var(--navy); padding: 14px 56px; font-size: 10px; color: #8fa8d0;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo { font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 1px; }
+    @media print {
+      body { background: #fff; }
+      .page { box-shadow: none; margin: 0; }
+      .section { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="cover">
+    <div class="cover-top">
+      <div class="cover-left">
+        <div>
+          <div class="cover-logo">MOODY'S</div>
+          <div class="cover-title"><strong>Earnings Call</strong><br>Transcripts Summary</div>
+          <div class="cover-companies-label">Companies covered</div>
+        <div class="cover-companies" id="ecs-company-chips"></div>
+        </div>
+        <div class="cover-meta">
+          <span><strong>Date:</strong> <span id="ecs-report-date"></span></span>
+          <span><strong>Companies:</strong> <span id="ecs-company-count"></span></span>
+          <span><strong>Type:</strong> Earnings Call Summary</span>
+        </div>
+      </div>
+      <div class="cover-strip"><img id="ecs-cover-img-right" src="" alt=""></div>
+      <div class="cover-bar-top"></div>
+    </div>
+    <div class="cover-bottom">
+      <div class="cover-landscape"><img id="ecs-cover-img-bottom" src="" alt=""></div>
+      <div class="cover-bar-bottom"></div>
+    </div>
+  </div>
+  <div class="toc-page">
+    <div class="toc-heading">Contents</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">Section 1.</span><a href="#sec1"><span class="toc-label">Executive Summary</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 2.</span><a href="#sec2"><span class="toc-label">Overall Credit Consideration</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 3.</span><a href="#sec3"><span class="toc-label">Revenue YOY Trend</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 4.</span><a href="#sec4"><span class="toc-label">Volumes YOY Trend</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 5.</span><a href="#sec5"><span class="toc-label">Selling Price Trend</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 6.</span><a href="#sec6"><span class="toc-label">Qualitative / Broad Industry Commentary on Revenue, Volumes &amp; Pricing</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 7.</span><a href="#sec7"><span class="toc-label">End Market Conditions</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 8.</span><a href="#sec8"><span class="toc-label">Supply Chain Conditions</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 9.</span><a href="#sec9"><span class="toc-label">Business Conditions by Geography</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 10.</span><a href="#sec10"><span class="toc-label">Next Quarter &amp; Full Year Business Outlook / Guidance</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 11.</span><a href="#sec11"><span class="toc-label">Earnings Revisions for Applicable Companies</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 12.</span><a href="#sec12"><span class="toc-label">Corporate Events (M&amp;A, Restructurings, Plant Closures, Force Majeures, etc.)</span></a><span class="toc-dots"></span></li>
+    </ul>
+  </div>
+  <div class="report-body">
+    <div id="sec1" class="section">
+      <div class="section-heading">Section 1. Executive Summary</div>
+      <div class="section-content" id="ecs-executive-summary"></div>
+      <div id="ecs-cite-a"></div>
+    </div>
+    <div id="sec2" class="section">
+      <div class="section-heading">Section 2. Overall Credit Consideration</div>
+      <div class="section-content">
+        <div id="ecs-credit-badge"></div>
+        <div id="ecs-overall-credit"></div>
+      </div>
+      <div id="ecs-cite-b"></div>
+    </div>
+    <div id="sec3" class="section">
+      <div class="section-heading">Section 3. Revenue YOY Trend</div>
+      <table class="yoy-table">
+        <thead><tr><th>Company Name</th><th>YOY Change</th><th>Commentary</th></tr></thead>
+        <tbody id="ecs-tbody-revenue"></tbody>
+      </table>
+      <div id="ecs-cite-c"></div>
+    </div>
+    <div id="sec4" class="section">
+      <div class="section-heading">Section 4. Volumes YOY Trend</div>
+      <table class="yoy-table">
+        <thead><tr><th>Company Name</th><th>YOY Change</th><th>Commentary</th></tr></thead>
+        <tbody id="ecs-tbody-volumes"></tbody>
+      </table>
+      <div id="ecs-cite-d"></div>
+    </div>
+    <div id="sec5" class="section">
+      <div class="section-heading">Section 5. Selling Price Trend</div>
+      <table class="yoy-table">
+        <thead><tr><th>Company Name</th><th>YOY Change</th><th>Commentary</th></tr></thead>
+        <tbody id="ecs-tbody-prices"></tbody>
+      </table>
+      <div id="ecs-cite-e"></div>
+    </div>
+    <div id="sec6" class="section">
+      <div class="section-heading">Section 6. Qualitative / Broad Industry Commentary on Revenue, Volumes &amp; Pricing</div>
+      <div class="section-content" id="ecs-qualitative"></div>
+      <div id="ecs-cite-f"></div>
+    </div>
+    <div id="sec7" class="section">
+      <div class="section-heading">Section 7. End Market Conditions</div>
+      <div class="section-content" id="ecs-end-markets"></div>
+      <div id="ecs-cite-g"></div>
+    </div>
+    <div id="sec8" class="section">
+      <div class="section-heading">Section 8. Supply Chain Conditions</div>
+      <div class="section-content" id="ecs-supply-chain"></div>
+      <div id="ecs-cite-h"></div>
+    </div>
+    <div id="sec9" class="section">
+      <div class="section-heading">Section 9. Business Conditions by Geography</div>
+      <div class="section-content" id="ecs-geography"></div>
+      <div id="ecs-cite-i"></div>
+    </div>
+    <div id="sec10" class="section">
+      <div class="section-heading">Section 10. Next Quarter &amp; Full Year Business Outlook / Guidance</div>
+      <div class="section-content" id="ecs-outlook"></div>
+      <div id="ecs-cite-j"></div>
+    </div>
+    <div id="sec11" class="section">
+      <div class="section-heading">Section 11. Earnings Revisions for Applicable Companies</div>
+      <div class="section-content" id="ecs-revisions"></div>
+      <div id="ecs-cite-k"></div>
+    </div>
+    <div id="sec12" class="section">
+      <div class="section-heading">Section 12. Corporate Events (M&amp;A, Restructurings, Plant Closures, Force Majeures, etc.)</div>
+      <div class="section-content" id="ecs-events"></div>
+      <div id="ecs-cite-l"></div>
+    </div>
+    <div class="sources-section">
+      <div class="sources-heading">Citations</div>
+      <div id="ecs-sources"></div>
+    </div>
+  </div>
+  <div class="report-footer">
+    <span class="footer-logo">MOODY'S</span>
+    <span>This report was generated using Moody's GenAI tools and earnings call transcript data. For internal use only.</span>
+    <span id="ecs-footer-date"></span>
+  </div>
+</div>
+</body>
+</html>
