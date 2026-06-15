@@ -62,8 +62,16 @@ const KEYS = {
     hint: "your Entra app registration's Application (client) ID — overrides the default multi-tenant app",
   },
   entra_scope: {
-    pattern: /^(api|https):\/\/\S+\/[\w.-]+$/i,
-    hint: "scope URI for your Entra-protected API, e.g. api://<your-app-guid>/.default — requires graph_client_id",
+    // Any non-blank string — Entra validates scope syntax, not us. May be a comma- or
+    // whitespace-separated list (the add-in splits it); requires graph_client_id (enforced below).
+    pattern: /\S/,
+    hint: "scope(s) for your Entra-protected API, e.g. api://<your-app-guid>/.default — comma/space-separated list allowed, requires graph_client_id",
+  },
+  graph_cloud: {
+    // The add-in rejects unrecognized values at load and falls back to global,
+    // so a typo here degrades to commercial endpoints — heed the warning.
+    pattern: /^(global|us-gov-high|us-gov-dod|china)$/,
+    hint: "Microsoft national cloud: global | us-gov-high | us-gov-dod | china — only for sovereign clouds; GCC-High and 21Vianet are also auto-detected at sign-in",
   },
   allow_1p: {
     pattern: /^[01]$/,
@@ -92,6 +100,8 @@ async function main() {
   if (host !== "outlook" && pairs.some((p) => p.startsWith("graph_client_id="))) {
     console.warn("note: graph_client_id only applies to Outlook; it has no effect in the office manifest");
   }
+  // graph_cloud is relevant to both manifests: in Outlook it steers Graph +
+  // Entra sign-in; in office it steers the Entra SSO authority.
 
   const params = new URLSearchParams();
   for (const p of pairs) {
@@ -117,6 +127,13 @@ async function main() {
   }
   if (params.has("entra_scope") && !params.has("graph_client_id")) {
     throw new Error("entra_scope requires graph_client_id (the scope is requested as your own Entra app, not the default)");
+  }
+  // A non-global graph_cloud needs a BYO Entra app — Anthropic's multi-tenant
+  // app exists only in the commercial cloud, so the default client_id against
+  // a sovereign authority fails with an opaque AADSTS700016 at sign-in.
+  const cloud = params.get("graph_cloud");
+  if (cloud && cloud !== "global" && !params.has("graph_client_id")) {
+    throw new Error(`graph_cloud=${cloud} requires a graph_client_id registered in that cloud`);
   }
 
   // URLSearchParams joins with `&`; XML attribute values need it escaped.

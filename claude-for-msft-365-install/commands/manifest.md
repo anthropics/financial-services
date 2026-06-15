@@ -43,6 +43,54 @@ Mail.ReadWrite, Calendars.Read, People.Read, User.Read, offline_access
 delegated permissions and admin consent granted). Otherwise leave it unset and
 the add-in uses Anthropic's multi-tenant app.
 
+## Sovereign / national clouds (GCC-High, DoD, 21Vianet)
+
+The add-in auto-detects the tenant's national cloud at sign-in (from the
+authority host Office reports) and resolves the matching Graph + Entra
+endpoints, so most sovereign tenants need **no cloud config**. The only
+required step is
+bringing your own Entra app via `graph_client_id` — Anthropic's multi-tenant
+app exists only in the commercial cloud. A GCC-High Outlook manifest needs
+nothing beyond the usual keys:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml \
+  <provider keys> entra_sso=1 graph_client_id=<your-app-guid>
+```
+
+### When to set `graph_cloud`
+
+The cloud is configured as a single enum value — never a URL. Each value maps
+to the fixed Graph + Entra endpoint pair from Microsoft's
+[national-cloud deployments](https://learn.microsoft.com/graph/deployments)
+inside the add-in.
+
+| Tenant | `graph_cloud` | Notes |
+|---|---|---|
+| Commercial or GCC | `global` | default; may be omitted |
+| GCC High | `us-gov-high` | auto-detected; set explicitly to pin it in the reviewed manifest |
+| US Gov DoD | `us-gov-dod` | **always required** — DoD shares an authority host with GCC High, so auto-detect picks GCC High |
+| China (21Vianet) | `china` | auto-detected; set explicitly to pin it |
+
+A DoD Outlook manifest:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml \
+  <provider keys> entra_sso=1 graph_client_id=<your-app-guid> graph_cloud=us-gov-dod
+```
+
+The build script enforces the same rules the add-in does at load: an
+unrecognized value is a hard error, and any non-global `graph_cloud` requires
+`graph_client_id` (without one, sign-in fails with an opaque AADSTS700016).
+
+`graph_cloud` also governs the Entra SSO authority for Word/Excel/PowerPoint —
+they share the auth path — so include it in the `office` manifest too if you
+set it.
+
+**Bedrock / WIF note:** a `.us`-issued idToken has issuer
+`https://login.microsoftonline.us/{tenant}/v2.0` — your AWS OIDC identity
+provider must be configured with that issuer, not the `.com` one.
+
 ## Entra SSO
 
 `entra_sso=1` makes the add-in acquire an Entra ID token at startup. Set it
@@ -82,10 +130,20 @@ it, then grant admin consent for the tenant. In the app manifest, set
 leave it unset and you get v1.0 tokens, which your validator may reject.
 `/.default` (requests all consented scopes) also works.
 
-`entra_scope` requires `graph_client_id` — the build script enforces this. Both
-are manifest-only: the add-in needs them to initialize NAA *before* it can read
-extension attrs or call your bootstrap endpoint, so neither can arrive through
-those layers. Leave `entra_scope` unset and the ID token is sent.
+**Multiple scopes.** `entra_scope` accepts a comma- or whitespace-separated
+list — `entra_scope=api://<guid>/use_llm,api://<guid>/admin`. All scopes must
+target the **same resource**: one access token has one `aud`, so MSAL cannot
+mint a token spanning two APIs (`api://torii/x,api://other/y` will fail or
+silently honor only one). The Bearer's `scp` claim is the space-joined list.
+If you need every consented scope, prefer `/.default` over enumerating them.
+
+`entra_scope` requires `graph_client_id` — the build script enforces *that
+pairing* but not the scope string itself: any non-blank value is accepted and
+Entra validates the syntax at sign-in (a malformed scope surfaces as an
+`AADSTS` error, not a build failure). Both keys are manifest-only: the add-in
+needs them to initialize NAA *before* it can read extension attrs or call your
+bootstrap endpoint, so neither can arrive through those layers. Leave
+`entra_scope` unset and the ID token is sent.
 
 ## Bootstrap endpoint
 

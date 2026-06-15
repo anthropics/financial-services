@@ -141,8 +141,9 @@ With `entra_sso=1`, validate the JWT before trusting it:
 If you set `entra_scope` in the [manifest](manifest.md#entra-sso), the Bearer
 is an **access token**, not an ID token. Validate `aud` = your API's
 Application ID URI (`api://<guid>`, not the client GUID) and check `scp`
-contains the scope you defined. `iss`, `exp`, `oid`, and signature verification
-are the same.
+contains the scope(s) you defined — `scp` is a space-delimited list when
+`entra_scope` names more than one. `iss`, `exp`, `oid`, and signature
+verification are the same.
 
 Signature verification needs Microsoft's JWKS
 (`https://login.microsoftonline.com/<TENANT_ID>/discovery/v2.0/keys`). Use a

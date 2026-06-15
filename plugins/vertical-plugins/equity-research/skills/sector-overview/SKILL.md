@@ -1,6 +1,9 @@
-# Sector Overview
-
+---
+name: sector-overview
 description: Create comprehensive industry and sector landscape reports covering market dynamics, competitive positioning, key players, and thematic trends. Use for client requests, sector initiations, thematic research pieces, or internal knowledge building. Triggers on "sector overview", "industry report", "market landscape", "sector analysis", "industry deep dive", or "thematic research".
+---
+
+# Sector Overview
 
 ## Workflow
 
