@@ -46,7 +46,7 @@
     },
     "longbridge": {
       "type": "http",
-      "url": "https://openapi.longbridge.com/mcp"
+      "url": "https://mcp.longbridge.com"
     }
     "box": {
       "type": "http",
