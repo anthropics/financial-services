@@ -8,6 +8,11 @@ SVG markup that can be substituted directly into the HTML template.
 import math
 from datetime import datetime
 
+try:
+    from .utils import to_number as _to_num
+except ImportError:
+    from utils import to_number as _to_num
+
 # Chart color constants matching template CSS variables.
 _C_FUND = "#2364B9"
 _C_BENCH = "#B2013C"
@@ -28,7 +33,12 @@ _ALLOC_COLORS = {
 
 def _escape_xml(text: str) -> str:
     """Escape text for safe embedding in SVG/XML."""
-    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+    return (
+        text.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
 
 
 def _format_growth_date(value) -> str:
@@ -65,11 +75,7 @@ def build_line_chart_svg(data: list[dict]) -> str:
     Returns SVG markup string.
     """
     if not data:
-        return (
-            '<div class="chart-wrap" '
-            'style="display:flex;align-items:center;justify-content:center;'
-            'color:#7F7D7A;font-size:12px;">No return data available</div>'
-        )
+        return '<div class="chart-wrap" style="display:flex;align-items:center;justify-content:center;color:#7F7D7A;font-size:12px;">No return data available</div>'
 
     is_growth = "date" in data[0]
     label_key = "date" if is_growth else "year"
@@ -120,11 +126,11 @@ def build_line_chart_svg(data: list[dict]) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
         f'style="width:100%;height:auto;max-height:320px;" '
         f'font-family="MORN Intrinsic,Aptos,Calibri,sans-serif">'
-        '<defs>'
+        "<defs>"
         '<filter id="tip-shadow" x="-20%" y="-20%" width="140%" height="140%">'
         '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#3D3B39" flood-opacity="0.14"/>'
-        '</filter>'
-        '</defs>'
+        "</filter>"
+        "</defs>"
     ]
 
     tick_count = 5
@@ -137,12 +143,12 @@ def build_line_chart_svg(data: list[dict]) -> str:
             grid_style += ' stroke-dasharray="2,4"'
         parts.append(
             f'<line x1="{pad_left}" y1="{y:.1f}" x2="{w - pad_right}" y2="{y:.1f}" '
-            f'{grid_style} />'
+            f"{grid_style} />"
         )
         parts.append(
             f'<text x="{pad_left - 8}" y="{y:.1f}" text-anchor="end" '
             f'dominant-baseline="middle" fill="{_C_BODY}" font-size="11">'
-            f'{_escape_xml(fmt_val(tick_val))}</text>'
+            f"{_escape_xml(fmt_val(tick_val))}</text>"
         )
 
     parts.append(
@@ -172,15 +178,18 @@ def build_line_chart_svg(data: list[dict]) -> str:
         first, second = data[index], data[index + 1]
         first_fund, second_fund = first.get("fund"), second.get("fund")
         first_bench, second_bench = first.get("benchmark"), second.get("benchmark")
-        if not all(isinstance(value, (int, float)) for value in [first_fund, second_fund, first_bench, second_bench]):
+        if not all(
+            isinstance(value, (int, float))
+            for value in [first_fund, second_fund, first_bench, second_bench]
+        ):
             continue
         above = (first_fund + second_fund) / 2 >= (first_bench + second_bench) / 2
         color = "rgba(3,150,73,0.10)" if above else "rgba(228,37,19,0.10)"
         path = (
-            f'M{x_for(index):.1f},{y_for(first_fund):.1f} '
-            f'L{x_for(index + 1):.1f},{y_for(second_fund):.1f} '
-            f'L{x_for(index + 1):.1f},{y_for(second_bench):.1f} '
-            f'L{x_for(index):.1f},{y_for(first_bench):.1f} Z'
+            f"M{x_for(index):.1f},{y_for(first_fund):.1f} "
+            f"L{x_for(index + 1):.1f},{y_for(second_fund):.1f} "
+            f"L{x_for(index + 1):.1f},{y_for(second_bench):.1f} "
+            f"L{x_for(index):.1f},{y_for(first_bench):.1f} Z"
         )
         parts.append(f'<path d="{path}" fill="{color}" />')
 
@@ -243,9 +252,15 @@ def build_line_chart_svg(data: list[dict]) -> str:
             tip_h = 26 + len(series) * row_h + 6
             anchor_right = cx_pt + tip_w + 16 > w - pad_right
             tip_x = cx_pt - tip_w - 12 if anchor_right else cx_pt + 12
-            tooltip_value = item.get("fund") if isinstance(item.get("fund"), (int, float)) else item.get("benchmark")
+            tooltip_value = (
+                item.get("fund")
+                if isinstance(item.get("fund"), (int, float))
+                else item.get("benchmark")
+            )
             value_y = y_for(tooltip_value)
-            tip_y = max(pad_top + 4, min(value_y - tip_h / 2, pad_top + plot_h - tip_h - 4))
+            tip_y = max(
+                pad_top + 4, min(value_y - tip_h / 2, pad_top + plot_h - tip_h - 4)
+            )
             parts.append('<g class="chart-tooltip-box">')
             parts.append(
                 f'<rect x="{tip_x:.1f}" y="{tip_y:.1f}" width="{tip_w:.1f}" height="{tip_h:.1f}" '
@@ -264,17 +279,17 @@ def build_line_chart_svg(data: list[dict]) -> str:
                 )
                 parts.append(
                     f'<text x="{tip_x + 27:.1f}" y="{row_y:.1f}" fill="{_C_BODY}" font-size="10">'
-                    f'{_escape_xml(name)}</text>'
+                    f"{_escape_xml(name)}</text>"
                 )
                 parts.append(
                     f'<text x="{tip_x + tip_w - 8:.1f}" y="{row_y:.1f}" '
                     f'text-anchor="end" fill="{_C_BODY}" font-size="10" font-variant-numeric="tabular-nums">'
-                    f'{_escape_xml(value)}</text>'
+                    f"{_escape_xml(value)}</text>"
                 )
-            parts.append('</g>')
-        parts.append('</g>')
+            parts.append("</g>")
+        parts.append("</g>")
 
-    parts.append('</svg>')
+    parts.append("</svg>")
     return "\n".join(parts)
 
 
@@ -290,7 +305,9 @@ def build_donut_chart_svg(data: list[dict]) -> str:
     if not data:
         return ""
 
-    total = sum(item.get("value", 0) for item in data if isinstance(item.get("value"), (int, float)))
+    total = sum(
+        n for item in data if (n := _to_num(item.get("value", 0))) is not None and n > 0
+    )
     if not total:
         return ""
 
@@ -303,11 +320,11 @@ def build_donut_chart_svg(data: list[dict]) -> str:
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" '
         f'style="width:100%;height:auto;max-height:280px;" '
         f'font-family="MORN Intrinsic,Aptos,Calibri,sans-serif">'
-        '<defs>'
+        "<defs>"
         '<filter id="tip-shadow" x="-20%" y="-20%" width="140%" height="140%">'
         '<feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#3D3B39" flood-opacity="0.14"/>'
-        '</filter>'
-        '</defs>'
+        "</filter>"
+        "</defs>"
     ]
 
     legend_x = 10
@@ -319,7 +336,9 @@ def build_donut_chart_svg(data: list[dict]) -> str:
         if legend_x + text_w + 20 > w - 10:
             legend_x = 10
             legend_y += 20
-        parts.append(f'<circle cx="{legend_x + 5}" cy="{legend_y}" r="4" fill="{color}" />')
+        parts.append(
+            f'<circle cx="{legend_x + 5}" cy="{legend_y}" r="4" fill="{color}" />'
+        )
         parts.append(
             f'<text x="{legend_x + 13}" y="{legend_y}" dominant-baseline="middle" '
             f'fill="{_C_TEXT}" font-size="11">{label}</text>'
@@ -328,8 +347,8 @@ def build_donut_chart_svg(data: list[dict]) -> str:
 
     angle = -math.pi / 2
     for item in data:
-        value = item.get("value", 0)
-        if not isinstance(value, (int, float)) or value <= 0:
+        value = _to_num(item.get("value", 0))
+        if value is None or value <= 0:
             continue
         slice_angle = (value / total) * 2 * math.pi
         start_angle = angle
@@ -351,10 +370,10 @@ def build_donut_chart_svg(data: list[dict]) -> str:
         large_arc = 1 if slice_angle > math.pi else 0
 
         path = (
-            f'M{x1_o:.2f},{y1_o:.2f} '
-            f'A{outer_r},{outer_r} 0 {large_arc},1 {x2_o:.2f},{y2_o:.2f} '
-            f'L{x1_i:.2f},{y1_i:.2f} '
-            f'A{inner_r},{inner_r} 0 {large_arc},0 {x2_i:.2f},{y2_i:.2f} Z'
+            f"M{x1_o:.2f},{y1_o:.2f} "
+            f"A{outer_r},{outer_r} 0 {large_arc},1 {x2_o:.2f},{y2_o:.2f} "
+            f"L{x1_i:.2f},{y1_i:.2f} "
+            f"A{inner_r},{inner_r} 0 {large_arc},0 {x2_i:.2f},{y2_i:.2f} Z"
         )
 
         # Card tooltip position: outside the ring in the direction of mid_angle
@@ -385,18 +404,20 @@ def build_donut_chart_svg(data: list[dict]) -> str:
         )
         parts.append(
             f'<text x="{tip_x + 25:.1f}" y="{row_y:.1f}" fill="{_C_BODY}" font-size="10">'
-            f'{display_label}</text>'
+            f"{display_label}</text>"
         )
         parts.append(
             f'<text x="{tip_x + tip_w - 8:.1f}" y="{row_y:.1f}" text-anchor="end" '
             f'fill="{_C_BODY}" font-size="10" font-variant-numeric="tabular-nums">'
-            f'{_escape_xml(value_str)}</text>'
+            f"{_escape_xml(value_str)}</text>"
         )
-        parts.append('</g>')
-        parts.append('</g>')
+        parts.append("</g>")
+        parts.append("</g>")
         angle = end_angle
 
-    parts.append(f'<circle cx="{cx}" cy="{cy}" r="{inner_r - 1:.1f}" fill="#fff" pointer-events="none" />')
+    parts.append(
+        f'<circle cx="{cx}" cy="{cy}" r="{inner_r - 1:.1f}" fill="#fff" pointer-events="none" />'
+    )
 
-    parts.append('</svg>')
+    parts.append("</svg>")
     return "\n".join(parts)

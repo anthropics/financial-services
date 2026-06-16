@@ -209,6 +209,12 @@
             align-items: start;
         }
 
+        .overview-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
         .grid-3 {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
@@ -292,7 +298,7 @@
         .manager {
             display: flex;
             gap: 12px;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .manager-avatar {
@@ -318,6 +324,12 @@
         .manager-meta {
             font-size: 11px;
             color: var(--c-muted);
+        }
+
+        .manager+.manager {
+            margin-top: 12px;
+            border-top: 1px solid var(--c-border);
+            padding-top: 12px;
         }
 
         /* --- Cards (Analysis) --- */
@@ -1007,7 +1019,6 @@
         .metric-benchmark {
             display: block;
             font-size: 10px;
-            color: var(--c-muted);
             margin-top: 1px;
         }
     </style>
@@ -1033,104 +1044,110 @@
             <div class="section-title">Overview</div>
             <div class="grid-2">
 
-                <div class="panel">
-                    <div class="panel-title">Fund Identity</div>
-                    <div class="field highlight">
-                        <span class="label">Name</span>
-                        <span class="value">{{FUND_STANDARD_NAME}}</span>
-                    </div>
-                    <div class="panel-grid">
-                        <div class="field"><span class="label">Investment Type</span><span
-                                class="value">{{INVESTMENT_TYPE}}</span></div>
-                        <div class="field"><span class="label">Base Currency</span><span
-                                class="value">{{BASE_CURRENCY}}</span></div>
-                    </div>
-                </div>
+                <div class="overview-col">
 
-                <div class="panel">
-                    <div class="panel-title">Cost & Yield</div>
-                    <div class="field highlight">
-                        <span class="label info-tip">Net Expense Ratio<i class="info-icon">i</i><span
-                                class="info-bubble">The Prospectus Adjusted Operating Expense Ratio is the percentage of
-                                fund assets paid for operating expenses and management fees. The ratio does reflect fee
-                                waivers in effect during the time period, and does not include interest and dividends on
-                                borrowed securities.</span></span>
-                        <span class="value">{{EXPENSE_RATIO}}</span>
-                    </div>
-                    <div class="panel-grid">
-                        <div class="field"><span class="label">Fee Level</span><span class="value">{{FEE_LEVEL}}</span>
-                        </div>
-                        <div class="field"><span class="label">Fee Level (Dist.)</span><span
-                                class="value">{{FEE_LEVEL_DISTRIBUTION}}</span></div>
-                        <div class="field"><span class="label">12-Mo Yield</span><span
-                                class="value">{{TWELVE_MONTH_YIELD}}</span></div>
-                        <div class="field"><span class="label">Turnover</span><span
-                                class="value">{{TURNOVER_RATIO}}</span></div>
-                    </div>
-                </div>
-
-                <div class="panel">
-                    <div class="panel-title">Structure & Access</div>
-                    <div class="field highlight">
-                        <span class="label">Active / Index</span>
-                        <span class="value">{{ACTIVE_INDEX_LABEL}}</span>
-                    </div>
-                    <div class="panel-grid">
-                        <div class="field"><span class="label">Fund Size</span><span class="value">{{FUND_SIZE}}</span>
-                        </div>
-                        <div class="field"><span class="label">Closed to New</span><span
-                                class="value">{{CLOSED_TO_NEW}}</span></div>
-                        <div class="field"><span class="label">Inception Date</span><span
-                                class="value">{{INCEPTION_DATE}}</span></div>
-                        <div class="field"><span class="label">Min. Purchase</span><span
-                                class="value">{{MIN_INITIAL_PURCHASE}}</span></div>
-                        <div class="field"><span class="label">Oldest Share Class Inception Date</span><span
-                                class="value">{{OLDEST_SHARE_CLASS_INCEPTION}}</span></div>
-                    </div>
-                </div>
-
-                <div class="panel-stack">
                     <div class="panel">
-                        <div class="panel-title">Classification & Benchmark</div>
+                        <div class="panel-title">Fund Identity</div>
                         <div class="field highlight">
-                            <span class="label">Morningstar Category</span>
-                            <span class="value">{{CATEGORY}}</span>
+                            <span class="label">Name</span>
+                            <span class="value">{{FUND_STANDARD_NAME}}</span>
                         </div>
                         <div class="panel-grid">
-                            <div class="field"><span class="label">Primary Prospectus Benchmark</span><span
-                                    class="value">{{PROSPECTUS_BENCHMARK}}</span></div>
+                            <div class="field"><span class="label">Investment Type</span><span
+                                    class="value">{{INVESTMENT_TYPE}}</span></div>
+                            <div class="field"><span class="label">Base Currency</span><span
+                                    class="value">{{BASE_CURRENCY}}</span></div>
                         </div>
                     </div>
+
                     <div class="panel">
-                        <div class="panel-title">Management</div>
-                        <div class="manager">
-                            <div class="manager-avatar">{{MANAGER_INITIALS}}</div>
-                            <div>
-                                <div class="manager-name">{{MANAGER_NAME}}</div>
-                                <div class="manager-meta">Since {{MANAGER_START_DATE}} · Ownership:
-                                    {{MANAGER_OWNERSHIP}}</div>
+                        <div class="panel-title">Structure & Access</div>
+                        <div class="field highlight">
+                            <span class="label">Active / Index</span>
+                            <span class="value">{{ACTIVE_INDEX_LABEL}}</span>
+                        </div>
+                        <div class="panel-grid">
+                            <div class="field"><span class="label">Fund Size</span><span
+                                    class="value">{{FUND_SIZE}}</span>
+                            </div>
+                            <div class="field"><span class="label">Closed to New</span><span
+                                    class="value">{{CLOSED_TO_NEW}}</span></div>
+                            <div class="field"><span class="label">Inception Date</span><span
+                                    class="value">{{INCEPTION_DATE}}</span></div>
+                            <div class="field"><span class="label">Min. Purchase</span><span
+                                    class="value">{{MIN_INITIAL_PURCHASE}}</span></div>
+                            <div class="field"><span class="label">Oldest Share Class Inception Date</span><span
+                                    class="value">{{OLDEST_SHARE_CLASS_INCEPTION}}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Fund Flows & Price</div>
+                        <div class="field highlight">
+                            <span class="label">NAV</span>
+                            <span class="value">{{NAV}}</span>
+                        </div>
+                        <div class="flow-row">
+                            <div class="field"><span class="label">SEC 30-Day Yield</span><span
+                                    class="value">{{SEC_YIELD}}</span></div>
+                            <div class="field"><span class="label">Est. Net Flow 1M</span><span
+                                    class="value">{{EST_NET_FLOW_1M}}</span></div>
+                            <div class="field"><span class="label">Est. Net Flow 3M</span><span
+                                    class="value">{{EST_NET_FLOW_3M}}</span></div>
+                            <div class="field"><span class="label">Est. Net Flow 1Y</span><span
+                                    class="value">{{EST_NET_FLOW_1Y}}</span></div>
+                        </div>
+                    </div>
+
+                </div><!-- end overview-col left -->
+
+                <div class="overview-col">
+
+                    <div class="panel">
+                        <div class="panel-title">Cost & Yield</div>
+                        <div class="field highlight">
+                            <span class="label info-tip">Net Expense Ratio<i class="info-icon">i</i><span
+                                    class="info-bubble">The Prospectus Adjusted Operating Expense Ratio is the
+                                    percentage of
+                                    fund assets paid for operating expenses and management fees. The ratio does reflect
+                                    fee
+                                    waivers in effect during the time period, and does not include interest and
+                                    dividends on
+                                    borrowed securities.</span></span>
+                            <span class="value">{{EXPENSE_RATIO}}</span>
+                        </div>
+                        <div class="panel-grid">
+                            <div class="field"><span class="label">Fee Level</span><span
+                                    class="value">{{FEE_LEVEL}}</span>
+                            </div>
+                            <div class="field"><span class="label">Fee Level (Dist.)</span><span
+                                    class="value">{{FEE_LEVEL_DISTRIBUTION}}</span></div>
+                            <div class="field"><span class="label">12-Mo Yield</span><span
+                                    class="value">{{TWELVE_MONTH_YIELD}}</span></div>
+                            <div class="field"><span class="label">Turnover</span><span
+                                    class="value">{{TURNOVER_RATIO}}</span></div>
+                        </div>
+                    </div>
+
+                    <div class="panel-stack">
+                        <div class="panel">
+                            <div class="panel-title">Classification & Benchmark</div>
+                            <div class="field highlight">
+                                <span class="label">Morningstar Category</span>
+                                <span class="value">{{CATEGORY}}</span>
+                            </div>
+                            <div class="panel-grid">
+                                <div class="field"><span class="label">Primary Prospectus Benchmark</span><span
+                                        class="value">{{PROSPECTUS_BENCHMARK}}</span></div>
                             </div>
                         </div>
+                        <div class="panel">
+                            <div class="panel-title">Management</div>
+                            {{MANAGERS_HTML}}
+                        </div>
                     </div>
-                </div>
 
-                <div class="panel">
-                    <div class="panel-title">Fund Flows & Price</div>
-                    <div class="field highlight">
-                        <span class="label">NAV</span>
-                        <span class="value">${{NAV}}</span>
-                    </div>
-                    <div class="flow-row">
-                        <div class="field"><span class="label">SEC 30-Day Yield</span><span
-                                class="value">{{SEC_YIELD}}</span></div>
-                        <div class="field"><span class="label">Est. Net Flow 1M</span><span
-                                class="value">{{EST_NET_FLOW_1M}}</span></div>
-                        <div class="field"><span class="label">Est. Net Flow 3M</span><span
-                                class="value">{{EST_NET_FLOW_3M}}</span></div>
-                        <div class="field"><span class="label">Est. Net Flow 1Y</span><span
-                                class="value">{{EST_NET_FLOW_1Y}}</span></div>
-                    </div>
-                </div>
+                </div><!-- end overview-col right -->
 
             </div>
         </div>
@@ -1379,7 +1396,7 @@
         </div>
 
         <!-- RISK & CAPTURE -->
-        <div class="section">
+        <div class="section {{RISK_SECTION_CLASS}}">
             <div class="section-title">Risk & Capture</div>
             <div class="section-subtitle">vs. {{PROSPECTUS_BENCHMARK}}</div>
 
@@ -1395,29 +1412,7 @@
                                 <th>10 Yr</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr data-metric="sharpe">
-                                <td>Sharpe Ratio</td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                            </tr>
-                            <tr data-metric="upside">
-                                <td>Upside Capture</td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                            </tr>
-                            <tr data-metric="downside">
-                                <td>Downside Capture</td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-delta"></span></td>
-                            </tr>
-                        </tbody>
+                        <tbody>{{RISK_CAPTURE_ROWS}}</tbody>
                     </table>
                     <div class="table-footnote">Capture delta = fund value - 100 (benchmark level). &gt;100 upside =
                         outperformed in rallies; &lt;100 downside = protected in drawdowns.</div>
@@ -1434,36 +1429,7 @@
                                 <th>10 Yr</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr data-metric="stddev">
-                                <td>Std Deviation</td>
-                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
-                                <td><span class="metric-fund"></span><span class="metric-benchmark"></span></td>
-                            </tr>
-                            <tr data-metric="alpha">
-                                <td>Alpha</td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                            </tr>
-                            <tr data-metric="beta">
-                                <td>Beta</td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                            </tr>
-                            <tr data-metric="rsquared">
-                                <td>R-Squared</td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                                <td><span class="metric-fund"></span></td>
-                            </tr>
-                        </tbody>
+                        <tbody>{{RISK_STATS_ROWS}}</tbody>
                     </table>
                 </div>
             </div>
@@ -1477,67 +1443,7 @@
         Report generated {{REPORT_DATE}} | Data as of {{DATA_AS_OF_DATE}}
 
     </div>
-    <script type="application/json" id="data-risk">{{ RISK_DATA_JSON }}</script>
-
     <script>
-        const safeJson = (id, fallback) => {
-            try {
-                return JSON.parse(document.getElementById(id).textContent || JSON.stringify(fallback));
-            } catch (error) {
-                console.warn(`Could not parse ${id}`, error);
-                return fallback;
-            }
-        };
-
-        const RISK_DATA = safeJson('data-risk', {});
-        const riskFmt = v => { if (v == null || Math.abs(v) < 0.005) return '\u2014'; return (v > 0 ? '+' : '') + v.toFixed(2); };
-        const riskCls = (v, inv) => { if (v == null || Math.abs(v) < 0.005) return 'delta-neutral'; if (inv) return v < 0 ? 'delta-positive' : 'delta-negative'; return v > 0 ? 'delta-positive' : 'delta-negative'; };
-
-        // Risk & Capture table
-        (function () {
-            if (!RISK_DATA || !RISK_DATA.fund) return;
-            const table = document.getElementById('risk-capture-table');
-            if (!table) return;
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const m = row.dataset.metric, cells = row.querySelectorAll('td');
-                const fv = RISK_DATA.fund[m] || [];
-                [0, 1, 2, 3].forEach((p, i) => {
-                    const cell = cells[i + 1]; if (!cell) return;
-                    const fs = cell.querySelector('.metric-fund'), ds = cell.querySelector('.metric-delta');
-                    if (fv[p] == null) { fs.textContent = '\u2014'; ds.textContent = ''; return; }
-                    fs.textContent = fv[p].toFixed(2);
-                    if (m === 'sharpe') { ds.textContent = ''; return; }
-                    const d = fv[p] - 100;
-                    ds.textContent = riskFmt(d);
-                    ds.className = 'metric-delta ' + riskCls(d, m === 'downside');
-                });
-            });
-        })();
-
-        // Risk Statistics table (stddev, alpha, beta, r-squared)
-        (function () {
-            if (!RISK_DATA || !RISK_DATA.fund) return;
-            const table = document.getElementById('risk-stats-table');
-            if (!table) return;
-            table.querySelectorAll('tbody tr').forEach(row => {
-                const m = row.dataset.metric, cells = row.querySelectorAll('td');
-                const fv = RISK_DATA.fund[m] || [], bv = (RISK_DATA.benchmark && RISK_DATA.benchmark[m]) || [];
-                [0, 1, 2, 3].forEach((p, i) => {
-                    const cell = cells[i + 1]; if (!cell) return;
-                    const fs = cell.querySelector('.metric-fund'), bs = cell.querySelector('.metric-benchmark');
-                    if (fv[p] == null) { fs.textContent = '\u2014'; if (bs) bs.textContent = ''; return; }
-                    fs.textContent = fv[p].toFixed(2);
-                    if (m === 'stddev' && bs && bv[p] != null) {
-                        const d = fv[p] - bv[p];
-                        bs.textContent = riskFmt(d);
-                        bs.className = 'metric-delta ' + riskCls(d, true);
-                    } else if (bs) {
-                        bs.textContent = '';
-                    }
-                });
-            });
-        })();
-
         // Excess row coloring
         document.querySelectorAll('.row-excess td').forEach(td => {
             const t = td.textContent.trim();

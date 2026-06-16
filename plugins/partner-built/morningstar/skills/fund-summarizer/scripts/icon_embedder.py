@@ -62,25 +62,31 @@ def _parse_star_rating(data: dict) -> int | None:
 
 
 def _parse_score(value) -> float | None:
-    """Parse a 0-100 score from report data."""
+    """Parse a score from report data. Values above 100 are preserved."""
     try:
         score = float(str(value).strip().rstrip("%"))
     except (ValueError, TypeError):
         return None
-    return max(0, min(100, score))
+    return max(0.0, score)
 
 
 def _build_mprs_visual(score_value, icons_path: Path) -> str:
     """Inline the MPRS dial and add a score label plus pointer marker."""
-    base_svg = _load_svg(icons_path / "MPRS.svg")
     score = _parse_score(score_value)
     if score is None:
         return '<span class="value-lg">--</span>'
+
+    above_100 = score > 100
+    # Pointer angle saturates at 100 on the dial; scores above 100 peg to the end.
+    dial_score = min(score, 100.0)
+    base_svg = _load_svg(icons_path / ("MPRS 100plus.svg" if above_100 else "MPRS.svg"))
+    score_text = str(int(round(score)))
+    text_fill = "#B2013C" if above_100 else "#6F6D6A"
+
     if not base_svg:
-        score_text = str(int(score)) if score.is_integer() else f"{score:.1f}"
         return f'<span class="value-lg">{score_text}</span>'
 
-    angle = math.radians(135 + score * 2.7)
+    angle = math.radians(135 + dial_score * 2.7)
     center_x = 150
     center_y = 150
     tip_radius = 78
@@ -96,13 +102,12 @@ def _build_mprs_visual(score_value, icons_path: Path) -> str:
     base_a = (base_center[0] + tx * half_width, base_center[1] + ty * half_width)
     base_b = (base_center[0] - tx * half_width, base_center[1] - ty * half_width)
     points = " ".join(f"{x:.1f},{y:.1f}" for x, y in (tip, base_a, base_b))
-    score_text = str(int(score)) if score.is_integer() else f"{score:.1f}"
     overlay = (
         f'<g class="mprs-overlay">'
         f'<polygon points="{points}" fill="#3D3B39" stroke="#FFFFFF" stroke-width="1.5" />'
-        f'<text x="150" y="159" text-anchor="middle" fill="#6F6D6A" '
-        f'font-family="MORN Intrinsic,Aptos,Calibri,sans-serif" font-size="52" font-weight="300">{score_text}</text>'
-        f'</g>'
+        f'<text x="150" y="159" text-anchor="middle" fill="{text_fill}" '
+        f'font-family="MORN Intrinsic,Aptos,Calibri,sans-serif" font-size="52" font-weight="600">{score_text}</text>'
+        f"</g>"
     )
     return base_svg.replace("</svg>", overlay + "</svg>")
 
@@ -147,14 +152,20 @@ def _build_pillar_score_scale(rating_raw: str, allow_unmatched: bool = True) -> 
     points = []
     for label in _PILLAR_SCALE_LABELS:
         active_class = " is-active" if label == active_label else ""
-        rating_class = f" is-{_PILLAR_SCALE_CLASS_MAP[label]}" if label == active_label else ""
+        rating_class = (
+            f" is-{_PILLAR_SCALE_CLASS_MAP[label]}" if label == active_label else ""
+        )
         points.append(
             f'<span class="pillar-scale-point{active_class}{rating_class}">'
             f'<span class="pillar-scale-segment"></span>'
             f'<span class="pillar-scale-label">{label}</span>'
-            f'</span>'
+            f"</span>"
         )
-    return '<div class="pillar-score-scale"><div class="pillar-scale-track">' + "".join(points) + "</div></div>"
+    return (
+        '<div class="pillar-score-scale"><div class="pillar-scale-track">'
+        + "".join(points)
+        + "</div></div>"
+    )
 
 
 def embed_icons(template: str, data: dict, icons_path: Path) -> str:
@@ -167,12 +178,16 @@ def embed_icons(template: str, data: dict, icons_path: Path) -> str:
     """
     medalist = str(data.get("MEDALIST_RATING", "")).strip()
     icon_file = _MEDALIST_ICON_MAP.get(medalist, "")
-    template = template.replace("{{MEDALIST_ICON}}", _load_svg(icons_path / icon_file) if icon_file else "")
+    template = template.replace(
+        "{{MEDALIST_ICON}}", _load_svg(icons_path / icon_file) if icon_file else ""
+    )
 
     star_rating = _parse_star_rating(data)
     star_icon = _load_svg(icons_path / f"{star_rating} Star.svg") if star_rating else ""
     template = template.replace("{{STAR_RATING_ICON}}", star_icon)
-    template = template.replace("{{MPRS_VISUAL}}", _build_mprs_visual(data.get("MPRS"), icons_path))
+    template = template.replace(
+        "{{MPRS_VISUAL}}", _build_mprs_visual(data.get("MPRS"), icons_path)
+    )
 
     for data_key, score_type_key, icon_placeholder, scale_placeholder in (
         ("PROCESS_RATING", "PROCESS_SCORE_TYPE", "PROCESS_ICON", "PROCESS_SCORE_SCALE"),
@@ -182,18 +197,45 @@ def embed_icons(template: str, data: dict, icons_path: Path) -> str:
         score_type_raw = str(data.get(score_type_key, ""))
         rating, icon_type = _parse_pillar(str(data.get(data_key, "")), score_type_raw)
         icon_label = _PILLAR_ICON_LABEL_MAP.get(rating, "")
-        pillar_svg = _load_svg(icons_path / f"{icon_label} {icon_type}.svg") if icon_label else ""
+        pillar_svg = (
+            _load_svg(icons_path / f"{icon_label} {icon_type}.svg")
+            if icon_label
+            else ""
+        )
         template = template.replace("{{" + icon_placeholder + "}}", pillar_svg)
-        template = template.replace("{{" + scale_placeholder + "}}", _build_pillar_score_scale(rating))
+        template = template.replace(
+            "{{" + scale_placeholder + "}}", _build_pillar_score_scale(rating)
+        )
 
     price_raw = str(data.get("PRICE_RATING", "")).strip()
     try:
         price_num = float(price_raw)
-        price_display = str(int(price_num)) if price_num.is_integer() else f"{price_num:.1f}"
+        price_display = (
+            str(int(price_num)) if price_num.is_integer() else f"{price_num:.1f}"
+        )
     except (ValueError, TypeError):
         price_display = price_raw
-    price_html = f'<span class="price-score-num">{price_display}</span>' if price_display else ""
+    price_html = (
+        f'<span class="price-score-num">{price_display}</span>' if price_display else ""
+    )
     template = template.replace("{{PRICE_SCORE}}", price_html)
-    template = template.replace("{{PRICE_SCORE_SCALE}}", _build_pillar_score_scale(price_raw, allow_unmatched=False))
+    template = template.replace(
+        "{{PRICE_SCORE_SCALE}}",
+        _build_pillar_score_scale(price_raw, allow_unmatched=False),
+    )
+
+    disclosure_type = str(data.get("MEDALIST_DISCLOSURE_TYPE", "")).strip()
+    if disclosure_type:
+        display_html = f'<div class="medalist-disclosure-label">{disclosure_type}</div>'
+        footnote_html = (
+            f'<div class="medalist-disclosure-footnote">'
+            f"Morningstar Medalist Rating methodology: {disclosure_type}."
+            f"</div>"
+        )
+    else:
+        display_html = ""
+        footnote_html = ""
+    template = template.replace("{{MEDALIST_DISCLOSURE_TYPE_DISPLAY}}", display_html)
+    template = template.replace("{{MEDALIST_DISCLOSURE_FOOTNOTE}}", footnote_html)
 
     return template
