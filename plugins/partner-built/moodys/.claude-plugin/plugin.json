@@ -1,8 +1,21 @@
 {
-  "name": "moodys-skills",
-  "description": "Skills for Moodys MCP tools",
+  "name": "moodys",
+  "description": "Moody's — Credit data and analytics skills including issuer briefs, sector briefs, peer analysis, rating pitch decks, and earnings-call summaries.",
   "version": "0.1.0",
   "author": {
-    "name": "Moody's"
-  }
+    "name": "Moody's",
+    "email": "clientservices@moodys.com"
+  },
+  "homepage": "https://www.moodys.com",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": [
+    "moodys",
+    "credit",
+    "ratings",
+    "fixed-income",
+    "issuer-briefs",
+    "peer-analysis",
+    "sector-analysis",
+    "earnings"
+  ]
 }

@@ -122,7 +122,7 @@
       "name": "moodys",
       "displayName": "Moody's",
       "source": "./plugins/partner-built/moodys",
-      "description": "Skills for Moodys MCP tools"
+      "description": "Moody's — Credit data and analytics skills including issuer briefs, sector briefs, peer analysis, rating pitch decks, and earnings-call summaries."
     },
     {
       "name": "claude-for-msft-365-install",

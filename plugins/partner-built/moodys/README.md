@@ -58,10 +58,10 @@ The plugin's `.mcp.json` declares the MCP servers that skills depend on. Current
 
 | Server | Type | Endpoint |
 |--------|------|----------|
-| `Moodys MCP server` | HTTP | `https://api.moodys.com/genai-ready-data/Credit/mcp` |
+| `moodys-credit-mcp` | HTTP | `https://api.moodys.com/genai-ready-data/Credit/mcp` |
 
 Individual skills list their required server and the specific tools they call in their `SKILL.md`.
 
 ## License
 
-Proprietary — Moody's Corporation. See repository root for full license terms.
+Apache License 2.0 — see [LICENSE](LICENSE) for full terms.
