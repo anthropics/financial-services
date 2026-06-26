@@ -145,6 +145,71 @@ needs them to initialize NAA *before* it can read extension attrs or call your
 bootstrap endpoint, so neither can arrive through those layers. Leave
 `entra_scope` unset and the ID token is sent.
 
+## Use the Entra token as your gateway credential
+
+If your gateway already validates Entra JWTs (`aud` + `scp` against your own
+API resource), you don't need a separate `gateway_token` or a bootstrap hop —
+set `gateway_auth_source=entra` and the add-in sends the Entra access token it
+acquired above directly as `Authorization: Bearer` on every gateway call, and
+silently re-acquires it before expiry. The end-user experience is zero-input
+SSO: open the add-in, start chatting.
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" office manifest.xml \
+  gateway_url=https://llm-gateway.your-org.example \
+  entra_sso=1 \
+  graph_client_id=<client-app-guid> \
+  entra_scope=api://<resource-app-guid>/access_as_user \
+  gateway_auth_source=entra
+```
+
+`gateway_auth_source=entra` requires `entra_scope` (and therefore
+`graph_client_id` and `entra_sso=1`); the build script enforces this. It
+implies `gateway_auth_header=authorization`, so you can omit that key. Don't
+also set `gateway_token` — it's ignored, and the script warns.
+
+### Entra app registration checklist
+
+This is the same setup the previous section describes, gathered in one place.
+Register the app(s) in [Entra admin center](https://entra.microsoft.com) →
+*App registrations* → *New registration*, single-tenant. The simplest topology
+is one app acting as both the client (the add-in signs in as it) and the
+resource (your gateway validates tokens audienced to it); split into two apps
+if your tenant policy requires it.
+
+1. **Platform / redirect URI** — *Authentication* → *Add a platform* →
+   *Single-page application* → redirect URI
+   `https://pivot.claude.ai/msal-redirect.html`. This is needed for Office on
+   the web, where the add-in runs as a SPA; desktop Office brokers the token
+   and ignores it.
+2. **Expose an API** — set the Application ID URI to `api://<app-guid>`, add a
+   scope (e.g. `access_as_user`), admin-consent enabled.
+3. **API permissions** — on the *client* app, add a delegated permission to the
+   scope from step 2, then *Grant admin consent for &lt;tenant&gt;*. (Single-app
+   topology: the app grants itself.)
+4. **Token version** — in the app *Manifest*, set
+   `accessTokenAcceptedVersion: 2` so issued tokens use v2.0 claims.
+5. **Gateway side** — validate `iss` =
+   `https://login.microsoftonline.com/<tenant-id>/v2.0`, `aud` = the
+   Application ID URI from step 2, and `scp` contains your scope. JWKS is at
+   `https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys`.
+
+### GCC High / DoD
+
+Same checklist, different portal and endpoints. Register the app at
+[portal.azure.us](https://portal.azure.us) (Azure Government) instead of the
+commercial portal — apps don't replicate across clouds. The SPA redirect URI is
+unchanged (`https://pivot.claude.ai/msal-redirect.html`; the add-in is served
+from the same domain in every cloud). In the manifest, add
+`graph_cloud=us-gov-high` (or `us-gov-dod`) per the
+[sovereign clouds](#sovereign--national-clouds-gcc-high-dod-21vianet) section.
+
+The token your gateway validates will carry the `.us` issuer —
+`https://login.microsoftonline.us/<tenant-id>/v2.0` — and the JWKS lives at
+`https://login.microsoftonline.us/<tenant-id>/discovery/v2.0/keys`. Configure
+your gateway's JWT middleware (and any AWS OIDC identity provider in the chain)
+with those `.us` URLs; a validator pinned to `.com` will reject every request.
+
 ## Bootstrap endpoint
 
 `bootstrap_url` points to an HTTPS endpoint you host. At startup the add-in

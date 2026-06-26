@@ -1,7 +1,7 @@
 {
   "name": "claude-for-msft-365-install",
   "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Office add-in. Generates the customized add-in manifest, walks through Azure admin consent, and writes per-user config via Microsoft Graph extension attributes.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": {
     "name": "Anthropic",
     "email": "support@anthropic.com"
