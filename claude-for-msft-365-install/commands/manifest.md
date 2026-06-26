@@ -48,9 +48,10 @@ the add-in uses Anthropic's multi-tenant app.
 The add-in auto-detects the tenant's national cloud at sign-in (from the
 authority host Office reports) and resolves the matching Graph + Entra
 endpoints, so most sovereign tenants need **no cloud config**. The only
-required step is
-bringing your own Entra app via `graph_client_id` — Anthropic's multi-tenant
-app exists only in the commercial cloud. A GCC-High Outlook manifest needs
+required step is bringing your own Entra app via `graph_client_id` —
+Anthropic's multi-tenant app exists only in the commercial cloud; see
+[entra-app](entra-app.md#gcc-high--dod--21vianet) for the registration steps in
+the Azure Government / 21Vianet portals. A GCC-High Outlook manifest needs
 nothing beyond the usual keys:
 
 ```bash
@@ -110,11 +111,9 @@ involve Microsoft.
 **Bring your own Entra app.** By default the token is requested as Anthropic's
 multi-tenant app (`c2995f31-…`), so its `aud` claim is that GUID. If your
 bootstrap endpoint or token-exchange service requires `aud` to match an app
-registered in *your* tenant, set `graph_client_id=<your-app-guid>`. Register
-the app in Entra as a single-tenant **Single-page application** — see the
-[registration checklist](#entra-app-registration-checklist) below for the
-redirect URIs and API setup. You handle consent on your own app —
-[consent](consent.md) covers the default app only.
+registered in *your* tenant, set `graph_client_id=<your-app-guid>`. See
+[entra-app](entra-app.md) for the registration steps (redirect URIs, API setup,
+admin consent). [consent](consent.md) covers Anthropic's default app only.
 
 **Send an access token instead of the ID token.** With `graph_client_id` alone
 the add-in still sends an *ID token* to your bootstrap endpoint — `aud` is your
@@ -169,52 +168,12 @@ node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" office manifest.xml \
 implies `gateway_auth_header=authorization`, so you can omit that key. Don't
 also set `gateway_token` — it's ignored, and the script warns.
 
-### Entra app registration checklist
-
-This is the same setup the previous section describes, gathered in one place.
-Register the app(s) in [Entra admin center](https://entra.microsoft.com) →
-*App registrations* → *New registration*, single-tenant. The simplest topology
-is one app acting as both the client (the add-in signs in as it) and the
-resource (your gateway validates tokens audienced to it); split into two apps
-if your tenant policy requires it.
-
-1. **Platform / redirect URIs** — *Authentication* → *Add a platform* →
-   *Single-page application* → add **both**:
-   - `brk-multihub://pivot.claude.ai` — the
-     [NAA broker](https://learn.microsoft.com/office/dev/add-ins/develop/enable-nested-app-authentication-in-your-add-in)
-     URI. Required for desktop Office and Outlook web; without it sign-in fails
-     with `AADSTS50011`.
-   - `https://pivot.claude.ai/msal-redirect.html` — the standard SPA fallback.
-     Required for Excel/Word/PowerPoint on Office for the web, which don't
-     inject the NAA bridge.
-2. **Expose an API** — set the Application ID URI to `api://<app-guid>`, add a
-   scope (e.g. `access_as_user`), admin-consent enabled.
-3. **API permissions** — on the *client* app, add a delegated permission to the
-   scope from step 2, then *Grant admin consent for &lt;tenant&gt;*. (Single-app
-   topology: the app grants itself.)
-4. **Token version** — in the app *Manifest*, set
-   `accessTokenAcceptedVersion: 2` so issued tokens use v2.0 claims.
-5. **Gateway side** — validate `iss` =
-   `https://login.microsoftonline.com/<tenant-id>/v2.0`, `aud` = the
-   Application ID URI from step 2, and `scp` contains your scope. JWKS is at
-   `https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys`.
-
-### GCC High / DoD
-
-Same checklist, different portal and endpoints. Register the app at
-[portal.azure.us](https://portal.azure.us) (Azure Government) instead of the
-commercial portal — apps don't replicate across clouds. The two SPA redirect
-URIs are unchanged (`brk-multihub://pivot.claude.ai` and
-`https://pivot.claude.ai/msal-redirect.html`; the add-in is served from the
-same domain in every cloud). In the manifest, add
-`graph_cloud=us-gov-high` (or `us-gov-dod`) per the
-[sovereign clouds](#sovereign--national-clouds-gcc-high-dod-21vianet) section.
-
-The token your gateway validates will carry the `.us` issuer —
-`https://login.microsoftonline.us/<tenant-id>/v2.0` — and the JWKS lives at
-`https://login.microsoftonline.us/<tenant-id>/discovery/v2.0/keys`. Configure
-your gateway's JWT middleware (and any AWS OIDC identity provider in the chain)
-with those `.us` URLs; a validator pinned to `.com` will reject every request.
+**Entra setup:** see [entra-app](entra-app.md) — the *Gateway / bootstrap auth*
+row of the permissions table, plus the
+[backend validation](entra-app.md#what-your-backend-validates) section for the
+`iss`/`aud`/`scp`/JWKS values your gateway should check. GCC High / DoD
+deployments are covered in the
+[same doc](entra-app.md#gcc-high--dod--21vianet).
 
 ## Bootstrap endpoint
 
