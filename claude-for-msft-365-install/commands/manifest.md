@@ -111,9 +111,10 @@ involve Microsoft.
 multi-tenant app (`c2995f31-…`), so its `aud` claim is that GUID. If your
 bootstrap endpoint or token-exchange service requires `aud` to match an app
 registered in *your* tenant, set `graph_client_id=<your-app-guid>`. Register
-the app in Entra as a single-tenant **Single-page application** with redirect
-URI `https://pivot.claude.ai/msal-redirect.html`. You handle consent on your
-own app — [consent](consent.md) covers the default app only.
+the app in Entra as a single-tenant **Single-page application** — see the
+[registration checklist](#entra-app-registration-checklist) below for the
+redirect URIs and API setup. You handle consent on your own app —
+[consent](consent.md) covers the default app only.
 
 **Send an access token instead of the ID token.** With `graph_client_id` alone
 the add-in still sends an *ID token* to your bootstrap endpoint — `aud` is your
@@ -177,11 +178,15 @@ is one app acting as both the client (the add-in signs in as it) and the
 resource (your gateway validates tokens audienced to it); split into two apps
 if your tenant policy requires it.
 
-1. **Platform / redirect URI** — *Authentication* → *Add a platform* →
-   *Single-page application* → redirect URI
-   `https://pivot.claude.ai/msal-redirect.html`. This is needed for Office on
-   the web, where the add-in runs as a SPA; desktop Office brokers the token
-   and ignores it.
+1. **Platform / redirect URIs** — *Authentication* → *Add a platform* →
+   *Single-page application* → add **both**:
+   - `brk-multihub://pivot.claude.ai` — the
+     [NAA broker](https://learn.microsoft.com/office/dev/add-ins/develop/enable-nested-app-authentication-in-your-add-in)
+     URI. Required for desktop Office and Outlook web; without it sign-in fails
+     with `AADSTS50011`.
+   - `https://pivot.claude.ai/msal-redirect.html` — the standard SPA fallback.
+     Required for Excel/Word/PowerPoint on Office for the web, which don't
+     inject the NAA bridge.
 2. **Expose an API** — set the Application ID URI to `api://<app-guid>`, add a
    scope (e.g. `access_as_user`), admin-consent enabled.
 3. **API permissions** — on the *client* app, add a delegated permission to the
@@ -198,9 +203,10 @@ if your tenant policy requires it.
 
 Same checklist, different portal and endpoints. Register the app at
 [portal.azure.us](https://portal.azure.us) (Azure Government) instead of the
-commercial portal — apps don't replicate across clouds. The SPA redirect URI is
-unchanged (`https://pivot.claude.ai/msal-redirect.html`; the add-in is served
-from the same domain in every cloud). In the manifest, add
+commercial portal — apps don't replicate across clouds. The two SPA redirect
+URIs are unchanged (`brk-multihub://pivot.claude.ai` and
+`https://pivot.claude.ai/msal-redirect.html`; the add-in is served from the
+same domain in every cloud). In the manifest, add
 `graph_cloud=us-gov-high` (or `us-gov-dod`) per the
 [sovereign clouds](#sovereign--national-clouds-gcc-high-dod-21vianet) section.
 
