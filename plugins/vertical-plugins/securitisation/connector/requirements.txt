@@ -1,0 +1,4 @@
+# Runtime dependency for the securitisation EDGAR connector.
+# The core/data logic uses only the Python standard library; the only third-party
+# package is the official MCP SDK that powers the stdio server.
+mcp>=1.2.0
