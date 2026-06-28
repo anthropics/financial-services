@@ -3,6 +3,29 @@ name: sector-overview
 description: Create comprehensive industry and sector landscape reports covering market dynamics, competitive positioning, key players, and thematic trends. Use for client requests, sector initiations, thematic research pieces, or internal knowledge building. Triggers on "sector overview", "industry report", "market landscape", "sector analysis", "industry deep dive", or "thematic research".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+For company snapshots in a sector overview, IBKR gives you the live
+trading layer (price, mkt cap, dividend yield) faster than re-keying
+from FactSet. When the `ibkr` MCP server is reachable (verify with
+`ibkr_status`):
+
+- **Per-name snapshot** — `ibkr_snapshot(symbols=[…])` (batch quote)
+  for the 5-10 players in the universe. Returns last, day range, and
+  volume in one call.
+- **Per-name fundamentals** — `ibkr_fundamentals(symbol)` for P/E, mkt
+  cap, div yield, margins — used in the Company Profiles table.
+- **Dividend track record** — `ibkr_dividends(symbol, lookback_years=5)`
+  for the "dividend payer / grower" line in each profile.
+- **Universe scan** — `ibkr_market_scanner(scan_code="most_active_us")`
+  with an `above_market_cap` filter to keep the universe on point.
+
+For deeper fundamentals (segment revenue, FCF yield), layer Daloopa /
+FactSet on top of the IBKR data — the two complement each other.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+web search and SEC EDGAR for the same fields.
 # Sector Overview
 
 ## Workflow

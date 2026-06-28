@@ -1,0 +1,48 @@
+# ABOUTME: Project config for the IBKR MCP server and its data-source wiring.
+# ABOUTME: Declares a workspace member for mcp_server so `uv run` from the
+# ABOUTME: repo root resolves the package via `mcp_server.ibkr.*`.
+
+[project]
+name = "financial-services-ibkr"
+version = "0.1.0"
+description = "IBKR data-source wiring for the Claude for Financial Services plugins (project-local)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ib-async>=2.1.0",
+    "mcp>=1.25.0",
+    "lxml>=6.0.2",
+    "yfinance>=1.4.1",
+]
+
+[project.scripts]
+# Lets `uv run ibkr-research` launch the server without the `-m` path.
+ibkr-research = "mcp_server.ibkr.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mcp_server"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["mcp_server/ibkr/tests"]
+markers = [
+    "ib_live: requires a running TWS / IB Gateway (skipped when IBKR_LIVE_TESTS=0)",
+]
+addopts = "-m 'not ib_live'"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]

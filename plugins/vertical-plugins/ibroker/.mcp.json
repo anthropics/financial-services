@@ -1,0 +1,20 @@
+{
+  "comment": "Cowork / OMP picks this up when the ibroker vertical plugin is installed. Points to the project-local server — installation only succeeds if the user has cloned the parent repo and started TWS / IB Gateway. Outside this repo the server is not available.",
+  "mcpServers": {
+    "ibkr": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        "../../..",
+        "python",
+        "-m",
+        "mcp_server.ibkr.server"
+      ],
+      "env": {
+        "IBKR_PORT": "7497"
+      }
+    }
+  }
+}

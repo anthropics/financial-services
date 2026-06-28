@@ -47,6 +47,12 @@
       "description": "Operational workflows: KYC document parsing and rules-grid evaluation"
     },
     {
+      "name": "ibroker",
+      "displayName": "IBKR Data Source",
+      "source": "./plugins/vertical-plugins/ibroker",
+      "description": "Interactive Brokers TWS / IB Gateway as a live market-data, fundamentals, options, and scanner source for the equity-research and financial-analysis workflows. Project-local — runs only when launched from this repo's working directory."
+    },
+    {
       "name": "pitch-agent",
       "displayName": "Pitch Agent",
       "source": "./plugins/agent-plugins/pitch-agent",

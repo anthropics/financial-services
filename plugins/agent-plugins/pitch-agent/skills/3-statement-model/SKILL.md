@@ -7,6 +7,26 @@ description: Complete, populate and fill out 3-statement financial model templat
 
 Complete and populate integrated financial model templates with proper linkages between Income Statement, Balance Sheet, and Cash Flow Statement.
 
+
+## Data Source: IBKR (preferred when available)
+
+For the "Today" valuation point on a 3-statement model (market cap,
+net debt at current price), the IBKR MCP server gives you the live
+inputs in one call. When the `ibkr` MCP server is reachable (verify
+with `ibkr_status`):
+
+- **Current market cap** — `ibkr_quote("<ticker>")` for the live share
+  price; `ibkr_fundamentals("<ticker>")` for shares outstanding. Use
+  the product as the market cap input in the Assumptions tab.
+- **Latest cash + debt** — `ibkr_fundamentals("<ticker>")` returns the
+  most recent balance-sheet line items (15-30 min lag). Cross-check
+  against the latest 10-Q.
+- **Historical price for sanity chart** — `ibkr_historical("<ticker>",
+  duration="5 Y", bar_size="1 month")` for the historical price chart
+  in the cover slide.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+the latest 10-K / 10-Q and a public market source for price.
 ## ⚠️ CRITICAL PRINCIPLES — Read Before Populating Any Template
 
 **Environment — Office JS vs Python:**

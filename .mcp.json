@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schema/mcp.json",
+  "comment": "Project-local MCP config. Claude Code and OMP both read .mcp.json from the cwd by default — this file makes the IBKR research server available ONLY when the agent is launched inside this repo. Requires TWS or IB Gateway running locally with API access enabled. Default port is 4001 (IB Gateway live); set IBKR_PORT to override.",
+  "mcpServers": {
+    "ibkr": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "run",
+        "--project",
+        ".",
+        "python",
+        "-m",
+        "mcp_server.ibkr.server"
+      ],
+      "env": {
+        "IBKR_PORT": "4001"
+      }
+    }
+  }
+}

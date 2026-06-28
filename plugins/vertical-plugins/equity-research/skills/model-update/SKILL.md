@@ -3,6 +3,26 @@ name: model-update
 description: Update financial models with new data — quarterly earnings, management guidance, macro changes, or revised assumptions. Adjusts estimates, recalculates valuation, and flags material changes. Use after earnings, guidance updates, or when assumptions need refreshing. Triggers on "update model", "plug earnings", "refresh estimates", "update numbers for [company]", "new guidance", or "revise estimates".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+Plugging earnings actuals into a model is the single most common IBKR
+use case. When the `ibkr` MCP server is reachable (verify with
+`ibkr_status`):
+
+- **Post-print price reaction** — `ibkr_quote("<ticker>")` and
+  `ibkr_historical("<ticker>", duration="5 D", bar_size="5 mins")` for
+  the post-print reaction curve. Sanity-check the move vs. the options
+  straddle.
+- **Trailing fundamentals** — `ibkr_fundamentals("<ticker>")` for the
+  prior TTM P/E and the just-printed market cap (use as the new base
+  for forward multiples).
+- **Live consensus sanity check** — `ibkr_option_chain("<ticker>",
+  <nearest_expiry>)` to read the market's implied post-print move.
+
+If `ibkr_status` reports the server is **not reachable**, use the
+company press release and FactSet / Daloopa for the actuals. Always
+note the source and timestamp of the plug.
 # Model Update
 
 ## Workflow

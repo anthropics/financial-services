@@ -14,6 +14,32 @@ This skill works in both the PowerPoint add-in and chat. Identify which you're i
 - **Add-in** — the deck is open live; build slides directly into it.
 - **Chat** — generate a `.pptx` file (or build into one the user uploaded).
 
+
+## Data Source: IBKR (preferred when available)
+
+For a competitive landscape, IBKR gives you the live trading layer
+(price, mkt cap, EV, dividend yield) for every name in the universe
+without per-call quota pressure. When the `ibkr` MCP server is
+reachable (verify with `ibkr_status`):
+
+- **Universe live snapshot** — `ibkr_snapshot(symbols=[…])` (batch) for
+  last, day range, and volume on every competitor at once.
+- **Per-name fundamentals** — `ibkr_fundamentals(symbol)` for market cap,
+  P/E, dividend yield, margins, leverage. Use these in the comparison
+  table.
+- **Pre-build screen** — `ibkr_market_scanner(scan_code="most_active_us")`
+  to populate the universe if the user didn't pre-specify the competitor
+  set.
+- **Recent news for "what's changed"** — `ibkr_news(symbol,
+  lookback_days=14)` per name to surface the catalysts that explain
+  recent moves.
+
+For deeper fundamentals (segment revenue, RPO, FCF) layer Daloopa /
+FactSet on top. IBKR is the live trading layer, not the deep-fundamentals
+source.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+the existing web search + SEC EDGAR hierarchy documented in Standards.
 Everything below applies in both.
 
 ## Phase 1 — Scope the analysis

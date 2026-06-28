@@ -25,7 +25,7 @@ description: |
 
 **ALWAYS follow this data source hierarchy:**
 
-1. **FIRST: Check for MCP data sources** - If S&P Kensho MCP, FactSet MCP, or Daloopa MCP are available, use them exclusively for financial and trading information
+1. **FIRST: Check for MCP data sources** - If S&P Kensho MCP, FactSet MCP, Daloopa MCP, or the **IBKR MCP** (project-local, requires TWS / IB Gateway) are available, use them. IBKR is the fastest source for live quotes, mkt cap, P/E, and dividend yield — call `ibkr_quote` and `ibkr_fundamentals` first, then layer S&P / FactSet / Daloopa for deeper comps (estimates history, segment detail).
 2. **DO NOT use web search** if the above MCP data sources are available
 3. **ONLY if MCPs are unavailable:** Then use Bloomberg Terminal, SEC EDGAR filings, or other institutional sources
 4. **NEVER use web search as a primary data source** - it lacks the accuracy, audit trails, and reliability required for institutional-grade analysis

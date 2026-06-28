@@ -1,0 +1,185 @@
+{
+  "version": 2,
+  "plugins": {
+    "financial-analysis@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___financial-analysis___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:18.397Z",
+        "lastUpdated": "2026-06-23T10:46:18.397Z"
+      }
+    ],
+    "investment-banking@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___investment-banking___0.2.1",
+        "version": "0.2.1",
+        "installedAt": "2026-06-23T10:46:18.883Z",
+        "lastUpdated": "2026-06-23T10:46:18.883Z"
+      }
+    ],
+    "equity-research@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___equity-research___0.1.2",
+        "version": "0.1.2",
+        "installedAt": "2026-06-23T10:46:19.329Z",
+        "lastUpdated": "2026-06-23T10:46:19.329Z"
+      }
+    ],
+    "private-equity@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___private-equity___0.1.2",
+        "version": "0.1.2",
+        "installedAt": "2026-06-23T10:46:19.802Z",
+        "lastUpdated": "2026-06-23T10:46:19.802Z"
+      }
+    ],
+    "wealth-management@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___wealth-management___0.1.2",
+        "version": "0.1.2",
+        "installedAt": "2026-06-23T10:46:20.277Z",
+        "lastUpdated": "2026-06-23T10:46:20.277Z"
+      }
+    ],
+    "fund-admin@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___fund-admin___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:20.759Z",
+        "lastUpdated": "2026-06-23T10:46:20.759Z"
+      }
+    ],
+    "operations@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___operations___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:21.229Z",
+        "lastUpdated": "2026-06-23T10:46:21.229Z"
+      }
+    ],
+    "pitch-agent@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___pitch-agent___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:21.708Z",
+        "lastUpdated": "2026-06-23T10:46:21.708Z"
+      }
+    ],
+    "market-researcher@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___market-researcher___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:22.194Z",
+        "lastUpdated": "2026-06-23T10:46:22.194Z"
+      }
+    ],
+    "earnings-reviewer@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___earnings-reviewer___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:22.673Z",
+        "lastUpdated": "2026-06-23T10:46:22.673Z"
+      }
+    ],
+    "meeting-prep-agent@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___meeting-prep-agent___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:23.146Z",
+        "lastUpdated": "2026-06-23T10:46:23.146Z"
+      }
+    ],
+    "model-builder@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___model-builder___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:23.627Z",
+        "lastUpdated": "2026-06-23T10:46:23.627Z"
+      }
+    ],
+    "gl-reconciler@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___gl-reconciler___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:24.135Z",
+        "lastUpdated": "2026-06-23T10:46:24.135Z"
+      }
+    ],
+    "kyc-screener@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___kyc-screener___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:24.607Z",
+        "lastUpdated": "2026-06-23T10:46:24.607Z"
+      }
+    ],
+    "valuation-reviewer@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___valuation-reviewer___0.1.1",
+        "version": "0.1.1",
+        "installedAt": "2026-06-23T10:46:25.091Z",
+        "lastUpdated": "2026-06-23T10:46:25.091Z"
+      }
+    ],
+    "month-end-closer@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___month-end-closer___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:25.563Z",
+        "lastUpdated": "2026-06-23T10:46:25.563Z"
+      }
+    ],
+    "statement-auditor@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___statement-auditor___0.1.0",
+        "version": "0.1.0",
+        "installedAt": "2026-06-23T10:46:26.047Z",
+        "lastUpdated": "2026-06-23T10:46:26.047Z"
+      }
+    ],
+    "lseg@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___lseg___1.0.0",
+        "version": "1.0.0",
+        "installedAt": "2026-06-23T10:46:26.531Z",
+        "lastUpdated": "2026-06-23T10:46:26.531Z"
+      }
+    ],
+    "sp-global@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___sp-global___1.0.1",
+        "version": "1.0.1",
+        "installedAt": "2026-06-23T10:46:27.005Z",
+        "lastUpdated": "2026-06-23T10:46:27.005Z"
+      }
+    ],
+    "claude-for-msft-365-install@claude-for-financial-services": [
+      {
+        "scope": "project",
+        "installPath": "/Users/jbandaria/.omp/plugins/cache/plugins/claude-for-financial-services___claude-for-msft-365-install___0.1.5",
+        "version": "0.1.5",
+        "installedAt": "2026-06-23T10:46:27.488Z",
+        "lastUpdated": "2026-06-23T10:46:27.488Z"
+      }
+    ]
+  }
+}

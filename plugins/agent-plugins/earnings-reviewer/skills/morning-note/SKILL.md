@@ -3,6 +3,24 @@ name: morning-note
 description: Draft concise morning meeting notes summarizing overnight developments, trade ideas, and key events for coverage stocks. Designed for the 7am morning meeting format — tight, opinionated, actionable. Triggers on "morning note", "morning meeting", "what happened overnight", "trade idea", "morning call prep", or "daily note".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+For pre-market color and overnight moves, IBKR is the live feed. When
+the `ibkr` MCP server is reachable (verify with `ibkr_status`):
+
+- **Overnight / pre-market moves** — `ibkr_historical("<ticker>",
+  duration="2 D", bar_size="1 hour")` shows the post-close and pre-open
+  bars — enough to characterize the overnight move.
+- **Live quote** — `ibkr_quote("<ticker>")` for the current last,
+  pre-market / after-hours price, and volume.
+- **Unusual activity check** — `ibkr_market_scanner(scan_code="unusual_volume_us")`
+  for any coverage names flagging on volume into the open.
+- **News flow** — `ibkr_news("<ticker>", lookback_days=1)` for the
+  headlines that explain the move.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+web search for the same data and note the source lag in the note.
 # Morning Note
 
 ## Workflow

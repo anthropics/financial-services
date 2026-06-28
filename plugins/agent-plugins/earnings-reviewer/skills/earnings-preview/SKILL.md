@@ -3,6 +3,26 @@ name: earnings-preview
 description: Build pre-earnings analysis with estimate models, scenario frameworks, and key metrics to watch. Use before a company reports quarterly earnings to prepare positioning notes, set up bull/bear scenarios, and identify what will move the stock. Triggers on "earnings preview", "what to watch for [company] earnings", "pre-earnings", "earnings setup", or "preview Q[X] for [company]".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+When TWS / IB Gateway is running and the `ibkr` MCP server is reachable
+(verify with `ibkr_status`), pull live data instead of relying on cached
+web sources:
+
+- **Live quote + day range** — `ibkr_quote("<ticker>")` for the current
+  price, bid/ask, day high/low, and volume. Use this in the "Trading
+  setup" line of the output.
+- **Historical price action into the print** — `ibkr_historical("<ticker>",
+  duration="1 M", bar_size="1 day")` for the run-up chart.
+- **Headline fundamentals** — `ibkr_fundamentals("<ticker>")` for TTM EPS,
+  market cap, and the trailing P/E. Cite the `data_delay` field (IB
+  fundamentals are 15-30 min lagged).
+- **Recent news** — `ibkr_news("<ticker>", lookback_days=7)` for
+  pre-print color from Briefing.com / Dow Jones / Reuters feeds.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+web search for the same data and note the source in the preview.
 # Earnings Preview
 
 ## Workflow

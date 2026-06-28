@@ -3,6 +3,26 @@ name: idea-generation
 description: Systematic stock screening and investment idea sourcing. Combines quantitative screens, thematic research, and pattern recognition to surface new long and short ideas. Use when looking for new ideas, running screens, or conducting thematic sweeps. Triggers on "idea generation", "stock screen", "find ideas", "what looks interesting", "screen for", "new ideas", or "pitch me something".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+For screen-driven idea generation, IBKR is the fastest way to pull
+candidate universes and their basic stats. When the `ibkr` MCP server
+is reachable (verify with `ibkr_status`):
+
+- **Momentum / volume screen** — `ibkr_market_scanner(scan_code=…)`
+  with one of the presets: `top_pct_gainers_us`, `top_pct_losers_us`,
+  `most_active_us`, `unusual_volume_us`, `new_highs_us`, `new_lows_us`,
+  `top_trade_ideas_long`, `top_trade_ideas_short`.
+- **Yield screen** — `ibkr_market_scanner(scan_code="high_yield_dividend_us")`.
+- **Universe fundamentals** — for each survivor of the screen, call
+  `ibkr_snapshot(symbols=[…])` (batch) and `ibkr_fundamentals(symbol)`
+  to populate the metric table (mkt cap, P/E, div yield).
+- **News context** — `ibkr_news(symbol, lookback_days=7)` for any
+  catalyst that explains the move before you present the idea.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+web-based screeners (Finviz, Yahoo) and SEC EDGAR for fundamentals.
 # Idea Generation
 
 ## Workflow

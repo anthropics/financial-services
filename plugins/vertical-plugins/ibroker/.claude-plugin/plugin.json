@@ -1,0 +1,8 @@
+{
+  "name": "ibroker",
+  "version": "0.1.0",
+  "description": "Interactive Brokers (TWS / IB Gateway) data source wiring for the equity-research and financial-analysis verticals. Project-local — the MCP server only runs from this repo's working directory.",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

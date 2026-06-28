@@ -5,6 +5,24 @@ description: This skill should be used when completing LBO (Leveraged Buyout) mo
 
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+For an LBO model, you need a live current price (entry assumption) and
+an honest market cap. When the `ibkr` MCP server is reachable (verify
+with `ibkr_status`):
+
+- **Current share price** — `ibkr_quote("<ticker>")` for the live last.
+  Use as the "Current Market Price" input in the Sources & Uses block.
+- **Market cap + cash + debt** — `ibkr_fundamentals("<ticker>")` for
+  market cap and the cash and total-debt fields needed for net debt.
+  Note the `data_delay` field (15-30 min lag).
+- **Float + shares outstanding** — `ibkr_fundamentals("<ticker>")`
+  returns `sharesOutstanding` and `floatShares` — used to size the
+  take-private premium against the tradeable float.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+the latest 10-Q for cash / debt and a public market source for price.
 ## TEMPLATE REQUIREMENT
 
 **This skill uses templates for LBO models. Always check for an attached template file first.**

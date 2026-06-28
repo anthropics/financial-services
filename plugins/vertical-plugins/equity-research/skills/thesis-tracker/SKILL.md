@@ -3,6 +3,23 @@ name: thesis-tracker
 description: Maintain and update investment theses for portfolio positions and watchlist names. Track key data points, catalysts, and thesis milestones over time. Use when updating a thesis with new information, reviewing position rationale, or checking if a thesis is still intact. Triggers on "update thesis for [company]", "is my thesis still intact", "thesis check", "add data point to [company]", or "review my positions".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+Thesis scorecards need current price + fundamentals to be meaningful.
+When the `ibkr` MCP server is reachable (verify with `ibkr_status`):
+
+- **Live price** — `ibkr_quote("<ticker>")` to anchor the thesis against
+  current price vs. your target.
+- **Earnings data for the scorecard** — `ibkr_fundamentals("<ticker>")`
+  for the TTM P/E, market cap, and trailing EPS — refreshes the
+  scorecard row that compares current valuation to your entry.
+- **Catalyst / news check** — `ibkr_news("<ticker>", lookback_days=30)`
+  when adding a new data point to the Update Log.
+
+If `ibkr_status` reports the server is **not reachable**, log the
+missing price point in the Update Log and note "as of <date>" so the
+scorecard is honest about the staleness.
 # Thesis Tracker
 
 ## Workflow

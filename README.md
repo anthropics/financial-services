@@ -218,18 +218,8 @@ These are reference templates — they get better when you tune them to how your
 <details>
 <summary><b>private-equity</b> — sourcing through portfolio ops</summary>
 
-| Skill | Command | Description |
-|---|---|---|
-| deal-sourcing | `/source` | Discover companies, check CRM, draft founder outreach |
-| deal-screening | `/screen-deal` | Quick pass/fail on inbound CIMs and teasers |
-| dd-checklist | `/dd-checklist` | Diligence checklists by workstream |
-| dd-meeting-prep | `/dd-prep` | Prep for management presentations and expert calls |
-| unit-economics | `/unit-economics` | ARR cohorts, LTV/CAC, net retention, revenue quality |
-| returns-analysis | `/returns` | IRR/MOIC sensitivity tables |
-| ic-memo | `/ic-memo` | Investment committee memo drafting |
-| portfolio-monitoring | `/portfolio` | Track portfolio company KPIs and variances |
-| value-creation-plan | `/value-creation` | Post-close 100-day plans and EBITDA bridges |
-| ai-readiness | `/ai-readiness` | Assess a portfolio company's AI readiness |
+| Skill | Command | Description |  |  |  |
+|---|---|:--|---|---|---|
 
 </details>
 

@@ -11,7 +11,27 @@ This skill creates institutional-quality DCF models for equity valuation followi
 
 ## Tools
 
-- Default to using all of the information provided by the user and MCP servers available for data sourcing.
+- Default to using all of the information provided by the user and MCP servers available for data sourcing. See **Data Source: IBKR** below for the project-local broker feed.
+
+## Data Source: IBKR (preferred when available)
+
+DCF inputs need a current market price and a clean beta. When the
+`ibkr` MCP server is reachable (verify with `ibkr_status`):
+
+- **Current share price + market cap** — `ibkr_quote("<ticker>")` for
+  the live last price; `ibkr_fundamentals("<ticker>")` for the most
+  recent market cap. Use these in the "Market Data & Key Inputs" block.
+- **Historical price (for beta + volatility)** — `ibkr_historical("<ticker>",
+  duration="2 Y", bar_size="1 day")` for the 2-year daily series used
+  in the beta calculation. Returns close-to-close and volume.
+- **Cost of debt input** — `ibkr_dividends("<ticker>", lookback_years=5)`
+  and `ibkr_fundamentals` for the cash flow inputs you need alongside
+  the 10-K.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+FactSet / Daloopa / web sources as documented below in the Data Sources
+Priority section.
+
 
 ## Critical Constraints - Read These First
 

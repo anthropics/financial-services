@@ -11,6 +11,28 @@ Create institutional-quality equity research initiation reports through a struct
 
 This skill produces comprehensive first-time coverage reports following institutional standards (JPMorgan, Goldman Sachs, Morgan Stanley format). Tasks are executed individually, each verifying prerequisites before proceeding.
 
+## Data Source: IBKR (preferred when available)
+
+For an initiation report, IBKR is the live trading layer — use it for
+price, market cap, beta, and the current valuation snapshot. When the
+`ibkr` MCP server is reachable (verify with `ibkr_status`):
+
+- **Cover-page price + market cap** — `ibkr_quote("<ticker>")` for the
+  live price; `ibkr_fundamentals("<ticker>")` for market cap and
+  shares outstanding. Use these in the cover-page summary box.
+- **Beta + vol history** — `ibkr_historical("<ticker>", duration="2 Y",
+  bar_size="1 day")` for the 2-year daily series (used for the beta
+  in the WACC and the 1-yr vol in the risk panel).
+- **Dividend track record** — `ibkr_dividends("<ticker>",
+  lookback_years=5)` for the "dividend payer / grower" discussion.
+- **Comparable set live snapshot** — when building the comps spread,
+  call `ibkr_snapshot(symbols=[…])` (batch) and `ibkr_fundamentals(…)`
+  for the trading layer of each comp. Layer FactSet / Daloopa on top
+  for the deeper estimates history.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+web search + SEC EDGAR + FactSet as documented in the Task instructions.
+
 **Default Font**: Times New Roman throughout all documents (unless user specifies otherwise).
 
 ---

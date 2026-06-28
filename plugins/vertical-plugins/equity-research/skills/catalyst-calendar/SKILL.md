@@ -3,6 +3,25 @@ name: catalyst-calendar
 description: Build and maintain a calendar of upcoming catalysts across a coverage universe — earnings dates, conferences, product launches, regulatory decisions, and macro events. Helps prioritize attention and position ahead of events. Triggers on "catalyst calendar", "upcoming events", "what's coming up", "earnings calendar", "event calendar", or "catalyst tracker".
 ---
 
+
+## Data Source: IBKR (preferred when available)
+
+Earnings dates from the press often lag the company's official schedule.
+When the `ibkr` MCP server is reachable (verify with `ibkr_status`):
+
+- **Earnings date + pre/post-market timing** — IBKR's `reqContractDetails`
+  (exposed as `ibkr_contract_details`) carries the next-earnings-date
+  field on the contract. For a cross-check, `ibkr_historical` with
+  `duration="1 M", bar_size="1 day"` shows the typical "drift" run-up
+  into past prints.
+- **Live news** — `ibkr_news(symbol, lookback_days=14)` to surface any
+  pre-announcement color or rumors that should bump the impact rating.
+- **Bulk flag check** — for a sector-wide catalyst sweep, run
+  `ibkr_market_scanner(scan_code="most_active_us")` to spot names with
+  unusual pre-print volume.
+
+If `ibkr_status` reports the server is **not reachable**, fall back to
+company IR pages and FactSet / S&P for earnings dates.
 # Catalyst Calendar
 
 ## Workflow
