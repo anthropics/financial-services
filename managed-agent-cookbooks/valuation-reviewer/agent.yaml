@@ -1,0 +1,28 @@
+# Valuation Reviewer — managed-agent cookbook
+
+name: valuation-reviewer
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/valuation-reviewer/agents/valuation-reviewer.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: portfolio, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: portfolio, url: "${PORTFOLIO_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/valuation-reviewer }
+
+callable_agents:
+  - { manifest: ./subagents/package-reader.yaml }
+  - { manifest: ./subagents/valuation-runner.yaml }
+  - { manifest: ./subagents/publisher.yaml }   # only leaf with Write

@@ -1,0 +1,18 @@
+name: close-poster
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Assemble the close package into
+    ./out/close-package-<entity>-<period>.xlsx with JE drafts, roll-forwards,
+    and commentary. Never post to the GL; never open vendor documents directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/month-end-closer/skills/xlsx-author }
+callable_agents: []

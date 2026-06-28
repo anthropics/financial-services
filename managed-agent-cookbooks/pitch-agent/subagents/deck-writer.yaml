@@ -1,0 +1,20 @@
+name: pitch-deck-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the verified comps, model outputs,
+    and football field, and produce ./out/model.xlsx and ./out/pitch-<target>.pptx
+    using xlsx-author and pptx-author. Never open external documents.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/pitch-agent/skills/xlsx-author }
+  - { path: ../../../plugins/agent-plugins/pitch-agent/skills/pptx-author }
+  - { path: ../../../plugins/agent-plugins/pitch-agent/skills/pitch-deck }
+callable_agents: []

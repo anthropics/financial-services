@@ -1,0 +1,5 @@
+[
+  { "event": "Process earnings: NVDA Q1-FY27", "description": "Single ticker, single period" },
+  { "event": "Process earnings: coverage-list semis, period Q1-FY27", "description": "Fan-out across a coverage list (orchestration layer iterates)" },
+  { "event": "Update model only: NVDA Q1-FY27, skip note", "description": "Follow-up when the analyst writes the note themselves" }
+]

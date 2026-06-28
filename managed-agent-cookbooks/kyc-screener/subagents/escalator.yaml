@@ -1,0 +1,18 @@
+name: kyc-escalator
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the rules result and screening
+    hits and produce ./out/escalation-<packet>.xlsx for compliance sign-off.
+    Never open onboarding documents directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/kyc-screener/skills/xlsx-author }
+callable_agents: []

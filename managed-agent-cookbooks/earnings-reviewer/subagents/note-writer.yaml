@@ -1,0 +1,19 @@
+name: earnings-note-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the variance table and call read
+    and produce ./out/model-<ticker>.xlsx and ./out/note-<ticker>.docx. Never
+    open transcript or filing files directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/earnings-reviewer/skills/morning-note }
+  - { path: ../../../plugins/agent-plugins/earnings-reviewer/skills/xlsx-author }
+callable_agents: []

@@ -1,0 +1,8 @@
+{
+  "name": "pitch-agent",
+  "version": "0.1.1",
+  "description": "Comps, precedents, LBO to a branded pitch deck, end to end",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

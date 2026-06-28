@@ -1,0 +1,5 @@
+[
+  { "event": "Build dcf for MSFT, assumptions: {wacc: 0.085, tgr: 0.025, horizon: 5}", "description": "DCF with explicit assumptions" },
+  { "event": "Build lbo for TGT, assumptions: {entry_multiple: 9.0, leverage: 5.5, hold: 5}", "description": "LBO from entry multiple and leverage" },
+  { "event": "Build 3-stmt for SHOP, source: latest 10-K", "description": "Three-statement from filings" }
+]

@@ -1,0 +1,30 @@
+# Earnings Reviewer — managed-agent cookbook
+
+name: earnings-reviewer
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/earnings-reviewer/agents/earnings-reviewer.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
+  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/earnings-reviewer }
+
+callable_agents:
+  - { manifest: ./subagents/transcript-reader.yaml }
+  - { manifest: ./subagents/model-updater.yaml }
+  - { manifest: ./subagents/note-writer.yaml }   # only leaf with Write

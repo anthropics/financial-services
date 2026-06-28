@@ -1,0 +1,5 @@
+[
+  { "event": "Briefing pack for client C-004921, meeting cal-evt-8f2a", "description": "Standard pre-meeting brief keyed to a calendar event" },
+  { "event": "Briefing pack for prospect 'Acme Family Office', meeting 2026-05-12", "description": "Prospect with no CRM record yet" },
+  { "event": "Refresh holdings + market context only for client C-004921", "description": "Same-day follow-up before the meeting" }
+]

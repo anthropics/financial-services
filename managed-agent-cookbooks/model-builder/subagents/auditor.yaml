@@ -1,0 +1,17 @@
+name: model-auditor
+model: claude-opus-4-7
+system:
+  text: |
+    You re-check ./out/model.xlsx for ties, balance checks, and hardcodes per
+    check-model conventions. Read-only — return a pass/fail report with
+    locations of any issues.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/model-builder/skills/audit-xls }
+callable_agents: []

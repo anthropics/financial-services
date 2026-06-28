@@ -1,0 +1,5 @@
+[
+  { "event": "Close entity US-OPCO for period 2026-04", "description": "Standard month-end close" },
+  { "event": "Close entity UK-HOLDCO for period 2026-03, scope: accruals only", "description": "Partial close, accruals only" },
+  { "event": "Re-draft variance commentary for entity US-OPCO 2026-04 after late JEs", "description": "Follow-up after adjustments post" }
+]

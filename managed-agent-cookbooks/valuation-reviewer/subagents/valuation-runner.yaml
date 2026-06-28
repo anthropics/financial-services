@@ -1,0 +1,18 @@
+name: valuation-runner
+model: claude-opus-4-7
+system:
+  text: |
+    You compare validated reported marks to the firm's valuation policy via the
+    portfolio MCP, run the waterfall, and return reviewer flags. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: portfolio, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: portfolio, url: "${PORTFOLIO_MCP_URL}" }
+skills:
+  - { path: ../../../plugins/agent-plugins/valuation-reviewer/skills/returns-analysis }
+callable_agents: []

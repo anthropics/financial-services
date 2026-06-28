@@ -1,0 +1,5 @@
+[
+  { "event": "Screen onboarding packet PKT-2026-00318", "description": "New-client onboarding" },
+  { "event": "Periodic refresh: client C-004921, as-of 2026-04-30", "description": "Periodic KYC refresh on an existing client" },
+  { "event": "Re-screen UBOs only for packet PKT-2026-00318 after updated ownership chart", "description": "Follow-up on additional documents" }
+]

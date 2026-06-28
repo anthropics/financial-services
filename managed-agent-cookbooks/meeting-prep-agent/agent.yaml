@@ -1,0 +1,30 @@
+# Meeting Prep Agent — managed-agent cookbook
+
+name: meeting-prep-agent
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/meeting-prep-agent/agents/meeting-prep-agent.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: crm,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: capiq, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: crm,   url: "${CRM_MCP_URL}" }
+  - { type: url, name: capiq, url: "${CAPIQ_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/meeting-prep-agent }
+
+callable_agents:
+  - { manifest: ./subagents/profiler.yaml }
+  - { manifest: ./subagents/news-reader.yaml }
+  - { manifest: ./subagents/pack-writer.yaml }   # only leaf with Write

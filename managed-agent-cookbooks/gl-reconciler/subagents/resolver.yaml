@@ -1,0 +1,18 @@
+name: gl-reconciler-resolver
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Receive the verified break set
+    (already critic-checked and schema-validated), draft the exception report,
+    and write it to ./out/. Never read counterparty files; never run bash.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/gl-reconciler/skills/xlsx-author }
+callable_agents: []

@@ -1,0 +1,8 @@
+{
+  "name": "model-builder",
+  "version": "0.1.0",
+  "description": "DCF, LBO, 3-statement, comps - live in Excel",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

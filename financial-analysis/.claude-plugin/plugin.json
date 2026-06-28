@@ -1,8 +1,0 @@
-{
-  "name": "financial-analysis",
-  "version": "0.1.0",
-  "description": "Core financial modeling and analysis tools: DCF, comps, LBO, 3-statement models, competitive analysis, and deck QC",
-  "author": {
-    "name": "Anthropic FSI"
-  }
-}

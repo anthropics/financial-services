@@ -1,0 +1,28 @@
+# Statement Auditor — managed-agent cookbook
+
+name: statement-auditor
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/statement-auditor/agents/statement-auditor.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: nav, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: nav, url: "${NAV_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/statement-auditor }
+
+callable_agents:
+  - { manifest: ./subagents/statement-reader.yaml }
+  - { manifest: ./subagents/reconciler.yaml }
+  - { manifest: ./subagents/flagger.yaml }   # only leaf with Write

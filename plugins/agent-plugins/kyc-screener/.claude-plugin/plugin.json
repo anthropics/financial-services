@@ -1,0 +1,8 @@
+{
+  "name": "kyc-screener",
+  "version": "0.1.0",
+  "description": "Parses onboarding docs, runs the rules engine, flags gaps",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

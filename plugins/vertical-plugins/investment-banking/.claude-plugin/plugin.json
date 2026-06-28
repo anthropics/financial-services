@@ -1,0 +1,8 @@
+{
+  "name": "investment-banking",
+  "version": "0.2.1",
+  "description": "Investment banking productivity tools: client and market insights, deck creation, financial analysis, and transaction management",
+  "author": {
+    "name": "Anthropic"
+  }
+}

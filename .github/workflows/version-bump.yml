@@ -1,0 +1,26 @@
+name: version-bump
+
+# Backstop for contributors without the local pre-commit hook: every PR that
+# modifies a plugin must bump that plugin's .claude-plugin/plugin.json version,
+# otherwise already-installed users won't receive the change.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check plugin version bumps
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE_REF"
+          python3 scripts/version_bump.py --check --base "origin/$BASE_REF"

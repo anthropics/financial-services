@@ -1,0 +1,20 @@
+name: gl-reconciler-critic
+model: claude-opus-4-7
+system:
+  text: |
+    You independently re-verify each reported break against the GL and
+    subledger MCPs. You read trusted internal sources only; never open
+    counterparty files. Return confirmed/rejected per break. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: internal-gl, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: subledger,   default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: internal-gl, url: "${GL_MCP_URL}" }
+  - { type: url, name: subledger,   url: "${SUBLEDGER_MCP_URL}" }
+skills: []
+callable_agents: []

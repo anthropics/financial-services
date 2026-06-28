@@ -1,0 +1,47 @@
+name: pitch-researcher
+model: claude-opus-4-7
+system:
+  text: |
+    You research comps and precedent transactions for a target. Pull trading
+    multiples and precedent data from CapIQ/Daloopa, return a structured table.
+    Read-only — you do not write files.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+skills: []
+callable_agents: []
+output_schema:
+  type: object
+  required: [target, comps]
+  additionalProperties: false
+  properties:
+    target: { type: string, maxLength: 64, pattern: "^[A-Za-z0-9 ._-]+$" }
+    comps:
+      type: array
+      maxItems: 30
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          ticker:   { type: string, maxLength: 12, pattern: "^[A-Z.]+$" }
+          metric:   { type: string, maxLength: 32, pattern: "^[A-Za-z0-9 /_-]+$" }
+          value:    { type: number }
+    precedents:
+      type: array
+      maxItems: 30
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          target:   { type: string, maxLength: 64, pattern: "^[A-Za-z0-9 ._-]+$" }
+          acquirer: { type: string, maxLength: 64, pattern: "^[A-Za-z0-9 ._-]+$" }
+          ev:       { type: number }
+          multiple: { type: number }

@@ -1,0 +1,8 @@
+{
+  "name": "fund-admin",
+  "version": "0.1.0",
+  "description": "Fund administration and finance ops skills: GL reconciliation, break tracing, accruals, roll-forwards, variance commentary, NAV tie-out",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

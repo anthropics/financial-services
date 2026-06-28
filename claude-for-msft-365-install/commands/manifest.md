@@ -1,0 +1,315 @@
+---
+description: Generate the add-in manifest XML with your cloud config baked in
+---
+
+# Generate add-in manifest
+
+The script fetches the canonical manifest and appends your config as URL query
+parameters. The add-in reads them at startup. Outlook uses a separate template
+because Microsoft's `MailApp` schema is distinct from the `TaskPaneApp` schema
+Excel/Word/PowerPoint share, so ask which apps they're deploying and generate
+one file per host.
+
+| Host arg | Apps | Template |
+|---|---|---|
+| `office` | Excel, Word, PowerPoint | `pivot.claude.ai/manifest.xml` |
+| `outlook` | Outlook (mail + calendar) | `pivot.claude.ai/manifest-outlook-3p.xml` |
+
+## Keys by cloud
+
+Prompt only for the keys their cloud path needs. Don't ask for all eight.
+
+| Cloud | Keys |
+|---|---|
+| Vertex | `gcp_project_id` `gcp_region` `google_client_id` `google_client_secret` |
+| Bedrock | `aws_role_arn` `aws_region` |
+| Foundry | `azure_resource_name` `azure_api_key` |
+| Gateway | `gateway_url` `gateway_token` `gateway_auth_header` `gateway_api_format` |
+| Gateway (`gateway_api_format=vertex`) | also `gcp_project_id` `gcp_region` |
+
+Amazon Bedrock is **not currently supported for the `outlook` host**; the script
+exits with an error if you pass `aws_*` keys with `outlook`.
+
+## Outlook — Microsoft Graph
+
+Outlook reads the user's mailbox and calendar via Microsoft Graph, which
+requires a one-time tenant-wide admin consent regardless of which cloud serves
+the model. Run [consent](consent.md#outlook--microsoft-graph-consent) before
+deploying — otherwise every user hits "Need admin approval" on first open.
+
+If their policy forbids consenting to a third-party app, prompt for
+`graph_client_id` (their own single-tenant Entra app's client ID with
+Mail.ReadWrite, Calendars.Read, People.Read, User.Read, offline_access
+delegated permissions and admin consent granted). Otherwise leave it unset and
+the add-in uses Anthropic's multi-tenant app.
+
+## Sovereign / national clouds (GCC-High, DoD, 21Vianet)
+
+The add-in auto-detects the tenant's national cloud at sign-in (from the
+authority host Office reports) and resolves the matching Graph + Entra
+endpoints, so most sovereign tenants need **no cloud config**. The only
+required step is bringing your own Entra app via `graph_client_id` —
+Anthropic's multi-tenant app exists only in the commercial cloud; see
+[entra-app](entra-app.md#gcc-high--dod--21vianet) for the registration steps in
+the Azure Government / 21Vianet portals. A GCC-High Outlook manifest needs
+nothing beyond the usual keys:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml \
+  <provider keys> entra_sso=1 graph_client_id=<your-app-guid>
+```
+
+### When to set `graph_cloud`
+
+The cloud is configured as a single enum value — never a URL. Each value maps
+to the fixed Graph + Entra endpoint pair from Microsoft's
+[national-cloud deployments](https://learn.microsoft.com/graph/deployments)
+inside the add-in.
+
+| Tenant | `graph_cloud` | Notes |
+|---|---|---|
+| Commercial or GCC | `global` | default; may be omitted |
+| GCC High | `us-gov-high` | auto-detected; set explicitly to pin it in the reviewed manifest |
+| US Gov DoD | `us-gov-dod` | **always required** — DoD shares an authority host with GCC High, so auto-detect picks GCC High |
+| China (21Vianet) | `china` | auto-detected; set explicitly to pin it |
+
+A DoD Outlook manifest:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml \
+  <provider keys> entra_sso=1 graph_client_id=<your-app-guid> graph_cloud=us-gov-dod
+```
+
+The build script enforces the same rules the add-in does at load: an
+unrecognized value is a hard error, and any non-global `graph_cloud` requires
+`graph_client_id` (without one, sign-in fails with an opaque AADSTS700016).
+
+`graph_cloud` also governs the Entra SSO authority for Word/Excel/PowerPoint —
+they share the auth path — so include it in the `office` manifest too if you
+set it.
+
+**Bedrock / WIF note:** a `.us`-issued idToken has issuer
+`https://login.microsoftonline.us/{tenant}/v2.0` — your AWS OIDC identity
+provider must be configured with that issuer, not the `.com` one.
+
+## Entra SSO
+
+`entra_sso=1` makes the add-in acquire an Entra ID token at startup. Set it
+when your deployment needs the user's Microsoft identity — Bedrock uses it as
+the STS web identity, the bootstrap endpoint uses it as Bearer auth, and
+per-user attrs ([update-user-attrs](update-user-attrs.md)) ride inside it as
+`extn.*` claims.
+
+**Admin consent is a prerequisite.** Without it, every user hits a Microsoft
+consent dialog on first open. Run [consent](consent.md) first so
+`entra_sso=1` is silent for your users.
+
+If you don't need Entra — static gateway config, Vertex with Google OAuth —
+leave it off. Users won't see a Microsoft prompt for a setup that doesn't
+involve Microsoft.
+
+**Bring your own Entra app.** By default the token is requested as Anthropic's
+multi-tenant app (`c2995f31-…`), so its `aud` claim is that GUID. If your
+bootstrap endpoint or token-exchange service requires `aud` to match an app
+registered in *your* tenant, set `graph_client_id=<your-app-guid>`. See
+[entra-app](entra-app.md) for the registration steps (redirect URIs, API setup,
+admin consent). [consent](consent.md) covers Anthropic's default app only.
+
+**Send an access token instead of the ID token.** With `graph_client_id` alone
+the add-in still sends an *ID token* to your bootstrap endpoint — `aud` is your
+app's GUID, but there's no `scp` claim. If your endpoint is a standard OAuth2
+protected resource that validates `aud` + `scp`, or an RFC 8693 token-exchange
+service, set `entra_scope=api://<your-app-guid>/<scope>` and the add-in
+requests an *access token* for that scope instead. The Bearer it sends carries
+`aud` = your API's App ID URI and `scp` = the granted scope. In Entra, on your
+app registration: **Expose an API** (Application ID URI `api://<guid>`), add a
+scope such as `access_as_user`, and grant the same app delegated permission to
+it, then grant admin consent for the tenant. In the app manifest, set
+`accessTokenAcceptedVersion: 2` so the issued token uses v2.0 claims
+(`iss = login.microsoftonline.com/<tid>/v2.0`, `azp`, `preferred_username`);
+leave it unset and you get v1.0 tokens, which your validator may reject.
+`/.default` (requests all consented scopes) also works.
+
+**Multiple scopes.** `entra_scope` accepts a comma- or whitespace-separated
+list — `entra_scope=api://<guid>/use_llm,api://<guid>/admin`. All scopes must
+target the **same resource**: one access token has one `aud`, so MSAL cannot
+mint a token spanning two APIs (`api://torii/x,api://other/y` will fail or
+silently honor only one). The Bearer's `scp` claim is the space-joined list.
+If you need every consented scope, prefer `/.default` over enumerating them.
+
+`entra_scope` requires `graph_client_id` — the build script enforces *that
+pairing* but not the scope string itself: any non-blank value is accepted and
+Entra validates the syntax at sign-in (a malformed scope surfaces as an
+`AADSTS` error, not a build failure). Both keys are manifest-only: the add-in
+needs them to initialize NAA *before* it can read extension attrs or call your
+bootstrap endpoint, so neither can arrive through those layers. Leave
+`entra_scope` unset and the ID token is sent.
+
+## Use the Entra token as your gateway credential
+
+If your gateway already validates Entra JWTs (`aud` + `scp` against your own
+API resource), you don't need a separate `gateway_token` or a bootstrap hop —
+set `gateway_auth_source=entra` and the add-in sends the Entra access token it
+acquired above directly as `Authorization: Bearer` on every gateway call, and
+silently re-acquires it before expiry. The end-user experience is zero-input
+SSO: open the add-in, start chatting.
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" office manifest.xml \
+  gateway_url=https://llm-gateway.your-org.example \
+  entra_sso=1 \
+  graph_client_id=<client-app-guid> \
+  entra_scope=api://<resource-app-guid>/access_as_user \
+  gateway_auth_source=entra
+```
+
+`gateway_auth_source=entra` requires `entra_scope` (and therefore
+`graph_client_id` and `entra_sso=1`); the build script enforces this. It
+implies `gateway_auth_header=authorization`, so you can omit that key. Don't
+also set `gateway_token` — it's ignored, and the script warns.
+
+**Entra setup:** see [entra-app](entra-app.md) — the *Gateway / bootstrap auth*
+row of the permissions table, plus the
+[backend validation](entra-app.md#what-your-backend-validates) section for the
+`iss`/`aud`/`scp`/JWKS values your gateway should check. GCC High / DoD
+deployments are covered in the
+[same doc](entra-app.md#gcc-high--dod--21vianet).
+
+## Bootstrap endpoint
+
+`bootstrap_url` points to an HTTPS endpoint you host. At startup the add-in
+fetches per-user JSON from it — provider keys, `mcp_servers`, `skills` — and
+the response overrides manifest values for that user. The URL itself is
+[interpolated](bootstrap.md#template-interpolation) against manifest + attrs
+before the fetch, so one endpoint can branch on a query param.
+
+See [bootstrap](bootstrap.md) for the request/response contract, JWT
+validation, and handler scaffolding.
+
+## MCP servers
+
+`mcp_servers` is a JSON array of customer-hosted MCP servers the add-in
+connects to directly. Each entry is `{url, label, headers?, discover?}` —
+`headers` present means static auth; absent triggers OAuth discovery. Values
+interpolate other config keys via `{{gateway_url}}`-style templates.
+
+Setting it here applies one list org-wide; per-user lists belong in
+[bootstrap](bootstrap.md#mcp_servers), which also has the full schema. The
+value is JSON inside a shell arg — single-quote it:
+
+```bash
+mcp_servers='[{"url":"{{gateway_url}}/deepwiki/mcp","label":"DeepWiki","headers":{"Authorization":"Bearer {{gateway_token}}"}}]'
+```
+
+## Telemetry
+
+`otlp_endpoint` routes the add-in's OpenTelemetry traces to a collector you
+operate. Set it to the collector's base HTTPS URL — the add-in appends
+`/v1/traces` and posts OTLP/HTTP. gRPC isn't supported (the add-in runs in a
+browser WebView). Leave it unset and no custom collector is configured.
+
+`otlp_headers` supplies authentication headers for that collector, in the same
+`key1=value1,key2=value2` format as the standard
+`OTEL_EXPORTER_OTLP_HEADERS` variable. URL-encode the value in the manifest.
+
+`otlp_resource_attributes` adds attributes to the OpenTelemetry Resource on
+every span, in the same `key1=value1,key2=value2` format as the standard
+`OTEL_RESOURCE_ATTRIBUTES` variable. Use this when your collector requires
+specific resource attributes for routing or attribution (e.g.
+`team.name=platform,deployment.environment=prod`). The add-in already sets
+`service.name`, `service.version`, and `git.sha`; values you provide here are
+merged on top.
+
+Setting these here applies one collector org-wide; per-user routing belongs in
+[bootstrap](bootstrap.md#telemetry) or extension attrs.
+
+## Inference headers
+
+`inference_headers` is a JSON object of extra HTTP headers the add-in attaches
+to every request it sends to your gateway (`gateway_url`). Use it for
+accounting or cost-allocation tags your gateway expects — e.g., an internal
+application ID — so you don't need a header-injecting proxy in front of it.
+Applies only when using a gateway; direct cloud connections ignore it.
+
+```bash
+inference_headers='{"x-application-id":"app123"}'
+```
+
+The add-in treats the values as opaque. `Authorization`, `x-api-key`,
+`Content-Type`, `Host`, `Content-Length`, `User-Agent`, `Cookie`, and any
+`anthropic-*` / `x-amz-*` / `x-goog-*` header are reserved and silently dropped
+— they carry the add-in's own auth and protocol negotiation.
+
+Setting it here applies one header set org-wide; per-user values belong in
+[bootstrap](bootstrap.md#inference_headers).
+
+## Auto-connect
+
+Default: when all fields for a provider are set, users skip the connection form
+and land straight in chat. Ask: should they instead see the form first
+(prefilled, one click)? Yes → `auto_connect=0`.
+
+## Allow Claude.ai sign-in
+
+When any enterprise config key is present, users land on the enterprise
+connection screen and the **Back** button to Claude.ai sign-in is hidden
+(`allow_1p=0`, the default). Set `allow_1p=1` to keep the **Back** button.
+
+## Disabled features
+
+`disabled_features` is a comma-separated list of feature slugs the admin wants
+locked for users. Slugs use `<domain>.<action>` form. Currently enforced:
+
+| Slug | Effect |
+|---|---|
+| `skills.authoring` | Blocks creating, editing, and uploading skills (create/update tools, `/skillify`, `.skill` upload + drag-drop, skill editing UI). Running admin-provisioned skills is unaffected. |
+
+```bash
+disabled_features='skills.authoring'
+```
+
+Unknown slugs are ignored (forward-compatible). Setting it here applies one
+policy org-wide; per-user policy belongs in [bootstrap](bootstrap.md#disabled_features)
+(JSON array) or extension attrs (comma-separated).
+
+## Version
+
+M365 Admin Center caches by `<Id>` + `<Version>` — re-upload with the same
+version is silently ignored. After the script writes `manifest.xml`, ask whether
+this replaces an existing deployment; if yes, edit `<Version>` to bump the
+fourth segment past their last deployed value. First deploy can leave the
+template's version as-is.
+
+## Run
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" office manifest.xml \
+  gcp_project_id=<value> \
+  gcp_region=<value> \
+  auto_connect=0 \
+  ...
+
+# and if they're also deploying Outlook:
+node "${CLAUDE_PLUGIN_ROOT}/scripts/build-manifest.mjs" outlook manifest-outlook.xml \
+  <same provider keys as above> \
+  graph_client_id=<value>   # only if NOT using Anthropic's app via the consent URL
+```
+
+The script validates key names (unknown keys fail hard) and shape-hints values
+(warns but doesn't block — their infra may look different).
+
+## Validate
+
+```bash
+npx --yes office-addin-manifest validate manifest.xml
+```
+
+If validation passes but M365 Admin Center still rejects or ignores the upload,
+match the symptom below. Edit `manifest.xml` directly, then re-validate.
+
+| Symptom | Fix |
+|---|---|
+| "An add-in with this ID already exists" | Replace the text inside `<Id>` with a fresh UUID. The template carries the marketplace install's ID. |
+| Re-upload accepted but nothing changes | M365 caches by ID + version. Edit `<Version>` to a higher fourth segment (e.g. `1.0.0.9` → `1.0.0.10`) and re-validate. |
+| Only want Excel (not PowerPoint) | Remove `<Host>` elements for `Presentation`. **Two parallel lists:** the top-level `<Hosts>` uses `Name="Presentation"`, the one under `<VersionOverrides>` uses `xsi:type="Presentation"` — both must go or the manifest is inconsistent. The `xsi:type` block is multi-line, delete the whole `<Host xsi:type="Presentation">...</Host>`. |
+| Only want Excel/PPT, not Outlook | Nothing to remove — Outlook is a separate file. Just don't generate it. |

@@ -1,0 +1,8 @@
+{
+  "name": "operations",
+  "version": "0.1.0",
+  "description": "Operational workflows: KYC document parsing and rules-grid evaluation",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

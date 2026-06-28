@@ -1,0 +1,8 @@
+{
+  "name": "month-end-closer",
+  "version": "0.1.0",
+  "description": "Accruals, roll-forwards, variance commentary",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

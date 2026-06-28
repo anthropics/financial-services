@@ -1,0 +1,21 @@
+name: earnings-model-updater
+model: claude-opus-4-7
+system:
+  text: |
+    You drop validated actuals into the coverage model and roll estimates,
+    using FactSet/Daloopa for consensus. Read trusted sources only. Return the
+    variance table; you do not write the final files.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
+  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+skills:
+  - { path: ../../../plugins/agent-plugins/earnings-reviewer/skills/model-update }
+callable_agents: []

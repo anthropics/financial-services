@@ -1,0 +1,18 @@
+name: kyc-rules-engine
+model: claude-opus-4-7
+system:
+  text: |
+    You evaluate the firm's KYC/AML rules against the validated entity file and
+    run sanctions/PEP screening via the screening MCP. Return pass/fail per
+    rule and any hits with confidence. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: screening, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: screening, url: "${SCREENING_MCP_URL}" }
+skills: []
+callable_agents: []

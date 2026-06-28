@@ -1,0 +1,19 @@
+name: briefing-pack-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the profile and news summary and
+    produce ./out/briefing-<client>.pptx. Never open client-provided documents
+    directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/meeting-prep-agent/skills/client-review }
+  - { path: ../../../plugins/agent-plugins/meeting-prep-agent/skills/pptx-author }
+callable_agents: []

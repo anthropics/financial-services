@@ -1,0 +1,30 @@
+# Market Researcher — managed-agent cookbook
+
+name: market-researcher
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/market-researcher/agents/market-researcher.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/market-researcher }
+
+callable_agents:
+  - { manifest: ./subagents/sector-reader.yaml }
+  - { manifest: ./subagents/comps-spreader.yaml }
+  - { manifest: ./subagents/note-writer.yaml }   # only leaf with Write

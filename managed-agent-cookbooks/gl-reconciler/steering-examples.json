@@ -1,0 +1,14 @@
+[
+  {
+    "event": "Reconcile GL vs subledger, trade date 2026-04-30, classes: equities, fixed-income, derivatives",
+    "description": "Daily run across three asset classes"
+  },
+  {
+    "event": "Reconcile GL vs subledger, trade date 2026-03-31, classes: all, threshold: 10000",
+    "description": "Month-end run with explicit variance threshold"
+  },
+  {
+    "event": "Re-trace break: account 41200-EQ-US, trade date 2026-04-30",
+    "description": "Follow-up steering event to deep-dive a single break"
+  }
+]

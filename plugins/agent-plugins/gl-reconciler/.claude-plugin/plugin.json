@@ -1,0 +1,8 @@
+{
+  "name": "gl-reconciler",
+  "version": "0.1.0",
+  "description": "Finds breaks, traces root cause, routes for sign-off",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

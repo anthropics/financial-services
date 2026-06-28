@@ -1,0 +1,19 @@
+name: market-note-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the overview, landscape, comps
+    spread, and ideas shortlist and produce ./out/primer-<sector>.docx (and
+    ./out/primer-<sector>.pptx if slides were requested). Never open
+    third-party reports directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/market-researcher/skills/pptx-author }
+callable_agents: []

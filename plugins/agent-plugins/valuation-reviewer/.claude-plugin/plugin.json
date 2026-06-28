@@ -1,0 +1,8 @@
+{
+  "name": "valuation-reviewer",
+  "version": "0.1.1",
+  "description": "Ingests GP packages, runs valuation template, stages LP reporting",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

@@ -1,0 +1,18 @@
+name: stmt-flagger
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the tie-out table and produce
+    ./out/signoff-<batch>.xlsx with pass/hold per statement. Never open
+    statement files directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/statement-auditor/skills/xlsx-author }
+callable_agents: []

@@ -1,0 +1,28 @@
+# KYC Screener — managed-agent cookbook
+
+name: kyc-screener
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/kyc-screener/agents/kyc-screener.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: screening, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: screening, url: "${SCREENING_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/kyc-screener }
+
+callable_agents:
+  - { manifest: ./subagents/doc-reader.yaml }
+  - { manifest: ./subagents/rules-engine.yaml }
+  - { manifest: ./subagents/escalator.yaml }   # only leaf with Write

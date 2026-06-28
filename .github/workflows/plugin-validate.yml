@@ -1,0 +1,64 @@
+name: plugin-validate
+
+# Runs the official Claude Code plugin linter over every plugin and the
+# marketplace manifest. Catches malformed manifests (e.g. hooks.json as a
+# bare [] instead of {"hooks": {}}) before they reach users.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  # Pinned for reproducible builds + a stable cache key. Bump by setting this
+  # to a newer version from https://downloads.claude.ai/claude-code-releases/stable
+  # 2.1.143: first release whose `plugin validate` accepts `displayName` on
+  # marketplace entries (2.1.140 and earlier reject it as an unrecognized key).
+  CLAUDE_VERSION: 2.1.143
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Claude Code CLI
+        id: cli-cache
+        uses: actions/cache@v4
+        with:
+          # ~/.local/bin/claude is a symlink into the versioned dir below —
+          # both must be cached or the restored symlink dangles (exit 127).
+          path: |
+            ~/.local/bin/claude
+            ~/.local/share/claude
+          key: claude-cli-${{ runner.os }}-${{ env.CLAUDE_VERSION }}-v2
+
+      - name: Install Claude Code CLI
+        if: steps.cli-cache.outputs.cache-hit != 'true'
+        run: curl -fsSL https://claude.ai/install.sh | bash -s "$CLAUDE_VERSION"
+
+      - name: Validate marketplace + every plugin
+        run: |
+          set -euo pipefail
+          export PATH="$HOME/.local/bin:$PATH"
+          claude --version
+          fail=0
+
+          echo "::group::marketplace"
+          claude plugin validate .claude-plugin/marketplace.json || fail=1
+          echo "::endgroup::"
+
+          while IFS= read -r manifest; do
+            plugin_dir="$(dirname "$(dirname "$manifest")")"
+            echo "::group::$plugin_dir"
+            claude plugin validate "$plugin_dir" || fail=1
+            echo "::endgroup::"
+          done < <(find plugins -path '*/.claude-plugin/plugin.json' | sort)
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::plugin validation failed — see grouped logs above"
+            exit 1
+          fi

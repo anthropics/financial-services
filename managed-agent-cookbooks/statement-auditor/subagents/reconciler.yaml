@@ -1,0 +1,17 @@
+name: stmt-reconciler
+model: claude-opus-4-7
+system:
+  text: |
+    You compare each LP's extracted balances to the NAV pack via the NAV MCP
+    and return a tie-out table with discrepancies. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: nav, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: nav, url: "${NAV_MCP_URL}" }
+skills: []
+callable_agents: []

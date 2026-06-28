@@ -1,0 +1,17 @@
+name: close-rollforward
+model: claude-opus-4-7
+system:
+  text: |
+    You build accrual and roll-forward schedules from the trial balance (via GL
+    MCP) and the validated support, and draft variance commentary. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: internal-gl, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: internal-gl, url: "${GL_MCP_URL}" }
+skills: []
+callable_agents: []

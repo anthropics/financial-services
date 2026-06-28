@@ -1,0 +1,50 @@
+# GL Reconciler — orchestrator
+#
+# Deploy manifest for `POST /v1/agents`. Field names match the API; the deploy
+# script resolves {file:} / {path:} / {manifest:} references before posting.
+# See ../README.md for the manifest→API mapping.
+
+name: gl-reconciler
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/gl-reconciler/agents/gl-reconciler.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+# The orchestrator never reads counterparty documents directly and never holds
+# bash or write — it dispatches, aggregates, and hands off. See ./README.md.
+tools:
+  - type: agent_toolset_20260401
+    default_config:
+      enabled: false
+    configs:
+      - name: read
+        enabled: true
+      - name: grep
+        enabled: true
+      - name: glob
+        enabled: true
+  - type: mcp_toolset
+    mcp_server_name: internal-gl
+    default_config:
+      enabled: true   # read-only server
+  - type: mcp_toolset
+    mcp_server_name: subledger
+    default_config:
+      enabled: true   # read-only server
+
+mcp_servers:
+  - type: url
+    name: internal-gl
+    url: ${GL_MCP_URL}            # set in your environment or vault
+  - type: url
+    name: subledger
+    url: ${SUBLEDGER_MCP_URL}
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/gl-reconciler }
+
+callable_agents:
+  - manifest: ./subagents/reader.yaml
+  - manifest: ./subagents/critic.yaml
+  - manifest: ./subagents/resolver.yaml

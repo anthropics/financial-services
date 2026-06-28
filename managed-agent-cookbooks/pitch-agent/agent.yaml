@@ -1,0 +1,30 @@
+# Pitch Agent — managed-agent cookbook
+
+name: pitch-agent
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/pitch-agent/agents/pitch-agent.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/pitch-agent }
+
+callable_agents:
+  - { manifest: ./subagents/researcher.yaml }
+  - { manifest: ./subagents/modeler.yaml }
+  - { manifest: ./subagents/deck-writer.yaml }   # only leaf with Write

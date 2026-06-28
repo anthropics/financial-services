@@ -1,8 +1,0 @@
-{
-  "name": "private-equity",
-  "version": "0.1.0",
-  "description": "Private equity deal sourcing and workflow tools: company discovery, CRM integration, and founder outreach",
-  "author": {
-    "name": "Anthropic FSI"
-  }
-}

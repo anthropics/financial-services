@@ -1,0 +1,23 @@
+name: pitch-modeler
+model: claude-opus-4-7
+system:
+  text: |
+    You build the DCF/LBO valuation in a scratch directory using the comps and
+    inputs handed to you. Run calculations in Python via Bash; return computed
+    outputs as structured JSON. You do not write the final workbook — the
+    deck-writer does.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: bash, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+skills:
+  - { path: ../../../plugins/agent-plugins/pitch-agent/skills/dcf-model }
+  - { path: ../../../plugins/agent-plugins/pitch-agent/skills/lbo-model }
+callable_agents: []

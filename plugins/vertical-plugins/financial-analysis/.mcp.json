@@ -1,0 +1,51 @@
+{
+  "mcpServers": {
+    "daloopa": {
+      "type": "http",
+      "url": "https://mcp.daloopa.com/server/mcp"
+    },
+    "morningstar": {
+      "type": "http",
+      "url": "https://mcp.morningstar.com/mcp"
+    },
+    "sp-global": {
+      "type": "http",
+      "url": "https://kfinance.kensho.com/integrations/mcp"
+    },
+    "factset": {
+      "type": "http",
+      "url": "https://mcp.factset.com/mcp"
+    },
+    "moodys": {
+      "type": "http",
+      "url": "https://api.moodys.com/genai-ready-data/m1/mcp"
+    },
+    "mtnewswire": {
+      "type": "http",
+      "url": "https://vast-mcp.blueskyapi.com/mtnewswires"
+    },
+    "aiera": {
+      "type": "http",
+      "url": "https://mcp-pub.aiera.com"
+    },
+    "lseg": {
+      "type": "http",
+      "url": "https://api.analytics.lseg.com/lfa/mcp"
+    },
+    "pitchbook": {
+      "type": "http",
+      "url": "https://premium.mcp.pitchbook.com/mcp"
+    },
+    "chronograph": {
+      "type": "http",
+      "url": "https://ai.chronograph.pe/mcp"
+    },
+    "egnyte": {
+      "type": "http",
+      "url": "https://mcp-server.egnyte.com/mcp"
+    }
+    "box": {
+      "type": "http",
+      "url": "https://mcp.box.com"
+  }
+}
