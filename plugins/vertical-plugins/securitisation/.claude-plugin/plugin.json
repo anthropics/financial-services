@@ -1,0 +1,9 @@
+{
+  "name": "securitisation",
+  "version": "0.1.0",
+  "description": "Structured-finance (securitisation) skills, slash commands, and a free SEC EDGAR data connector: search ABS/CLO deals, retrieve prospectuses (424B) and investor reports (10-D), and extract loan-level data from Form ABS-EE.",
+  "author": {
+    "name": "Daniel Cheah",
+    "url": "https://danielcheah.com"
+  }
+}
