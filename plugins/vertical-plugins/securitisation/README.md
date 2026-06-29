@@ -31,9 +31,11 @@ requires a licence; this fills that gap for the structured-finance corner of the
 `payment-waterfall-extraction` · `clo-indenture-review`
 
 ### Connector (`connector/`)
-A local Python MCP server exposing four tools — `search_securitisation_deals`,
-`get_deal_filings`, `get_filing_document`, `extract_loan_level` — over EDGAR's public
-endpoints. Standard-library only except the official `mcp` SDK. See
+A local Python MCP server exposing five tools — `search_securitisation_deals`,
+`get_deal_filings`, `get_filing_document`, `extract_loan_level` (pool stats,
+stratifications and cross-tabs) and `extract_loan_timeseries` (roll-rate, static-pool
+loss, prepayment across stacked tapes) — over EDGAR's public endpoints.
+Standard-library only except the official `mcp` SDK. See
 [`connector/README.md`](./connector/README.md).
 
 ## Coverage (honest, verified)
