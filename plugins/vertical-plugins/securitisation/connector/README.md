@@ -5,14 +5,15 @@ the `securitisation` plugin. No API key, no subscription — it uses EDGAR's pub
 endpoints and complies with SEC's fair-access policy (descriptive User-Agent,
 request throttling).
 
-## What it does — four tools
+## What it does — five tools
 
 | Tool | What it does | EDGAR source |
 |---|---|---|
 | `search_securitisation_deals` | Find ABS/CLO deals & filings by text / asset class / form / date | Full-text search (`efts.sec.gov`) |
 | `get_deal_filings` | List a deal's filing history (424B, 10-D, ABS-EE, 8-K …) | Submissions API (`data.sec.gov`) |
 | `get_filing_document` | Fetch a prospectus (424B) or investor report (10-D) as text | Archives (`www.sec.gov/Archives`) |
-| `extract_loan_level` | Stream-parse a Form ABS-EE loan tape into pool stats / CSV | Archives (EX-102 asset XML) |
+| `extract_loan_level` | Stream-parse one ABS-EE tape into pool stats, delinquency buckets, period loss, stratifications and cross-tabs (`stratify_by`), with optional CSV | Archives (EX-102 asset XML) |
+| `extract_loan_timeseries` | Multi-tape analyses across periods — roll-rate matrix, static-pool loss curve, prepayment — joined on `assetNumber` | Archives (EX-102 asset XML) |
 
 ## Coverage (and honest limits)
 
