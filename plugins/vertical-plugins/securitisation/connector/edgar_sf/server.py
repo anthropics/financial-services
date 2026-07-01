@@ -160,6 +160,48 @@ def extract_loan_level(
 
 
 @mcp.tool()
+def extract_cmbs_loan_level(
+    cik: str,
+    accession: str,
+    mode: str = "summary",
+    filters: Optional[dict[str, Any]] = None,
+    out_path: Optional[str] = None,
+    sample: int = 5,
+    stratify_by: Optional[list[str]] = None,
+    region: str = "US",
+) -> dict[str, Any]:
+    '''Analyse a CMBS (commercial-mortgage) Form ABS-EE loan tape.
+
+    Like extract_loan_level, but tuned for commercial mortgages: returns pool
+    balance, balance-weighted DSCR (NCF), occupancy, LTV and coupon, pool debt
+    yield, property-type and state concentration, the maturity profile, and the
+    largest loans — plus optional stratification.
+
+    Args:
+        cik: The deal's CIK.
+        accession: The CMBS ABS-EE filing's accession number.
+        mode: "summary" (default), or "full"/"filter" to also write a CSV.
+        filters: field -> condition (scalar/list = equality/membership;
+            {"min":x,"max":y} = numeric range).
+        out_path: CSV path for full/filter modes (defaults to a temp file).
+        sample: Example loans to include (default 5).
+        stratify_by: One or two of: property_type, property_state, dscr_band,
+            ltv_band, occupancy_band, maturity_year, watchlist.
+        region: Data source; defaults to "US".
+
+    Use this for conduit CMBS; use extract_loan_level for auto ABS.
+    '''
+    if mode in ("full", "filter") and not out_path:
+        cik_digits = re.sub(r"\D", "", cik)
+        safe = re.sub(r"\W", "", accession)
+        out_path = os.path.join(tempfile.gettempdir(), f"cmbs_{cik_digits}_{safe}.csv")
+    return registry.get_region(region).extract_cmbs_loan_level(
+        cik, accession, mode=mode, filters=filters, out_path=out_path,
+        sample=sample, stratify_by=stratify_by,
+    )
+
+
+@mcp.tool()
 def extract_loan_timeseries(
     cik: str,
     accessions: list[str],

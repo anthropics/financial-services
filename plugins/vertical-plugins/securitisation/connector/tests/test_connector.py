@@ -19,6 +19,7 @@ from edgar_sf.core.models import FilingRef
 FX = os.path.join(HERE, "sample_auto_absee.xml")
 P1 = os.path.join(HERE, "sample_auto_absee_p1.xml")
 P2 = os.path.join(HERE, "sample_auto_absee_p2.xml")
+P_FLAT = os.path.join(HERE, "sample_auto_flat_absee.xml")
 _ok = _fail = 0
 
 
@@ -173,9 +174,23 @@ def test_timeseries_prepayment():
     check("P2 pool paydown = 45.2381", row2["pool_paydown_pct"] == 45.2381, row2["pool_paydown_pct"])
 
 
+def test_flat_auto_layout():
+    print("== flat auto layout (no <asset> wrapper) regression ==")
+    with open(P_FLAT, "rb") as s:
+        r = absee_parser.parse_tape(s, mode="summary", stratify_by=["fico_band"])
+    check("flat layout: 5 loans parsed (not 0)", r["loans_in_tape"] == 5, r["loans_in_tape"])
+    check("flat layout: total balance 105000", r["total_current_balance"] == 105000.0, r["total_current_balance"])
+    check("flat layout: WA coupon 6.8571", r["weighted_averages"]["coupon_pct"] == 6.8571, r["weighted_averages"].get("coupon_pct"))
+    check("flat layout: top state CA 70000", r["distributions"]["state"][0]["balance"] == 70000.0, r["distributions"]["state"][0])
+    check("flat layout: stratify 550-599 = 40000",
+          next(x["current_balance"] for x in r["stratification"]["rows"] if x["bucket"] == "550-599") == 40000.0)
+
+
 if __name__ == "__main__":
     test_parser_summary(); test_filter_and_csv(); test_search_and_filings(); test_url_construction()
     test_step1_enrichment(); test_stratify_one_dim(); test_stratify_cross_tab()
     test_timeseries_static_pool_loss(); test_timeseries_roll_rate(); test_timeseries_prepayment()
+    test_flat_auto_layout()
     print(f"\nRESULT: {_ok} passed, {_fail} failed")
     sys.exit(1 if _fail else 0)
+

@@ -79,3 +79,20 @@ class Region(ABC):
         raise NotImplementedError(
             f"Region '{self.code}' does not implement multi-tape analyses yet."
         )
+
+    def extract_cmbs_loan_level(
+        self,
+        cik: str,
+        accession: str,
+        *,
+        mode: str = "summary",
+        filters: dict[str, Any] | None = None,
+        out_path: str | None = None,
+        sample: int = 5,
+        stratify_by: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """CMBS commercial-mortgage loan-level analytics (DSCR, debt yield,
+        occupancy, LTV, property mix, maturity profile). Optional capability."""
+        raise NotImplementedError(
+            f"Region '{self.code}' does not implement CMBS loan-level analytics yet."
+        )
