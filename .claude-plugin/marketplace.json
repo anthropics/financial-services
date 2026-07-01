@@ -119,6 +119,11 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "valuein",
+      "source": "./plugins/partner-built/valuein",
+      "description": "Free + low-cost SEC EDGAR fundamentals, ratios, valuation metrics, smart-money intelligence, and forensic-audit scores for US-listed equities. Point-in-time accurate, survivorship-bias free."
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",

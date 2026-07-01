@@ -1,0 +1,30 @@
+{
+  "name": "valuein",
+  "description": "Free + low-cost SEC EDGAR fundamentals, ratios, valuation metrics, smart-money intelligence, and forensic-audit scores for US-listed equities. Point-in-time accurate, survivorship-bias free.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Valuein",
+    "email": "support@valuein.biz"
+  },
+  "homepage": "https://valuein.biz",
+  "repository": "https://github.com/valuein/mcp",
+  "license": "Apache-2.0",
+  "keywords": [
+    "sec-edgar",
+    "fundamentals",
+    "financial-statements",
+    "valuation",
+    "forensic-audit",
+    "smart-money",
+    "13f",
+    "insider-transactions",
+    "ratios",
+    "us-equities"
+  ],
+  "mcpServers": {
+    "valuein": {
+      "type": "http",
+      "url": "https://mcp.valuein.biz/mcp"
+    }
+  }
+}
