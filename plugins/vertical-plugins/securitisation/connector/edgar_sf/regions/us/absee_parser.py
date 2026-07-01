@@ -117,21 +117,11 @@ def _loan_metrics(rec: dict[str, str]) -> dict[str, Any]:
 
 
 def iter_assets(stream) -> Iterator[dict[str, str]]:
-    """Yield each <asset> as a flat {local_tag: text} dict, memory-safe."""
-    context = ET.iterparse(stream, events=("end",))
-    for _, elem in context:
-        if _localname(elem.tag) != "asset":
-            continue
-        rec: dict[str, str] = {}
-        for child in elem.iter():
-            if child is elem or len(child) > 0:
-                continue  # keep only leaf elements
-            name = _localname(child.tag)
-            text = (child.text or "").strip()
-            if name not in rec or (text and not rec[name]):
-                rec[name] = text
-        yield rec
-        elem.clear()  # free this loan's memory before the next one
+    """Yield one flat {local_tag: text} dict per loan, for EITHER ABS-EE layout
+    (<asset>-wrapped or flat assetTypeNumber-delimited). Delegates to the shared
+    structure-agnostic iterator so auto and CMBS both parse correctly."""
+    from .record_iter import iter_asset_records
+    yield from iter_asset_records(stream)
 
 
 def iter_loan_states(stream) -> Iterator[dict[str, Any]]:

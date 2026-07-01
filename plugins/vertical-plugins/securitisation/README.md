@@ -22,19 +22,21 @@ requires a licence; this fills that gap for the structured-finance corner of the
 |---|---|
 | `/securitisation:search-deals` | Find registered ABS/CMBS deals on EDGAR and list a deal's filings |
 | `/securitisation:parse-abs-prospectus` | Turn a 424B prospectus into a structured deal summary (tranches, credit enhancement, collateral, triggers) |
-| `/securitisation:analyze-loan-tape` | Stratify a Form ABS-EE loan tape and compute pool credit metrics |
+| `/securitisation:analyze-loan-tape` | Stratify a Form ABS-EE **auto** loan tape and compute pool credit metrics |
+| `/securitisation:analyze-cmbs-tape` | Analyse a **CMBS** ABS-EE tape — DSCR, debt yield, property mix, maturity wall |
 | `/securitisation:extract-waterfall` | Extract the priority of payments, with the triggers that reorder it |
 | `/securitisation:review-clo-indenture` | Review a (user-supplied) CLO indenture: coverage/quality tests, concentration limits, reinvestment |
 
 ### Skills (fire automatically when relevant)
 `deal-search` · `abs-prospectus-analysis` · `loan-tape-analysis` ·
-`payment-waterfall-extraction` · `clo-indenture-review`
+`cmbs-loan-tape-analysis` · `payment-waterfall-extraction` · `clo-indenture-review`
 
 ### Connector (`connector/`)
-A local Python MCP server exposing five tools — `search_securitisation_deals`,
-`get_deal_filings`, `get_filing_document`, `extract_loan_level` (pool stats,
-stratifications and cross-tabs) and `extract_loan_timeseries` (roll-rate, static-pool
-loss, prepayment across stacked tapes) — over EDGAR's public endpoints.
+A local Python MCP server exposing six tools — `search_securitisation_deals`,
+`get_deal_filings`, `get_filing_document`, `extract_loan_level` (auto pool stats,
+stratifications and cross-tabs), `extract_cmbs_loan_level` (commercial-mortgage DSCR,
+debt yield, property mix and maturity wall) and `extract_loan_timeseries` (roll-rate,
+static-pool loss, prepayment across stacked tapes) — over EDGAR's public endpoints.
 Standard-library only except the official `mcp` SDK. See
 [`connector/README.md`](./connector/README.md).
 
@@ -42,7 +44,7 @@ Standard-library only except the official `mcp` SDK. See
 | Asset class | Documents (424B / 10-D) | Loan-level (ABS-EE) |
 |---|---|---|
 | Auto loan / lease ABS | ✅ | ✅ strong (tuned for this) |
-| Conduit CMBS | ✅ | ✅ strong |
+| Conduit CMBS | ✅ | ✅ strong (dedicated DSCR / debt-yield / property analytics) |
 | Credit-card ABS | ✅ | ❌ none — excluded from asset-level disclosure by rule |
 | Registered private-label RMBS | ⚠️ rare | ❌ effectively absent (market is 144A) |
 | CLOs | ❌ not on EDGAR | ❌ not on EDGAR (144A — use the indenture-review skill on a supplied doc) |
@@ -89,16 +91,24 @@ claude plugin install securitisation@claude-for-financial-services
 ```
 /securitisation:search-deals AmeriCredit auto
 /securitisation:parse-abs-prospectus  (then pick the 424B5)
-/securitisation:analyze-loan-tape  (then pick the latest ABS-EE period)
+/securitisation:analyze-loan-tape  (auto: pick the latest ABS-EE period)
+/securitisation:analyze-cmbs-tape  (CMBS: DSCR, debt yield, maturity wall)
 /securitisation:extract-waterfall
 /securitisation:review-clo-indenture  (attach the indenture / offering memorandum)
 ```
 
-## Extensible to other regions
+## Extensible by design — and an honest note on other regions
 The connector is organised **US-first but region-neutral**: a `Region` interface with a
-clean `us/` implementation (SEC EDGAR). Europe and Australia are intended to be added as
-sibling `eu/` and `au/` modules implementing the same interface — every command, skill,
-and tool then serves them via a `region` argument, with no other changes.
+clean `us/` implementation (SEC EDGAR), so new sources slot in behind the same tools via a
+`region` argument.
+
+The binding constraint for the EU and Australia, though, is **data rights, not code**.
+Unlike EDGAR's fully open dissemination, EU loan-level data (European DataWarehouse / ESMA
+securitisation repositories) and Australian data (RBA Securitisation Dataset) are available
+only to *registered, permissioned* users and aren't freely redistributable. So a free,
+rights-clean EU/AU *loan-level* module isn't currently feasible; any future regional module
+would be limited to public deal/aggregate layers or a credentialed (non-free) integration,
+documented as such.
 
 ## Author
 **Daniel Cheah** — [danielcheah.com](https://danielcheah.com) · [LinkedIn](https://www.linkedin.com/in/dcheah/)

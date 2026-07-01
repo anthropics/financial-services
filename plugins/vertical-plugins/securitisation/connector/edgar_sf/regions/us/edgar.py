@@ -17,7 +17,7 @@ from ... import config
 from ...core.http_client import SecHttpClient
 from ...core.models import Deal, DealFilings, FilingRef, accession_no_dashes
 from ..base import Region
-from . import absee_parser, timeseries
+from . import absee_parser, cmbs_parser, timeseries
 
 # Map friendly asset-class names to the phrase that best identifies them in
 # EDGAR's full-text index (issuer names / cover text).
@@ -225,6 +225,42 @@ class UsEdgar(Region):
         stream, asset_file, url = self._open_asset_tape(cik_int, accession)
         try:
             summary = absee_parser.parse_tape(
+                stream, mode=mode, filters=filters, out_path=out_path,
+                sample=sample, stratify_by=stratify_by,
+            )
+        finally:
+            try:
+                stream.close()
+            except Exception:
+                pass
+        summary.update(
+            {
+                "region": self.code,
+                "cik": cik_int,
+                "accession": accession,
+                "asset_data_file": asset_file,
+                "source_url": url,
+                "mode": mode,
+            }
+        )
+        return summary
+
+    # ---- 4b) CMBS commercial-mortgage loan-level ----------------------------
+    def extract_cmbs_loan_level(
+        self,
+        cik: str,
+        accession: str,
+        *,
+        mode: str = "summary",
+        filters: dict[str, Any] | None = None,
+        out_path: str | None = None,
+        sample: int = 5,
+        stratify_by: list[str] | None = None,
+    ) -> dict[str, Any]:
+        cik_int = int(_digits(cik))
+        stream, asset_file, url = self._open_asset_tape(cik_int, accession)
+        try:
+            summary = cmbs_parser.parse_cmbs_tape(
                 stream, mode=mode, filters=filters, out_path=out_path,
                 sample=sample, stratify_by=stratify_by,
             )
