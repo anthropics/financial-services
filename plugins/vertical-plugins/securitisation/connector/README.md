@@ -56,3 +56,12 @@ python -m edgar_sf.server               # run the MCP server (stdio)
 
 The core/data logic uses only the Python standard library; `mcp` is needed only to
 run the server.
+
+## Running outside Cowork (`cwd` / `${CLAUDE_PLUGIN_ROOT}`)
+
+The bundled [`.mcp.json`](../.mcp.json) sets the server's `cwd` and `PYTHONPATH` to
+`${CLAUDE_PLUGIN_ROOT}/connector`. `${CLAUDE_PLUGIN_ROOT}` is substituted by the
+**Cowork / plugin runtime** at launch, so no edit is needed there. If you run the
+server **standalone** (e.g. wiring it into Claude Code by hand, or launching it from a
+shell), that variable is not expanded — point `cwd`/`PYTHONPATH` at an **absolute path**
+to this `connector/` directory instead.

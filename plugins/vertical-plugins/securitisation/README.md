@@ -76,7 +76,7 @@ why the streaming parser is the moat. Target output formats for these analyses a
    `https://github.com/dacheah/financial-services` (or upload a zip of this folder).
 2. One-time, so the local connector can run:
    ```bash
-   pip install mcp
+   pip install -r connector/requirements.txt   # only dependency: the pinned mcp SDK (mcp>=1.2.0)
    ```
    (Python 3.10+ required.) Optionally set a contact User-Agent —
    `SEC_EDGAR_USER_AGENT="Your Name your@email"` — though the bundled default works.
