@@ -56,6 +56,14 @@ within the stratum.
   the same deal's **consecutive monthly** ABS-EE tapes via `get_deal_filings`
   (`form_type="ABS-EE"`) and compare period over period; use `zeroBalanceCode` to
   separate voluntary prepayments from defaults.
+- `extract_loan_timeseries` automates this by **joining loans across periods on
+  `assetNumber`**. That join is only as reliable as the identifier: if an issuer
+  **re-numbers, re-uses, or omits `assetNumber`** between filings (it is not guaranteed
+  stable across tapes), loans can fail to match — inflating apparent prepayments (a
+  carried-over loan looks like it left the pool) or dropping loans from the roll-rate
+  matrix. Sanity-check that the joined loan count reconciles to each period's pool
+  count before trusting roll-rate or static-pool-loss output, and fall back to
+  period-over-period aggregate comparison where the identifier is unstable.
 
 ## Output
 A pool-metrics header block, then stratification tables, then a short
