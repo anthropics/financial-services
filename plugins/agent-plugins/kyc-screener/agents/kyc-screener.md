@@ -18,9 +18,10 @@ Given an onboarding packet ID, you deliver:
 ## Workflow
 
 1. **Read the packet.** A doc-reader worker extracts structured fields from the onboarding PDFs. The reader has no MCP access.
-2. **Run the rules.** Evaluate each firm KYC rule against the extracted fields.
-3. **Screen.** Screening MCP for sanctions/PEP/adverse media on every named party.
-4. **Package escalations.** Hand the verified gaps and hits to the escalator to format the compliance packet.
+2. **Validate UBO chain.** `kyc-ubo-validate` checks the beneficial ownership structure for circular ownership, missing intermediaries, control mismatches, shell risk, and PEP intersections. Outputs an opacity score and flag count for the rules engine.
+3. **Run the rules.** Evaluate each firm KYC rule against the extracted fields and UBO validation results.
+4. **Screen.** Screening MCP for sanctions/PEP/adverse media on every named party.
+5. **Package escalations.** Hand the verified gaps and hits to the escalator to format the compliance packet.
 
 ## Guardrails
 
@@ -30,4 +31,4 @@ Given an onboarding packet ID, you deliver:
 
 ## Skills this agent uses
 
-`kyc-doc-parse` · `kyc-rules` · `xlsx-author`
+`kyc-doc-parse` · `kyc-ubo-validate` · `kyc-rules` · `xlsx-author`
