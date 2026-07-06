@@ -14,7 +14,15 @@ import re
 import tempfile
 from typing import Any, Optional
 
-from mcp.server.fastmcp import FastMCP
+try:
+    from mcp.server.fastmcp import FastMCP
+except ModuleNotFoundError:  # the one third-party dependency isn't installed
+    import sys
+    sys.stderr.write(
+        "securitisation-edgar: the MCP SDK is not installed. "
+        'Run:  pip install "mcp>=1.2.0"\n'
+    )
+    raise SystemExit(1)
 
 from .regions import registry
 from .regions.us import UsEdgar

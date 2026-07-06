@@ -8,7 +8,7 @@
       "name": "securitisation",
       "displayName": "Securitisation (Structured Finance)",
       "source": "./plugins/vertical-plugins/securitisation",
-      "description": "Free SEC EDGAR structured-finance connector and skills: search ABS/CLO deals, parse ABS prospectuses, review CLO indentures, extract payment waterfalls, and analyse ABS-EE loan-level data"
+      "description": "Free SEC EDGAR structured-finance connector and skills: search ABS/CMBS/CLO deals, parse prospectuses, review CLO indentures, extract waterfalls, analyse ABS-EE loan tapes (auto + CMBS), compare deals, and measure prepayment/loss over time"
     },
     {
       "name": "financial-analysis",
