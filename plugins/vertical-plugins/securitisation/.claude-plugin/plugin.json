@@ -1,7 +1,7 @@
 {
   "name": "securitisation",
   "version": "0.3.0",
-  "description": "Structured-finance (securitisation) skills, slash commands, and a free SEC EDGAR data connector: search ABS/CMBS/CLO deals, retrieve prospectuses (424B) and investor reports (10-D), run loan-level analysis on Form ABS-EE data (auto + CMBS), compare deals (comps), and measure prepayment/loss across periods.",
+  "description": "Structured-finance (securitisation / securitization) skills, slash commands, and a free SEC EDGAR data connector: search ABS/CMBS/CLO deals, retrieve prospectuses (424B) and investor reports (10-D), run loan-level analysis on Form ABS-EE data (auto + CMBS), compare deals (comps), and measure prepayment/loss across periods.",
   "author": {
     "name": "Daniel Cheah",
     "url": "https://danielcheah.com"

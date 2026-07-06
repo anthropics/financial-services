@@ -1,6 +1,6 @@
 # Securitisation — Structured Finance (SEC EDGAR)
 
-A vertical plugin for structured-finance / securitisation work, backed by a **free,
+A vertical plugin for structured-finance / securitisation work (US spelling: *securitization*), backed by a **free,
 local SEC EDGAR data connector**. It searches registered ABS deals, retrieves their
 prospectuses and investor reports, and extracts loan-level data from Form ABS-EE — and
 ships skills for prospectus analysis, CLO indenture review, and payment-waterfall
