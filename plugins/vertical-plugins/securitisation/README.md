@@ -24,12 +24,15 @@ requires a licence; this fills that gap for the structured-finance corner of the
 | `/securitisation:parse-abs-prospectus` | Turn a 424B prospectus into a structured deal summary (tranches, credit enhancement, collateral, triggers) |
 | `/securitisation:analyze-loan-tape` | Stratify a Form ABS-EE **auto** loan tape and compute pool credit metrics |
 | `/securitisation:analyze-cmbs-tape` | Analyse a **CMBS** ABS-EE tape — DSCR, debt yield, property mix, maturity wall |
+| `/securitisation:analyze-prepayment` | Stack a deal's monthly ABS-EE tapes for prepayment (CPR), loss (CDR), pool-factor decay and roll-rates |
+| `/securitisation:deal-comps` | Compare several deals side by side — capital structure, credit enhancement, collateral, structure |
 | `/securitisation:extract-waterfall` | Extract the priority of payments, with the triggers that reorder it |
 | `/securitisation:review-clo-indenture` | Review a (user-supplied) CLO indenture: coverage/quality tests, concentration limits, reinvestment |
 
 ### Skills (fire automatically when relevant)
 `deal-search` · `abs-prospectus-analysis` · `loan-tape-analysis` ·
-`cmbs-loan-tape-analysis` · `payment-waterfall-extraction` · `clo-indenture-review`
+`cmbs-loan-tape-analysis` · `prepayment-analysis` · `deal-comps` ·
+`payment-waterfall-extraction` · `clo-indenture-review`
 
 ### Connector (`connector/`)
 A local Python MCP server exposing six tools — `search_securitisation_deals`,
@@ -69,23 +72,42 @@ The tape is a single XML of **~130–160 MB**, beyond any general fetch path —
 why the streaming parser is the moat. Target output formats for these analyses are specified in
 [`LOAN_LEVEL_OUTPUTS.md`](./LOAN_LEVEL_OUTPUTS.md).
 
-## Install
+## Installation
 
-### Cowork
-1. **Settings → Plugins → Add plugin** → paste the repo URL
-   `https://github.com/dacheah/financial-services` (or upload a zip of this folder).
-2. One-time, so the local connector can run:
-   ```bash
-   pip install -r connector/requirements.txt   # only dependency: the pinned mcp SDK (mcp>=1.2.0)
-   ```
-   (Python 3.10+ required.) Optionally set a contact User-Agent —
-   `SEC_EDGAR_USER_AGENT="Your Name your@email"` — though the bundled default works.
-
-### Claude Code
-```bash
-claude plugin marketplace add dacheah/financial-services
-claude plugin install securitisation@claude-for-financial-services
+**Claude Code** (primary path) — run in a session:
+```text
+/plugin marketplace add dacheah/financial-services      # after #283 merges: anthropics/financial-services
+/plugin install securitisation@claude-for-financial-services
 ```
+Then install the connector's one dependency and restart:
+```bash
+pip install "mcp>=1.2.0"      # the only third-party dependency; Python 3.10+
+```
+Restart Claude Code, then try:
+```text
+/securitisation:search-deals AmeriCredit auto
+```
+
+**Cowork** — install the `securitisation` plugin from Cowork's plugin manager (or a
+provided `.plugin` file), run the same `pip install "mcp>=1.2.0"` on your machine, and
+start a fresh session.
+
+The plugin's [`.mcp.json`](./.mcp.json) auto-starts the local connector. Skills fire on
+natural language; commands on the slash. Optionally set a contact User-Agent —
+`SEC_EDGAR_USER_AGENT="Your Name your@email"` — though the bundled default works.
+
+### Which surfaces support what
+| Surface | Skills & commands | Loan-level connector |
+|---|---|---|
+| Claude Code | ✅ | ✅ (local runtime) |
+| Cowork | ✅ | ✅ (local runtime) |
+| claude.ai chat | ✅ | ❌ — needs a local runtime; document/term-sheet analysis only |
+
+### Verify the connector is live
+Ask Claude to run `search_securitisation_deals` for any issuer. If it returns EDGAR
+results, the server is running. If it **web-searches instead**, the connector isn't
+loaded — re-check `pip install "mcp>=1.2.0"` and restart the session. (If the SDK is
+missing, the server now says so explicitly in the MCP logs rather than failing quietly.)
 
 ## Usage examples
 ```
