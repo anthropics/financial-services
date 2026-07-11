@@ -1,19 +1,18 @@
 ---
 name: cmbs-loan-tape-analysis
-description: |
-  Analyse Form ABS-EE **commercial-mortgage (CMBS)** loan-level data into a credit
-  view — balance-weighted DSCR and debt yield, occupancy, LTV, property-type and
-  geographic concentration, the maturity wall, and the largest loans. Tuned for
-  conduit/SASB CMBS via the connector's extract_cmbs_loan_level tool.
-
-  **Use when:** the user wants CMBS pool stratifications, debt-service/debt-yield
-  metrics, property/geographic concentration, a maturity profile, or a cohort cut
-  from an SEC CMBS ABS-EE tape.
-
-  **Not for:** auto ABS (use loan-tape-analysis) or CLOs (no loan-level on EDGAR).
+description: >-
+  Analyse Form ABS-EE commercial-mortgage (CMBS) loan-level data into a credit view:
+  balance-weighted DSCR and debt yield, occupancy, LTV, property-type and geographic
+  concentration, the maturity wall, and the largest loans, via the connector's
+  extract_cmbs_loan_level tool. Use when the user wants CMBS pool stratifications,
+  debt-service or debt-yield metrics, property or geographic concentration, a maturity
+  profile, or a cohort cut from an SEC CMBS ABS-EE tape. Not for auto ABS (use
+  loan-tape-analysis) or CLOs (no loan-level data on EDGAR).
 ---
 
 # CMBS Loan Tape Analysis (ABS-EE)
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 Extract a commercial-mortgage credit view with **`extract_cmbs_loan_level`**. The
 tape streams record-by-record, so even a large conduit pool is processed with flat

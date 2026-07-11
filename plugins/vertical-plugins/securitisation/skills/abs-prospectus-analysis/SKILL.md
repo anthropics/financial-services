@@ -1,18 +1,17 @@
 ---
 name: abs-prospectus-analysis
-description: |
-  Parse a registered ABS prospectus (Form 424B/424H) into a structured, analyst-grade
-  summary — transaction parties, capital structure (tranches), credit enhancement,
-  collateral pool, performance triggers, and servicing.
-
-  **Use when:** the user wants a deal summary, tranche table, or credit-enhancement
-  breakdown from an SEC-registered ABS prospectus (auto, CMBS, consumer, etc.).
-
-  **Not for:** CLOs (use clo-indenture-review) or loan-level tapes (use
-  loan-tape-analysis).
+description: >-
+  Parse a registered ABS prospectus (Form 424B or 424H) into a structured, analyst-grade
+  summary: transaction parties, capital structure and tranche table, credit enhancement,
+  collateral pool, performance triggers, and servicing. Use when the user wants a deal
+  summary, tranche table, or credit-enhancement breakdown from an SEC-registered ABS
+  prospectus (auto, CMBS, consumer). Not for CLOs (use clo-indenture-review) or loan-level
+  tapes (use loan-tape-analysis).
 ---
 
 # ABS Prospectus Analysis
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 Read a 424B/424H prospectus and extract the structure that matters. Fetch the text
 with **`get_filing_document`**; prospectuses are long, so page through with `offset`,

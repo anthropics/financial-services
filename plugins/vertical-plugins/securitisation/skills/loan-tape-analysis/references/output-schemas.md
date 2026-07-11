@@ -1,26 +1,16 @@
-# Loan-level output schemas (`extract_loan_level`)
+# Output schemas — single-tape loan-level analysis (`extract_loan_level`)
 
-Target output formats for the analyses that only the Form ABS-EE loan tape can produce. This is
-a **build spec** — the shapes `extract_loan_level` (and the `loan-tape-analysis` skill) should
-return — not extracted figures. Example rows are marked **illustrative**.
+The shapes `extract_loan_level` returns and the shapes this skill's deliverables
+should follow. Example rows are marked **illustrative** — never present them as
+extracted figures. Every metric derives from Reg AB II **Schedule AL (automobile)**
+asset-level fields mapped in `connector/edgar_sf/regions/us/field_maps.py`; the
+field-provenance table is at the end.
 
-Every metric here derives from the Reg AB II **Schedule AL (automobile)** asset-level fields the
-connector already maps in `regions/us/field_maps`. A field-provenance table is at the end.
-
----
-
-## Implementation status
-
-| Section | Status | Tool surface |
-|---|---|---|
-| §1 Pool summary | ✅ shipped | `extract_loan_level` — now adds delinquency buckets, 60+ %, and period net loss |
-| §2 Single-dim stratification | ✅ shipped | `extract_loan_level(stratify_by=["fico_band"])` |
-| §3 Cross-tab | ✅ shipped | `extract_loan_level(stratify_by=["fico_band","state"])` |
-| §4 Roll-rate matrix | ✅ shipped | `extract_loan_timeseries(analysis="roll_rate")` |
-| §5 Static-pool loss curve | ✅ shipped | `extract_loan_timeseries(analysis="static_pool_loss")` |
-| §6 Prepayment | 🟡 best-effort | `extract_loan_timeseries(analysis="prepayment")` — pool paydown + voluntary-payoff tally; true voluntary SMM needs `scheduledPrincipalAmount`, not always on the tape |
-
-Cumulative net loss is a deal-life figure, so it is produced by §5 (stacked tapes), not a single tape. All of the above are covered by offline tests in `connector/tests/test_connector.py` (40 checks).
+Multi-period shapes (roll-rate matrix, static-pool loss curve, prepayment by cohort)
+live with the skill that produces them:
+[`skills/prepayment-analysis/references/output-schemas.md`](../../prepayment-analysis/references/output-schemas.md).
+Cumulative net loss is a deal-life figure, so it comes from stacked tapes, not a
+single tape.
 
 ## Conventions
 
@@ -32,11 +22,7 @@ Cumulative net loss is a deal-life figure, so it is produced by §5 (stacked tap
   `current / 31–60 / 61–90 / 91+`; `60+` = 61+ combined.
 - **Net loss** — `chargedoffPrincipalAmount − recoveredAmount` in the period; cumulative net loss
   `% = Σ net loss ÷ original pool balance`.
-- **Prepayment** — voluntary payoff flagged by `zeroBalanceCode` = voluntary prepayment; report
-  `SMM → CPR` (annualised) and auto-market `ABS`.
 - **Period key** — `reportingPeriodEndingDate`; loans keyed across months on `assetNumber`.
-
----
 
 ## 1. Pool summary (header object)
 
@@ -52,8 +38,6 @@ Returned with every call as context.
   "cumulative_net_loss_pct": "‹tape›", "dq_60plus_pct": "‹tape›"
 }
 ```
-
----
 
 ## 2. Single-dimension stratification
 
@@ -86,8 +70,6 @@ Illustrative (`dimension = fico_band`):
 
 > The bottom row is the 10-D figure; every row above it is the differentiator.
 
----
-
 ## 3. Cross-tab (two dimensions)
 
 A matrix of one `cell_metric` over `row_dimension × col_dimension`
@@ -109,61 +91,6 @@ A matrix of one `cell_metric` over `row_dimension × col_dimension`
 Answers questions the pool average cannot, e.g. *"is the Texas concentration low-FICO or
 high-FICO?"* Also report each tail's **share of losses vs share of balance** (e.g. the <550
 slice).
-
----
-
-## 4. Roll-rate / transition matrix
-
-Requires **two consecutive tapes**, joined on `assetNumber`. States:
-`Current, 31–60, 61–90, 91+, Default/Charge-off, Prepaid`.
-
-| Column | Type | Definition |
-|---|---|---|
-| `from_state` | string | Delinquency state at period *t* |
-| `to_*` | % | Share (balance- or count-weighted) migrating to each state at *t+1* |
-
-```json
-{ "period_from": "2026-03-31", "period_to": "2026-04-30", "basis": "balance",
-  "matrix": [
-    { "from_state": "Current", "to_current": "‹tape›", "to_31_60": "‹tape›", "to_61_90": 0, "to_91plus": 0, "to_default": 0, "to_prepaid": "‹tape›" },
-    { "from_state": "31–60",   "to_current": "‹tape›", "to_31_60": "‹tape›", "to_61_90": "‹tape›", "to_91plus": 0, "to_default": 0, "to_prepaid": "‹tape›" }
-  ] }
-```
-
-The diagonal is "stayed"; the upper triangle is curing, the lower triangle is rolling worse. This
-is the single most useful output a stacked tape produces and is **impossible** from any aggregate report.
-
----
-
-## 5. Static-pool cumulative loss curve
-
-From stacked tapes — cumulative net loss (and CDR) by **months-on-book**, for the whole pool or a
-sub-cohort (any dimension bucket from §2).
-
-| Column | Type | Definition |
-|---|---|---|
-| `month_on_book` | int | Seasoning since deal close |
-| `cum_net_loss_pct` | % | Cumulative net loss ÷ original (cohort) balance |
-| `cdr_annualised` | % | Period CDR, annualised |
-| `pool_factor_pct` | % | Remaining balance ÷ original |
-
-Enables cohort comparison (e.g. <550 vs 600–649 loss timing) and benchmarking one vintage against another.
-
----
-
-## 6. Prepayment by cohort
-
-`cohort_dimension × period → speeds`.
-
-| Column | Type | Definition |
-|---|---|---|
-| `cohort` | string | Bucket (e.g. term band, FICO band) |
-| `period` | date | Reporting period |
-| `smm` | % | Single-month mortality |
-| `cpr` | % | SMM annualised |
-| `abs_speed` | % | Auto-market ABS prepayment speed |
-
----
 
 ## Field provenance
 

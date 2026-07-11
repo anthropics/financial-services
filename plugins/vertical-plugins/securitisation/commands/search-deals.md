@@ -5,6 +5,8 @@ argument-hint: "[issuer, shelf, or asset class]"
 
 # Search Securitisation Deals
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Find SEC-registered ABS / structured-finance deals on EDGAR and retrieve their
 filings — prospectuses (424B), investor reports (10-D), and loan-level tapes
 (ABS-EE) — using the free SEC EDGAR connector.

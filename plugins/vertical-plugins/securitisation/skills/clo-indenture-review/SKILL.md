@@ -1,15 +1,12 @@
 ---
 name: clo-indenture-review
-description: |
-  Review a CLO indenture or offering memorandum and extract the provisions that govern
-  the deal — interest/principal waterfalls, coverage tests (OC/IC), collateral quality
-  tests (WARF, WAS, diversity), concentration limits, the reinvestment regime, fees,
-  and call/refi/reset terms — comparing each against US BSL market-standard.
-
-  **Use when:** reviewing a CLO indenture / OM the user supplies.
-
-  **Not for:** finding CLOs on EDGAR (they are 144A and not filed there) — this skill
-  works on a user-provided document.
+description: >-
+  Review a CLO indenture or offering memorandum and extract the provisions that govern the
+  deal: interest and principal waterfalls, coverage tests (OC/IC), collateral quality
+  tests (WARF, WAS, diversity), concentration limits, the reinvestment regime, fees, and
+  call/refi/reset terms, comparing each against US BSL market standard. Use when reviewing
+  a CLO indenture or offering memorandum the user supplies. Not for finding CLOs on EDGAR
+  (they are 144A and not filed there) — this skill works on a user-provided document.
 ---
 
 # CLO Indenture Review

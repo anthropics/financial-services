@@ -5,6 +5,8 @@ argument-hint: "[deal name, CIK/accession, or document path]"
 
 # Extract Payment Waterfall
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Extract the **priority of payments** from an ABS prospectus, a CLO indenture, or a
 10-D investor report, and render it as an ordered, condition-aware sequence.
 

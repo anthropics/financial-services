@@ -5,6 +5,8 @@ argument-hint: "[deal name or CIK]"
 
 # Analyse Prepayment & Run-off (multi-tape ABS-EE)
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Stack a deal's consecutive monthly Form ABS-EE tapes into a life-of-deal view —
 prepayment speed (CPR/SMM), default/loss (CDR, cumulative net loss), pool-factor decay,
 and delinquency roll-rates.

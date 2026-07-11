@@ -5,6 +5,8 @@ argument-hint: "[shelf/issuer, or a list of deals]"
 
 # Deal Comps (cross-deal comparison)
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Run the single-deal parser across a shelf or a named set of deals and normalise the
 results into one comparison table — capital structure, credit enhancement / subordination,
 collateral, pricing, and structural features.

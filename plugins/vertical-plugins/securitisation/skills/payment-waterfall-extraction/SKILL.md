@@ -1,16 +1,16 @@
 ---
 name: payment-waterfall-extraction
-description: |
-  Extract the priority of payments (waterfall) from an ABS prospectus, a CLO indenture,
-  or a 10-D investor report, and render it as an ordered, condition-aware sequence —
-  handling sequential-vs-pro-rata logic, turbo/OC build, trigger switches, and
-  pre-/post-event-of-default variants.
-
-  **Use when:** the user wants the waterfall / "application of funds" / "priority of
-  payments" laid out clearly, with the triggers that reorder it.
+description: >-
+  Extract the priority of payments (waterfall) from an ABS prospectus, a CLO indenture, or
+  a 10-D investor report, and render it as an ordered, condition-aware sequence, handling
+  sequential-versus-pro-rata logic, turbo and OC build, trigger switches, and pre- and
+  post-event-of-default variants. Use when the user wants the waterfall, application of
+  funds, or priority of payments laid out clearly, with the triggers that reorder it.
 ---
 
 # Payment Waterfall Extraction
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 Locate the **"Priority of Payments" / "Application of Available Funds" / "Distribution"**
 section and reconstruct it as an **ordered list of steps, each with its condition**.

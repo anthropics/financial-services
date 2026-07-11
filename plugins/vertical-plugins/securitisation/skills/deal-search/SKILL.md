@@ -1,19 +1,18 @@
 ---
 name: deal-search
-description: |
-  Find SEC-registered securitisation deals on EDGAR and retrieve their filings using
-  the securitisation EDGAR connector. Covers EDGAR's data model (CIK per trust), the
-  ABS filing lifecycle and form-type glossary, asset-class search strategy, and the
-  honest limits of free EDGAR coverage.
-
-  **Use when:** locating an ABS/CMBS/auto deal, pulling a deal's prospectus or
-  investor reports, or finding the latest loan-level tape for a shelf.
-
-  **Not for:** CLOs or 144A private deals (not on EDGAR — use clo-indenture-review on
-  a supplied document), or market pricing/spreads (not on EDGAR).
+description: >-
+  Find SEC-registered securitisation deals on EDGAR and retrieve their filings using the
+  securitisation EDGAR connector. Covers EDGAR's data model (one CIK per trust), the ABS
+  filing lifecycle and form-type glossary, asset-class search strategy, and the honest
+  limits of free EDGAR coverage. Use when locating an ABS, CMBS, or auto deal, pulling a
+  deal's prospectus or investor reports, or finding the latest loan-level tape for a
+  shelf. Not for CLOs or 144A private deals (not on EDGAR — use clo-indenture-review on a
+  supplied document), or market pricing and spreads (not on EDGAR).
 ---
 
 # Securitisation Deal Search (SEC EDGAR)
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 ## How EDGAR organises securitisations
 Each securitisation **trust is its own EDGAR filer** with its own **CIK** (Central
@@ -48,6 +47,9 @@ annual 10-K → 15-15D at the end.
    with `form_type` to grab just the prospectus or the latest tape.
 
 ## Asset-class coverage (be honest about this)
+
+Rights, processing, and the full coverage rationale: [DATA_PROVENANCE.md](../../DATA_PROVENANCE.md).
+
 | Asset class | Find deals? | Documents (424B/10-D)? | Loan-level (ABS-EE)? |
 |---|---|---|---|
 | Auto loan / lease | ✅ | ✅ | ✅ strong |
