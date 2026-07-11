@@ -5,6 +5,8 @@ argument-hint: "[deal name, CIK, or accession number]"
 
 # Analyse Loan Tape (ABS-EE)
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Turn a Form ABS-EE loan-level tape into pool stratifications and credit metrics —
 weighted-average coupon, FICO, term, and distributions by state, vehicle, and
 delinquency. Tuned for **auto** ABS (the asset class with the richest EDGAR coverage).

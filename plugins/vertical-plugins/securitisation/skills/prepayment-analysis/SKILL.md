@@ -1,21 +1,19 @@
 ---
 name: prepayment-analysis
-description: |
-  Measure how an ABS pool pays down and defaults **over its life** by stacking a
-  deal's consecutive monthly Form ABS-EE tapes — prepayment speed (CPR/SMM),
-  default/loss (CDR, cumulative net loss), pool-factor decay, and delinquency
-  roll-rates — separating voluntary payoffs from defaults.
-
-  **Use when:** the user asks for prepayment speeds, CPR/CDR, static-pool loss
-  curves, pool-factor / run-off, roll-rates, or any "over time / across periods"
-  view of a single deal.
-
-  **Not for:** a single point-in-time pool cut (use loan-tape-analysis) or
-  cross-deal comparison (use deal-comps). Credit-card ABS and CLOs have no
-  loan-level data on EDGAR.
+description: >-
+  Measure how an ABS pool pays down and defaults over its life by stacking a deal's
+  consecutive monthly Form ABS-EE tapes: prepayment speed (CPR/SMM), default and loss
+  (CDR, cumulative net loss), pool-factor decay, and delinquency roll-rates, separating
+  voluntary payoffs from defaults. Use when the user asks for prepayment speeds, CPR or
+  CDR, static-pool loss curves, pool factor or run-off, roll-rates, or any over-time,
+  across-periods view of a single deal. Not for a single point-in-time pool cut (use
+  loan-tape-analysis) or cross-deal comparison (use deal-comps); credit-card ABS and CLOs
+  have no loan-level data on EDGAR.
 ---
 
 # Prepayment & Run-off Analysis (multi-tape ABS-EE)
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 A single ABS-EE tape is one photograph; prepayment and loss are a *movie*. This skill
 stacks a deal's **consecutive monthly** tapes and joins loans on `assetNumber` across
@@ -51,7 +49,8 @@ by date, not raw accession numbers.
 - **Roll-rates:** how delinquency buckets migrate month to month — the early-warning view.
 
 ### Step 4 — Deliver
-A period-by-period table (CPR/SMM, CDR, cumulative loss, pool factor), a short curve
+Render to the schemas in [references/output-schemas.md](references/output-schemas.md):
+a period-by-period table (CPR/SMM, CDR, cumulative loss, pool factor), a short curve
 description, and a plain-English read of the trend (speeding up / slowing, loss build,
 delinquency migration). Cite the deal and the reporting periods used.
 

@@ -1,19 +1,18 @@
 ---
 name: deal-comps
-description: |
-  Compare several ABS/CMBS deals side by side — capital structure, credit
-  enhancement and subordination, collateral characteristics, pricing/coupon, and
-  structural features (triggers, OC/turbo) — by running the single-deal parser
-  across a shelf or a named set of deals and normalising the results into one table.
-
-  **Use when:** the user wants a comps table, a shelf/vintage comparison, "how does
-  deal X stack up against its peers", or CE/subordination benchmarking across deals.
-
-  **Not for:** a single deal's summary (use abs-prospectus-analysis) or one pool's
-  loan-level cut (use loan-tape-analysis / cmbs-loan-tape-analysis).
+description: >-
+  Compare several ABS or CMBS deals side by side — capital structure, credit enhancement
+  and subordination, collateral characteristics, pricing, and structural features — by
+  running the single-deal parser across a shelf or a named set of deals and normalising
+  the results into one table. Use when the user wants a comps table, a shelf or vintage
+  comparison, how a deal stacks up against peers, or credit-enhancement benchmarking
+  across deals. Not for a single deal's summary (use abs-prospectus-analysis) or one
+  pool's loan-level cut (use loan-tape-analysis or cmbs-loan-tape-analysis).
 ---
 
 # Deal Comps (cross-deal comparison)
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 Comps are the single-deal parser applied across **N deals** and normalised into one
 comparison. This skill orchestrates the primitives that already exist; the value it adds

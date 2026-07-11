@@ -5,6 +5,8 @@ argument-hint: "[deal name, CIK, or accession number]"
 
 # Analyse CMBS Loan Tape
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Turn a conduit/SASB CMBS Form ABS-EE loan tape into a commercial-mortgage credit
 view: debt-service coverage, debt yield, occupancy, leverage, property-type and
 geographic concentration, the maturity profile, and the largest loans.

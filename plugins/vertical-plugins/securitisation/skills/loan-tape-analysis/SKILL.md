@@ -1,18 +1,17 @@
 ---
 name: loan-tape-analysis
-description: |
-  Analyse Form ABS-EE loan-level data into pool stratifications and credit metrics —
-  balance-weighted coupon/FICO/term, and distributions by FICO band, state, term,
-  new/used, and delinquency. Tuned for auto ABS (the richest EDGAR loan-level coverage).
-
-  **Use when:** the user wants pool stratifications, credit metrics, concentration
-  analysis, or a cohort cut from an SEC ABS-EE loan tape.
-
-  **Not for:** credit-card ABS or CLOs (no loan-level data on EDGAR), or document
-  summaries (use abs-prospectus-analysis).
+description: >-
+  Analyse Form ABS-EE loan-level data into pool stratifications and credit metrics:
+  balance-weighted coupon, FICO, and term, plus distributions by FICO band, state, term,
+  new/used, and delinquency. Tuned for auto ABS, the richest EDGAR loan-level coverage.
+  Use when the user wants pool stratifications, credit metrics, concentration analysis, or
+  a cohort cut from an SEC ABS-EE loan tape. Not for credit-card ABS or CLOs (no
+  loan-level data on EDGAR), or document summaries (use abs-prospectus-analysis).
 ---
 
 # Loan Tape Analysis (ABS-EE)
+
+> EDGAR access in this skill uses the bundled `securitisation-edgar` connector. If its tools are missing or erroring, see [CONNECTOR.md](../../CONNECTOR.md) — do not substitute web search for filings.
 
 Extract structured pool analytics from an ABS-EE tape with **`extract_loan_level`**.
 The tape can exceed 100 MB, so the tool streams it: **`mode="summary"`** returns pool
@@ -66,7 +65,8 @@ within the stratum.
   period-over-period aggregate comparison where the identifier is unstable.
 
 ## Output
-A pool-metrics header block, then stratification tables, then a short
+Render to the schemas in [references/output-schemas.md](references/output-schemas.md):
+a pool-metrics header, then stratification tables, then a short
 **concentration / credit observations** note (e.g. geographic or low-FICO
 concentrations, delinquency build). Cite the source filing and reporting period. State
 clearly that figures are point-in-time and balance-weighted where balance is present.

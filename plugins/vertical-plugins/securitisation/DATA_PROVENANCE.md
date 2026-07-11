@@ -40,9 +40,10 @@ Nothing is retrieved from any paid, licensed, or gated source.
    user's machine.
 
 **Data handling:** processing is local and ephemeral. The plugin does **not** bundle,
-cache server-side, or redistribute any filer data. The only data file committed to this
-repository is `connector/tests/sample_auto_absee.xml`, which is a **synthetic** fixture
-(hand-written fake loans) used for offline tests — not real filer data.
+cache server-side, or redistribute any filer data. The only data files committed to this
+repository are the `connector/tests/sample_*.xml` fixtures, which are **synthetic**
+(hand-written fake loans and commercial mortgages) used for offline tests — not real
+filer data.
 
 ## Coverage & limits
 Form ABS-EE asset-level (loan-level) data exists only for five asset classes:

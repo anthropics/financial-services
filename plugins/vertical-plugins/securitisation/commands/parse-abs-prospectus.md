@@ -5,6 +5,8 @@ argument-hint: "[deal name, CIK, or accession number]"
 
 # Parse ABS Prospectus
 
+> Uses the bundled EDGAR connector — if its tools are missing or erroring, see [CONNECTOR.md](../CONNECTOR.md).
+
 Turn a registered ABS prospectus (Form 424B / 424H) into a structured, analyst-grade
 summary: parties, capital structure, credit enhancement, collateral, triggers, and
 the priority of payments.

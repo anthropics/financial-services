@@ -6,8 +6,9 @@ prospectuses and investor reports, and extracts loan-level data from Form ABS-EE
 ships skills for prospectus analysis, CLO indenture review, and payment-waterfall
 extraction.
 
-It is the **only connector in this marketplace that needs no paid subscription**: SEC
-EDGAR is public data. Everything else here (Daloopa, Morningstar, S&P, Moody's, …)
+It is the **only connector in the Claude for Financial Services marketplace that needs
+no paid subscription**: SEC EDGAR is public data. Every other connector there (Daloopa,
+Morningstar, S&P, Moody's, …)
 requires a licence; this fills that gap for the structured-finance corner of the market.
 
 > **Not investment, legal, tax, or accounting advice.** This plugin drafts analyst work
@@ -34,14 +35,18 @@ requires a licence; this fills that gap for the structured-finance corner of the
 `cmbs-loan-tape-analysis` · `prepayment-analysis` · `deal-comps` ·
 `payment-waterfall-extraction` · `clo-indenture-review`
 
+### Agent
+`deal-surveillance` — point it at a deal for a reconciled surveillance note: latest
+ABS-EE tape vs the 10-D, period-over-period movement, and flags.
+
 ### Connector (`connector/`)
 A local Python MCP server exposing six tools — `search_securitisation_deals`,
 `get_deal_filings`, `get_filing_document`, `extract_loan_level` (auto pool stats,
 stratifications and cross-tabs), `extract_cmbs_loan_level` (commercial-mortgage DSCR,
 debt yield, property mix and maturity wall) and `extract_loan_timeseries` (roll-rate,
 static-pool loss, prepayment across stacked tapes) — over EDGAR's public endpoints.
-Standard-library only except the official `mcp` SDK. See
-[`connector/README.md`](./connector/README.md).
+Standard-library only except the official `mcp` SDK. Setup, health checks, and failure
+recovery: [`CONNECTOR.md`](./CONNECTOR.md); internals: [`connector/README.md`](./connector/README.md).
 
 ## Coverage (honest, verified)
 | Asset class | Documents (424B / 10-D) | Loan-level (ABS-EE) |
@@ -69,8 +74,10 @@ band, by state, by original term, by new/used; cross-tabs such as FICO × state;
 monthly tapes, roll-rate matrices and static-pool loss curves.
 
 The tape is a single XML of **~130–160 MB**, beyond any general fetch path — which is precisely
-why the streaming parser is the moat. Target output formats for these analyses are specified in
-[`LOAN_LEVEL_OUTPUTS.md`](./LOAN_LEVEL_OUTPUTS.md).
+why the streaming parser is the moat. Target output formats for these analyses are specified
+in the skills' reference schemas —
+[`single-tape`](./skills/loan-tape-analysis/references/output-schemas.md) and
+[`multi-tape`](./skills/prepayment-analysis/references/output-schemas.md).
 
 ## Installation
 
@@ -108,6 +115,7 @@ Ask Claude to run `search_securitisation_deals` for any issuer. If it returns ED
 results, the server is running. If it **web-searches instead**, the connector isn't
 loaded — re-check `pip install "mcp>=1.2.0"` and restart the session. (If the SDK is
 missing, the server now says so explicitly in the MCP logs rather than failing quietly.)
+Full troubleshooting: [`CONNECTOR.md`](./CONNECTOR.md).
 
 ## Usage examples
 ```
@@ -115,6 +123,8 @@ missing, the server now says so explicitly in the MCP logs rather than failing q
 /securitisation:parse-abs-prospectus  (then pick the 424B5)
 /securitisation:analyze-loan-tape  (auto: pick the latest ABS-EE period)
 /securitisation:analyze-cmbs-tape  (CMBS: DSCR, debt yield, maturity wall)
+/securitisation:analyze-prepayment  (stack monthly tapes: CPR/CDR, loss curve, roll-rates)
+/securitisation:deal-comps  (compare deals across a shelf or peer set)
 /securitisation:extract-waterfall
 /securitisation:review-clo-indenture  (attach the indenture / offering memorandum)
 ```
@@ -136,5 +146,5 @@ documented as such.
 **Daniel Cheah** — [danielcheah.com](https://danielcheah.com) · [LinkedIn](https://www.linkedin.com/in/dcheah/)
 
 ## Licence
-[Apache License 2.0](../../../LICENSE), matching the parent repository. SEC EDGAR data is
+[Apache License 2.0](./LICENSE), matching the parent repository. SEC EDGAR data is
 public; see [`DATA_PROVENANCE.md`](./DATA_PROVENANCE.md) for sources, rights, and processing.
