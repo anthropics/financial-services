@@ -26,10 +26,11 @@ const KEYS = {
   google_client_id: { pattern: /\.apps\.googleusercontent\.com$/, hint: "OAuth 2.0 client ID" },
   google_client_secret: { pattern: /^GOCSPX-/, hint: "OAuth 2.0 client secret" },
   aws_role_arn: {
-    pattern: /^arn:aws:iam::\d{12}:role\//,
-    hint: "e.g. arn:aws:iam::123456789012:role/ClaudeBedrockAccess",
+    // GovCloud roles live in the aws-us-gov partition.
+    pattern: /^arn:aws(-us-gov)?:iam::\d{12}:role\//,
+    hint: "e.g. arn:aws:iam::123456789012:role/ClaudeBedrockAccess (GovCloud: arn:aws-us-gov:iam::...)",
   },
-  aws_region: { pattern: /^[a-z]{2}-[a-z]+-\d+$/, hint: "e.g. us-east-1" },
+  aws_region: { pattern: /^[a-z]{2}(-gov)?-[a-z]+-\d+$/, hint: "e.g. us-east-1 or us-gov-west-1" },
   azure_resource_name: {
     pattern: /^[a-z0-9][a-z0-9-]{1,62}$/,
     hint: "Azure AI Foundry resource name — the subdomain of your endpoint URL, e.g. 'contoso-foundry' from https://contoso-foundry.services.ai.azure.com",
@@ -37,10 +38,6 @@ const KEYS = {
   azure_api_key: {
     pattern: /^[A-Za-z0-9]{20,}$/,
     hint: "From Azure Portal → your Foundry resource → Keys and Endpoint → KEY 1",
-  },
-  graph_client_id: {
-    pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-    hint: "Entra app (client) ID for Microsoft Graph — Outlook only; omit to use Anthropic's multi-tenant app via the admin consent URL",
   },
   gateway_url: { pattern: /^https:\/\//, hint: "HTTPS base URL" },
   gateway_token: { pattern: /./, hint: "gateway API key", secret: true },
@@ -143,6 +140,16 @@ async function main() {
   const cloud = params.get("graph_cloud");
   if (cloud && cloud !== "global" && !params.has("graph_client_id")) {
     throw new Error(`graph_cloud=${cloud} requires a graph_client_id registered in that cloud`);
+  }
+  // AWS partitions are hermetic: a commercial-partition role can never be
+  // assumed against a GovCloud endpoint (and vice versa), so a mismatch means
+  // the add-in's STS AssumeRoleWithWebIdentity call always fails at sign-in.
+  const roleArn = params.get("aws_role_arn");
+  const awsRegion = params.get("aws_region");
+  if (roleArn && awsRegion && roleArn.startsWith("arn:aws-us-gov:") !== awsRegion.startsWith("us-gov-")) {
+    throw new Error(
+      `aws_role_arn partition does not match aws_region=${awsRegion} — GovCloud (arn:aws-us-gov:) roles pair with us-gov-* regions, commercial (arn:aws:) roles with everything else`,
+    );
   }
 
   // URLSearchParams joins with `&`; XML attribute values need it escaped.
