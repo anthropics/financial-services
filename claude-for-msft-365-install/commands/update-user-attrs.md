@@ -27,6 +27,7 @@ over manifest params, so whatever's here wins. All values are 256 chars max.
 | `google_client_id` `google_client_secret` | Different OAuth client per team (uncommon) |
 | `aws_role_arn` `aws_region` | Different Bedrock roles by team |
 | `otlp_endpoint` `otlp_headers` `otlp_resource_attributes` | Route telemetry to a team-specific OTEL collector / tag spans with team-level resource attributes |
+| `available_models` | Different teams see different models in the 3P picker (comma-separated ids; see [manifest](manifest.md#model-picker)) |
 
 ## One user
 

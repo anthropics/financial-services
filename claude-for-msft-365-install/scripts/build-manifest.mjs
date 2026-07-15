@@ -20,6 +20,9 @@ const URL_SLOTS = [/(<SourceLocation\s+DefaultValue=")([^"]+)(")/g, /(id="Taskpa
 // (your infra may look different). `secret` keys warn louder: the manifest is an
 // org-wide file and its URL can land in deploy logs; per-user secrets typically go
 // in Azure extension attributes instead.
+// A JSON array (["a","b"]) or a comma list (a,b) of model ids.
+const MODEL_ID_LIST = /^(\[.*\]|[\w.:@-]+(\s*,\s*[\w.:@-]+)*)$/;
+
 const KEYS = {
   gcp_project_id: { pattern: /^[a-z][a-z0-9-]{4,28}[a-z0-9]$/, hint: "GCP project ID" },
   gcp_region: { pattern: /./, hint: "GCP region, e.g. us-east5 or global" },
@@ -84,6 +87,13 @@ const KEYS = {
   disabled_features: {
     pattern: /^[\w.]+(,[\w.]+)*$/,
     hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring",
+  },
+  // Model ids carry . : @ - (us.anthropic.claude-opus-4-5-20251101-v1:0,
+  // claude-opus-4-5@20251101), so this can't reuse disabled_features' slug pattern.
+  // Accepts a JSON array or a comma list; the add-in preserves id case.
+  available_models: {
+    pattern: MODEL_ID_LIST,
+    hint: 'the models the picker offers, replacing the built-in catalog, e.g. claude-opus-4-5 or ["claude-opus-4-5"] — 3P gateway/Bedrock/Vertex only',
   },
 };
 

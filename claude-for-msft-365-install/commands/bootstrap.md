@@ -260,6 +260,17 @@ layer.
 "disabled_features": ["skills.authoring"]
 ```
 
+### `available_models`
+
+A JSON array of the model ids the 3P picker offers this user, replacing the
+built-in catalog. Same semantics as the [manifest key](manifest.md#model-picker);
+bootstrap is the per-user layer, and the highest-precedence channel, so
+rotations here propagate without re-login.
+
+```json
+"available_models": ["claude-opus-4-5", "<id-your-gateway-serves>"]
+```
+
 ### `bootstrap_expires_at`
 
 Epoch timestamp (seconds or milliseconds — auto-detected) for when this

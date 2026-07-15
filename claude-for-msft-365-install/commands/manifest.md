@@ -272,6 +272,38 @@ Unknown slugs are ignored (forward-compatible). Setting it here applies one
 policy org-wide; per-user policy belongs in [bootstrap](bootstrap.md#disabled_features)
 (JSON array) or extension attrs (comma-separated).
 
+## Model picker
+
+On 3P deployments the picker is built from a model catalog baked into the
+add-in. `available_models` replaces that catalog with your own list:
+
+```bash
+available_models='claude-opus-4-5,<id-your-gateway-serves>'
+```
+
+Set it and the picker offers exactly those ids, in that order — the first is
+the default your users land on. Leave it unset and the built-in catalog
+applies. There is no separate "hide this one" key: to drop a model, leave it
+out of the list. Accepts a comma list or a JSON array
+(`'["claude-opus-4-5"]'`).
+
+Matching is case-insensitive, and a canonical id also covers the provider
+forms of the same model — `claude-opus-4-5` selects
+`us.anthropic.claude-opus-4-5-20251101-v1:0` and `claude-opus-4-5@20251101`
+too. An id the catalog doesn't know is offered as you wrote it, which is how
+you reach a model your gateway serves that this build predates — so a typo
+shows up in the picker and fails on use rather than being silently dropped.
+A list that matches nothing offerable is ignored entirely: an empty picker
+isn't recoverable in the UI.
+
+Note this pins you to the list. New models we ship won't appear until you add
+them — which is usually what you want, since your gateway has to provision
+each model anyway.
+
+In **Outlook** the list may only narrow, never extend: the mail safety gate
+pins that surface to a vetted model, so ids outside the built-in catalog are
+never offered there.
+
 ## Version
 
 M365 Admin Center caches by `<Id>` + `<Version>` — re-upload with the same
