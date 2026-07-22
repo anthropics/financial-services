@@ -73,12 +73,23 @@ Two caches, two clocks:
 
 | Layer | Who holds it | TTL | How to clear |
 |---|---|---|---|
-| Service | M365 Admin Center → Exchange Online → client | Up to **72h** for updates (24h for fresh deploys) | Wait, or redeploy with a fresh `<Id>` |
+| Service | M365 Admin Center → Exchange Online → client | Up to **72h** for updates, **24h** for fresh deploys ([source][cd-timing]) | Wait, or redeploy with a fresh `<Id>` |
 | Client | Office app's Wef folder on each machine | Until app restart, sometimes longer | Clear the cached manifests (see below) |
 
-Microsoft's own FAQ:
-> It can take up to 72 hours for add-in updates, changes from turn on or turn off to reflect for users.
-> https://learn.microsoft.com/en-us/microsoft-365/admin/manage/centralized-deployment-faq
+Microsoft's own FAQ, under *[How long does it take for add-ins to show up for
+all users?][cd-timing]* — both numbers come from this one answer:
+
+> It can take up to **24 hours** for a new add-in deployment to show up for all
+> users. It can take up to **72 hours** for add-in updates, changes from turn on
+> or turn off to reflect for users.
+
+Removal is on its own clock: *[How long does it take for add-ins to get removed
+for all users?][cd-removal]* — "up to 24 hours for add-in removal to reflect for
+all users." So an add-in can linger for a day after you delete it, which is not
+the same failure as a stale update.
+
+[cd-timing]: https://learn.microsoft.com/en-us/microsoft-365/admin/manage/centralized-deployment-faq#how-long-does-it-take-for-add-ins-to-show-up-for-all-users-
+[cd-removal]: https://learn.microsoft.com/en-us/microsoft-365/admin/manage/centralized-deployment-faq#how-long-does-it-take-for-add-ins-to-get-removed-for-all-users-
 
 ### Confirm what Admin Center is serving
 
@@ -186,8 +197,9 @@ Microsoft's cache-clear doc: https://learn.microsoft.com/en-us/office/dev/add-in
 ### Nuclear option: redeploy with a fresh Id
 
 If 72h is unacceptable, a fresh `<Id>` UUID forces Admin Center and every
-client to treat it as a brand-new add-in (24h fresh-deploy SLA, usually much
-faster). Edit `manifest.xml`, replace the text inside `<Id>` with a new UUID
+client to treat it as a brand-new add-in, which Microsoft documents as [up to
+24 hours][cd-timing] rather than 72 — usually much faster in practice. Edit
+`manifest.xml`, replace the text inside `<Id>` with a new UUID
 (`uuidgen` on mac/linux, `[guid]::NewGuid()` in PowerShell), re-upload.
 
 ---
@@ -200,8 +212,11 @@ faster). Edit `manifest.xml`, replace the text inside `<Id>` with a new UUID
 - **Shows "My Add-ins" but not the ribbon button:** The manifest's `<Hosts>`
   may not include this app. Check both `<Hosts>` lists (top-level and under
   `<VersionOverrides>`).
-- **Fresh deploy, been <24h:** Normal. Microsoft's SLA is 24h for first-time
-  deployment visibility.
+- **Fresh deploy, been <24h:** Normal. Microsoft documents [up to 24 hours for a
+  new deployment to show up for all users][cd-timing] — it is a stated upper
+  bound, not a guarantee, so some users see it well before others.
+- **Deleted the add-in but it's still there:** Also normal, and a different
+  clock — [removal takes up to 24 hours][cd-removal] to reflect for all users.
 
 ---
 

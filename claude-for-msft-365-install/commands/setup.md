@@ -372,7 +372,12 @@ one is a real decision.
 
 > → **Accept permissions** → **Finish deployment**
 
-Propagation to users takes up to 24 hours (usually much faster). The add-in
-appears under **Home → Add-ins** in Excel/Word/PowerPoint once it lands.
+Propagation to users takes [up to 24 hours][cd-timing] for a new deployment
+(usually much faster). The add-in appears under **Home → Add-ins** in
+Excel/Word/PowerPoint once it lands. Later *updates* to an already-deployed
+add-in are a slower clock — up to 72 hours — which is the usual cause of "I
+re-uploaded the manifest and nothing changed"; see [`:debug`](debug.md).
+
+[cd-timing]: https://learn.microsoft.com/en-us/microsoft-365/admin/manage/centralized-deployment-faq#how-long-does-it-take-for-add-ins-to-show-up-for-all-users-
 
 Append the final manifest path and the assignment scope to the setup log. Done.
