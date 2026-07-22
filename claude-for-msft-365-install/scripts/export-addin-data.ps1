@@ -1,16 +1,24 @@
 <#
 .SYNOPSIS
   Export a copy of the Claude Office add-in's local data on Windows -- chat
-  history, uploaded skills, MCP registrations, and memory.
+  history, uploaded skills, MCP registrations, memory, and settings.
 
 .DESCRIPTION
   READ ONLY. This script never writes to, moves, or deletes anything in
   Office. It reads the add-in's storage and copies it to a folder you name.
   Run it with no arguments and it only prints what it found.
 
-  It copies ONLY the Claude add-in's own storage. Other add-ins keep their
-  data in the same folder, and those stores are detected and skipped -- the
-  script reports how many it ignored.
+  IndexedDB (chat history, skills, MCP registrations, memory) is per-origin,
+  so only Claude's stores are copied -- other add-ins' stores are detected and
+  skipped, and the script reports how many it ignored.
+
+  localStorage (settings, inference config, onboarding + terms flags) is NOT
+  per-origin: Chromium keeps one LevelDB per profile shared by every origin.
+  It cannot be split, so it is copied WHOLE, once per Office account, and that
+  copy therefore also contains other add-ins' and other sites' settings. The
+  run prints its size, in list mode too, so this is never a surprise. If that
+  is unacceptable for your data policy, delete the "Local Storage" folder from
+  the export -- everything else is Claude-only.
 
   SEE IT YOURSELF -- you do not need this script to look
     The data is a plain, unencrypted folder. Paste into File Explorer:
@@ -192,7 +200,8 @@ foreach ($store in $stores) {
   if (-not $originHost) { continue }
 
   # ...\EBWebView\Default\IndexedDB\<store> -> ...\EBWebView
-  $acct = Get-AccountLabel (Split-Path (Split-Path (Split-Path $store.FullName -Parent) -Parent) -Parent)
+  $ebWebView = Split-Path (Split-Path (Split-Path $store.FullName -Parent) -Parent) -Parent
+  $acct = Get-AccountLabel $ebWebView
 
   # NB: .BaseName is NOT extension-stripped for a directory -- swap the
   # suffix explicitly or the attachment folder is missed.
@@ -226,6 +235,48 @@ foreach ($store in $stores) {
   Write-Host ""
 }
 
+# --- localStorage: one shared LevelDB per PROFILE, not per origin ------------
+# Settings, the inference/customer config, and the onboarding + terms flags all
+# live here rather than in IndexedDB. Chromium gives every origin on a profile
+# the same store, so it cannot be split per add-in -- it is copied whole.
+#
+# Driven off the profile list rather than the store loop: a profile whose only
+# store fails the origin-name parse would otherwise lose its settings silently.
+$lsFailed = 0
+$profiles = $stores |
+  ForEach-Object { Split-Path (Split-Path (Split-Path $_.FullName -Parent) -Parent) -Parent } |
+  Select-Object -Unique
+
+foreach ($prof in $profiles) {
+  $ls = Join-Path $prof 'Default\Local Storage'
+  if (-not (Test-Path -LiteralPath $ls)) { continue }
+  $acct = Get-AccountLabel $prof
+  $lsSize = (Get-ChildItem -Recurse -File $ls -ErrorAction SilentlyContinue |
+             Measure-Object Length -Sum).Sum
+  Write-Host ("local storage  [{0}]  {1:N0} bytes  -- WHOLE profile store, all origins" -f (Get-AccountKind $acct), $lsSize)
+
+  if ($Out) {
+    $lsDest = Join-Path (Join-Path $Out $acct) 'Local Storage'
+    $tmp = "$lsDest.partial"
+    # Copy to a scratch name and swap only on success. Deleting the old copy
+    # first would mean a locked LOCK file (Office still running) leaves the
+    # export with neither the new copy nor the previous good one.
+    try {
+      if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Recurse -Force }
+      New-Item -ItemType Directory -Force -Path (Split-Path $lsDest -Parent) | Out-Null
+      Copy-Item -Recurse -Force -LiteralPath $ls -Destination $tmp
+      if (Test-Path -LiteralPath $lsDest) { Remove-Item -LiteralPath $lsDest -Recurse -Force }
+      Rename-Item -LiteralPath $tmp -NewName 'Local Storage'
+      Write-Host "    -> $lsDest"
+    } catch {
+      $lsFailed++
+      Write-Host "    !! could not copy Local Storage for $acct -- skipped ($($_.Exception.Message))"
+      if (Test-Path -LiteralPath $tmp) { Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+  }
+  Write-Host ""
+}
+
 if ($Out) {
   # $n can still be 0 here if every store's folder name failed to parse, so
   # check the count rather than assuming the loop above copied something.
@@ -235,4 +286,10 @@ if ($Out) {
   }
   Write-Host "Done. $n location(s) exported to $Out"
   Write-Host "Nothing in Office was modified."
+  if ($lsFailed) {
+    Write-Host ""
+    Write-Host "WARNING: Local Storage for $lsFailed profile(s) could not be copied --"
+    Write-Host "settings are MISSING from this export. Close Office and re-run."
+    exit 1
+  }
 }

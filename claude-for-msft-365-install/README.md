@@ -49,7 +49,7 @@ Then inside the session: `/claude-for-msft-365-install:bootstrap`
 
 ## Exporting user data
 
-Chat history, uploaded skills, MCP registrations, and memory live in browser
+Chat history, uploaded skills, MCP registrations, memory, and settings live in browser
 storage on the user's own machine — there is no server-side copy.
 
 The export scripts are **read only**: they read Office's storage and write

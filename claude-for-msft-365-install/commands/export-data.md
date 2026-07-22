@@ -1,10 +1,10 @@
 ---
-description: Export a copy of a user's add-in chat history, skills, and MCP registrations before a machine is rebuilt
+description: Export a copy of a user's add-in chat history, skills, MCP registrations, and settings before a machine is rebuilt
 ---
 
 # Export add-in data
 
-Chat history, uploaded skills, MCP registrations, and memory live in browser
+Chat history, uploaded skills, MCP registrations, memory, and settings live in browser
 storage **on the user's own machine**. There is no server-side copy. These
 scripts make a copy of it.
 
@@ -98,14 +98,44 @@ claude-export/
     │   ├── claude-chat-history/
     │   ├── claude-local-skills/
     │   ├── claude-mcp-gateways/
-    │   └── claude-memory/
+    │   ├── claude-memory/
+    │   └── local-storage/            settings, inference config, onboarding + terms
     └── addins.contoso.com_8443/      a non-default port is kept in the name:
         └── …                         :8443 is a different origin, so a different store
 ```
 
+Windows groups by signed-in Office account instead of by app, and its
+localStorage is one store shared by every origin on that profile, so it is
+copied whole and sits beside the origin folders:
+
+```
+claude-export\
+└── <guid>_ADAL__2\                    the Office account (see "Putting data back")
+    ├── pivot.claude.ai\
+    │   └── https_pivot.claude.ai_0.indexeddb.leveldb\
+    ├── addins.contoso.com_8443\
+    └── Local Storage\                 ⚠ whole profile store — ALL origins, not
+        └── leveldb\                     just Claude's. Chromium cannot split it.
+```
+
+That last folder is the one exception to "only Claude's data". localStorage —
+settings, the inference config, the onboarding and terms-accepted flags — is a
+single LevelDB per profile shared by every origin, so it cannot be filtered
+down to one add-in. It is copied whole rather than dropped, and its size is
+printed on every run, including the argument-less preview. If that is
+unacceptable under your data policy, delete `Local Storage` from the export;
+everything else is Claude-only. On macOS localStorage *is* per-origin, so there
+it appears as a `local-storage/` folder inside each origin with nothing extra.
+
+Both layouts are **relabelled for readability, not a path mirror** — the real
+locations are nested under salted hashes (macOS) or `…\2\[n]\EBWebView\Default\`
+(Windows). Copying the export back over those paths will not work; see
+[Putting data back](#putting-data-back).
+
 Sign-in tokens are deliberately **not** included — a rebuilt machine signs in
 again, which is the safer default. The export **does** contain conversation
-text; handle it under the same policy as any other copy of that content.
+text, and on Windows the `Local Storage` folder carries other add-ins' settings
+too; handle it under the same policy as any other copy of that content.
 
 ### Checking an export is complete
 
