@@ -185,6 +185,31 @@ for d in sorted(MANAGED.iterdir()):
         if not (d / req).is_file():
             err(f"missing: {rel(d)}/{req}")
 
+# --- 6. PowerShell scripts must be pure ASCII -------------------------------
+# Windows PowerShell 5.1 -- still the default shell on managed Windows -- reads
+# a .ps1 with no BOM using the machine's ANSI code page, not UTF-8. A smart dash
+# or curly quote then decodes to mojibake that can contain a literal '"',
+# which terminates a string mid-file and makes the whole script fail to PARSE.
+# It is invisible on macOS and total on Windows, so gate it here.
+ASCII_ONLY_SUFFIXES = {".ps1", ".psm1", ".psd1"}
+for ps in sorted(ROOT.rglob("*.ps1")):
+    if any(part in {".git", "node_modules"} for part in ps.parts):
+        continue
+    checked += 1
+    raw = ps.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        continue  # an explicit BOM tells PS 5.1 it is UTF-8; then non-ASCII is fine
+    for lineno, line in enumerate(raw.split(b"\n"), 1):
+        bad = sorted({b for b in line if b > 0x7F})
+        if bad:
+            chars = ", ".join(f"0x{b:02x}" for b in bad[:5])
+            err(
+                f"non-ascii: {rel(ps)}:{lineno}: byte(s) {chars} in a .ps1 with no "
+                f"UTF-8 BOM -- Windows PowerShell 5.1 will mis-decode this and may "
+                f"fail to parse the file. Use ASCII (-- for an em dash) or add a BOM."
+            )
+            break
+
 # --- report ----------------------------------------------------------------
 if errors:
     print(f"FAIL — {len(errors)} issue(s) across {checked} file(s):\n", file=sys.stderr)

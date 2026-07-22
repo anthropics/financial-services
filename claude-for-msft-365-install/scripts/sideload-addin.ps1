@@ -8,10 +8,10 @@
   add-in <Id> and whose DATA is the absolute manifest path. Naming the
   value by <Id> means clear-addin-cache.ps1 -Id <GUID> removes it cleanly.
 
-  This writes the registry value directly — it does NOT use
+  This writes the registry value directly -- it does NOT use
   office-addin-dev-settings.
 
-  Sideloading is additive and idempotent — it installs directly (no
+  Sideloading is additive and idempotent -- it installs directly (no
   dry-run). Reverse it any time with clear-addin-cache.ps1 -Id <GUID> -Apply.
 
 .EXAMPLE
