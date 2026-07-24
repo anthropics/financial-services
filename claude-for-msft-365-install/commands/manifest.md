@@ -296,6 +296,15 @@ shows up in the picker and fails on use rather than being silently dropped.
 A list that matches nothing offerable is ignored entirely: an empty picker
 isn't recoverable in the UI.
 
+On the JSON form, an entry may also be `{"id": ..., "label": ...}` to control
+what the picker shows — useful when your gateway ids are internal names:
+
+```bash
+available_models='[{"id":"prod-claude-sonnet-4-6","label":"Sonnet 4.6 (Prod)"}]'
+```
+
+The comma form carries bare ids only.
+
 Note this pins you to the list. New models we ship won't appear until you add
 them — which is usually what you want, since your gateway has to provision
 each model anyway.

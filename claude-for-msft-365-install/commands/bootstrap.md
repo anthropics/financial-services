@@ -268,8 +268,10 @@ bootstrap is the per-user layer, and the highest-precedence channel, so
 rotations here propagate without re-login.
 
 ```json
-"available_models": ["claude-opus-4-5", "<id-your-gateway-serves>"]
+"available_models": ["claude-opus-4-5", {"id": "<id-your-gateway-serves>", "label": "<picker label>"}]
 ```
+
+Entries are ids, or `{ "id", "label" }` objects to control the picker label.
 
 ### `bootstrap_expires_at`
 
