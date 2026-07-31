@@ -88,6 +88,17 @@ unrecognized value is a hard error, and any non-global `graph_cloud` requires
 they share the auth path — so include it in the `office` manifest too if you
 set it.
 
+### Bedrock in AWS GovCloud
+
+If the provider is Bedrock direct and your AWS account lives in GovCloud, pass
+the GovCloud shapes for both AWS keys — the role and the region must be in the
+same partition, and the build script errors on a mismatch (a commercial-partition
+role can never be assumed against a GovCloud STS/Bedrock endpoint, or vice versa):
+
+```bash
+aws_role_arn=arn:aws-us-gov:iam::<account>:role/ClaudeBedrockAccess aws_region=us-gov-west-1
+```
+
 **Bedrock / WIF note:** a `.us`-issued idToken has issuer
 `https://login.microsoftonline.us/{tenant}/v2.0` — your AWS OIDC identity
 provider must be configured with that issuer, not the `.com` one.
