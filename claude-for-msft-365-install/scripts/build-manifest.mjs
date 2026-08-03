@@ -85,6 +85,10 @@ const KEYS = {
     pattern: /^[\w.]+(,[\w.]+)*$/,
     hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring",
   },
+  access_policies: {
+    pattern: /^\[.*\]$/s,
+    hint: "JSON array of policy statements — see commands/access-policies.md; e.g. [{\"effect\":\"deny\",\"action\":\"addin.access\",\"resource\":{...}}]",
+  },
 };
 
 const NEEDS_ENTRA = ["aws_role_arn", "graph_client_id", "entra_scope", "gateway_auth_source"];

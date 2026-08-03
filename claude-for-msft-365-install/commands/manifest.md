@@ -272,6 +272,28 @@ Unknown slugs are ignored (forward-compatible). Setting it here applies one
 policy org-wide; per-user policy belongs in [bootstrap](bootstrap.md#disabled_features)
 (JSON array) or extension attrs (comma-separated).
 
+## access_policies
+
+`access_policies` is the IAM-shaped successor to `disabled_features` — a JSON
+array of allow/deny statements that gates add-in features:
+
+- **No `resource`** — the statement applies everywhere, exactly like a
+  `disabled_features` entry (off for everyone).
+- **With a `resource`** — the rule is scoped to matching documents, today
+  identified by Purview sensitivity label (block the add-in entirely on
+  top-secret documents, or refuse attaching restricted Office/PDF files).
+
+It covers everything `disabled_features` does, plus conditions, allowlists, and
+per-statement attribution. Building one usually means fetching label GUIDs
+from Purview, so use the guided command:
+[access-policies](access-policies.md). Then pass the result as one more key:
+
+```bash
+access_policies='[{"effect":"deny","action":"addin.access","resource":{"type":"open_file","identifiers":[{"type":"mip_label_guid","equals":"<guid>"}]}}]'
+```
+
+Manifest / bootstrap only — the array does not fit in Entra extension attributes.
+
 ## Version
 
 M365 Admin Center caches by `<Id>` + `<Version>` — re-upload with the same
