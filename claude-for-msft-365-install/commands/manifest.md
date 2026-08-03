@@ -263,6 +263,9 @@ locked for users. Slugs use `<domain>.<action>` form. Currently enforced:
 | Slug | Effect |
 |---|---|
 | `skills.authoring` | Blocks creating, editing, and uploading skills (create/update tools, `/skillify`, `.skill` upload + drag-drop, skill editing UI). Running admin-provisioned skills is unaffected. |
+| `thumbs` | Blocks response feedback (thumbs up / down and the follow-up prompt). |
+| `addin.access` | Kill switch — the add-in refuses to run. Almost always wants a document `resource`; use [access-policies](access-policies.md). |
+| `file.upload` | Blocks attaching files to the conversation. Same — usually scoped by `resource`. |
 
 ```bash
 disabled_features='skills.authoring'

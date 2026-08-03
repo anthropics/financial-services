@@ -116,13 +116,51 @@ longer pass either. A matching `deny` still wins over a matching `allow`.
 }
 ```
 
-Combine as needed — the value is one JSON array of statements:
+Combine as needed — the value is one JSON array of statements. `action` also
+accepts an array to apply one statement to several actions:
 
 ```json
 [
   { "effect": "deny", "action": "addin.access", "resource": { ... } },
-  { "effect": "deny", "action": "file.upload", "resource": { ... } }
+  { "effect": "deny", "action": ["file.upload", "skills.authoring"] }
+]
 ```
+
+### Statement grammar (reference)
+
+```
+statement   := { effect, action, resource? }
+effect      := "allow" | "deny"
+action      := <slug> | [ <slug>, ... ]          # feature slugs; unknown -> skipped + reported
+resource    := { type, identifiers: [identifier, ...], description? }
+type        := "open_file" | "uploaded_file"    # the extension point
+identifier  := { type: "mip_label_guid" | "mip_label_name", <one operator> }
+```
+
+| `action` slug | Gates | Takes a `resource`? |
+|---|---|---|
+| `addin.access` | Whether the add-in runs at all on the open document — the kill switch | `open_file` |
+| `file.upload` | Whether a file may be attached to the conversation | `uploaded_file` |
+| `skills.authoring` | Creating, editing, and uploading skills; running admin-provisioned skills is unaffected | — |
+| `thumbs` | Response feedback (thumbs up / down and the follow-up prompt) | — |
+
+Unknown slugs are skipped and reported — forward-compatible. A resource-less
+statement works with any slug; today only `addin.access` and `file.upload`
+have a resource type to scope against.
+
+| Operator | Value | Semantics |
+|---|---|---|
+| `equals` | string | GUID: case-insensitive. Name: exact, case-sensitive |
+| `startsWith` | string | prefix match — `mip_label_name` only (see the parent-label rule) |
+| `endsWith` | string | suffix match — `mip_label_name` only |
+| `exists` | boolean | presence check — `false` = unlabeled, `true` = any label |
+
+Exactly one operator per identifier; `mip_label_guid` supports only `equals` and
+`exists`. A resource needs at least one identifier — an empty `identifiers`
+array never matches. Statements OR together; identifiers within a resource OR
+together; a matching `deny` beats a matching `allow`; the first
+`allow` for an `(action, resource type)` flips that scope to default-deny.
+`description` is inert prose (surfaced in UI copy / telemetry, never matched).
 
 ## 3. Rules to explain before they ship it
 
@@ -139,10 +177,11 @@ together.
 carries its sublabel's GUID (the row with a `ParentId`). To block a whole
 parent group ("everything under *Confidential*"), either list each sublabel's
 GUID, or match on the composed display name, which Office writes as
-`"Parent - Sublabel"`:
+`"Parent - Sublabel"` (include the ` - ` separator in the prefix so a sibling
+label like *Confidentiality Waiver* doesn't also match):
 
 ```json
-{ "type": "mip_label_name", "startsWith": "Confidential" }
+{ "type": "mip_label_name", "startsWith": "Confidential - " }
 ```
 
 **Name matching is exact and rename-hazardous.** `mip_label_name` compares the
@@ -172,10 +211,13 @@ is refused.
 
 Read the finished array back to the admin as a table (effect / action /
 resource / identifiers) before generating anything. Then pass it to
-[manifest](manifest.md#access_policies) as the `access_policies` key — the build
-script checks it's a JSON array. Malformed statements aren't fatal on the
-add-in side (they're skipped and reported), but validate now so the admin isn't
-surprised by a rule that silently didn't apply.
+[manifest](manifest.md#access_policies) as the `access_policies` key. The build
+script rejects a value that isn't valid JSON and warns on each statement that
+doesn't fit the grammar above (bad `effect`, unknown resource / identifier type,
+missing or duplicate operator). Fix every warning now: the add-in reports
+unknown action slugs and an unparseable value, but a statement that fails the
+grammar is dropped silently — this build-time check is the only catch, and the
+admin would otherwise ship a rule that quietly never applies.
 
 `access_policies` is manifest / bootstrap only — it does **not** fit in Entra
 extension attributes (256-char cap). If they use per-user

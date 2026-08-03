@@ -88,8 +88,76 @@ const KEYS = {
   access_policies: {
     pattern: /^\[.*\]$/s,
     hint: "JSON array of policy statements — see commands/access-policies.md; e.g. [{\"effect\":\"deny\",\"action\":\"addin.access\",\"resource\":{...}}]",
+    validate: (v) => {
+      let arr;
+      try {
+        arr = JSON.parse(v);
+      } catch (e) {
+        throw new Error(`access_policies is not valid JSON: ${e.message}`);
+      }
+      if (!Array.isArray(arr)) return ["expected a JSON array of statements"];
+      return arr.flatMap((st, i) => validateStatement(st, `statement[${i}]`));
+    },
   },
 };
+
+// Structural check for one access_policies statement. Warn-only: the add-in itself
+// skips and reports malformed statements rather than failing, so this catches typos
+// before deploy without being stricter than the runtime.
+const EFFECTS = ["allow", "deny"];
+const RESOURCE_TYPES = ["open_file", "uploaded_file"];
+const STRING_OPS = ["equals", "startsWith", "endsWith"];
+// Mirrors the add-in: a GUID supports only equals | exists (a prefix of a GUID is
+// meaningless); a name supports the string operators too. Other pairings are dropped
+// at runtime, so warn here.
+const OPERATORS_BY_TYPE = {
+  mip_label_guid: ["equals", "exists"],
+  mip_label_name: ["equals", "startsWith", "endsWith", "exists"],
+};
+
+function validateStatement(st, at) {
+  if (typeof st !== "object" || st === null || Array.isArray(st)) return [`${at}: expected an object`];
+  const problems = [];
+  if (!EFFECTS.includes(st.effect)) problems.push(`${at}.effect: expected "allow" or "deny"`);
+  const slugs = Array.isArray(st.action) ? st.action : [st.action];
+  const actionOk = slugs.length > 0 && slugs.every((a) => typeof a === "string" && a.trim());
+  if (!actionOk) problems.push(`${at}.action: expected a non-empty slug string or array of them`);
+  if (st.resource !== undefined) {
+    const r = st.resource;
+    if (typeof r !== "object" || r === null) return [...problems, `${at}.resource: expected an object`];
+    if (!RESOURCE_TYPES.includes(r.type)) problems.push(`${at}.resource.type: expected ${RESOURCE_TYPES.join(" | ")}`);
+    if (r.description !== undefined && typeof r.description !== "string") {
+      problems.push(`${at}.resource.description: expected a string`);
+    }
+    if (!Array.isArray(r.identifiers)) {
+      problems.push(`${at}.resource.identifiers: expected an array`);
+    } else if (r.identifiers.length === 0) {
+      problems.push(`${at}.resource.identifiers: empty — the statement will never match; drop \`resource\` to apply everywhere`);
+    } else {
+      r.identifiers.forEach((id, j) => problems.push(...validateIdentifier(id, `${at}.resource.identifiers[${j}]`)));
+    }
+  }
+  return problems;
+}
+
+function validateIdentifier(id, at) {
+  if (typeof id !== "object" || id === null) return [`${at}: expected an object`];
+  const problems = [];
+  const allowed = OPERATORS_BY_TYPE[id.type];
+  if (!allowed) problems.push(`${at}.type: expected ${Object.keys(OPERATORS_BY_TYPE).join(" | ")}`);
+  const ops = [...STRING_OPS.filter((op) => op in id), ..."exists" in id ? ["exists"] : []];
+  if (ops.length !== 1) {
+    problems.push(`${at}: expected exactly one operator (equals | startsWith | endsWith | exists), got ${ops.length}`);
+    return problems;
+  }
+  const [op] = ops;
+  if (allowed && !allowed.includes(op)) {
+    problems.push(`${at}: ${id.type} does not support ${op} (only ${allowed.join(" | ")})`);
+  } else if (op === "exists" ? typeof id.exists !== "boolean" : typeof id[op] !== "string" || !id[op].trim()) {
+    problems.push(`${at}.${op}: expected a ${op === "exists" ? "boolean" : "non-empty string"}`);
+  }
+  return problems;
+}
 
 const NEEDS_ENTRA = ["aws_role_arn", "graph_client_id", "entra_scope", "gateway_auth_source"];
 
@@ -118,6 +186,7 @@ async function main() {
     if (!spec) throw new Error(`unknown key: ${k}\n  valid: ${Object.keys(KEYS).join(", ")}`);
     if (!v) throw new Error(`empty value for ${k}`);
     if (!spec.pattern.test(v)) console.warn(`warn: ${k}=${v} — expected ${spec.hint}`);
+    for (const msg of spec.validate?.(v) ?? []) console.warn(`warn: ${k} ${msg}`);
     if (spec.secret) {
       console.warn(
         `note: ${k} in the manifest applies to every user. If it varies per user, set it via update-user-attrs instead.`,

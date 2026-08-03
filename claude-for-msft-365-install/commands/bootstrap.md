@@ -260,6 +260,20 @@ layer.
 "disabled_features": ["skills.authoring"]
 ```
 
+### `access_policies`
+
+Native JSON array of allow/deny statements — the per-user layer of the
+[manifest key](manifest.md#access_policies); build the array with
+[access-policies](access-policies.md). Pass it as a real array, not a string:
+
+```json
+"access_policies": [
+  { "effect": "deny", "action": "addin.access",
+    "resource": { "type": "open_file",
+      "identifiers": [{ "type": "mip_label_guid", "equals": "<guid>" }] } }
+]
+```
+
 ### `bootstrap_expires_at`
 
 Epoch timestamp (seconds or milliseconds — auto-detected) for when this
