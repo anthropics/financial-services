@@ -312,6 +312,27 @@ Unknown slugs are ignored (forward-compatible). Setting it here applies one
 policy org-wide; per-user policy belongs in [bootstrap](bootstrap.md#disabled_features)
 (JSON array) or extension attrs (comma-separated).
 
+## available_models
+
+`available_models` **overrides** the model picker — when set, users see exactly
+the models listed, in the listed order, and nothing else. It replaces the
+retired `disabled_models` / `additional_models` pair: because it is an
+override, it must include every backend model users should keep, not just
+additions or removals.
+
+Two formats:
+
+```bash
+# comma-separated ids
+available_models='claude-opus-4-8,claude-sonnet-5'
+
+# JSON, when picker labels matter — an array of ids and/or {id, label} objects
+available_models='[{"id":"claude-opus-4-8","label":"Opus 4.8"},"claude-sonnet-5"]'
+```
+
+Unset (or empty) means the picker is unchanged. Setting it here applies
+org-wide; per-user policy belongs in [bootstrap](bootstrap.md#available_models).
+
 ## access_policies
 
 `access_policies` is the IAM-shaped successor to `disabled_features` — a JSON

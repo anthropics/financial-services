@@ -85,6 +85,33 @@ const KEYS = {
     pattern: /^[\w.]+(,[\w.]+)*$/,
     hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring",
   },
+  available_models: {
+    // Comma-separated model ids, or JSON: an array of ids and/or {id, label}
+    // objects (a lone object is single-entry shorthand). Mirrors the add-in's
+    // parseModelIdEntries leniency but warns where the runtime would silently drop.
+    pattern: /\S/,
+    hint: "override the model picker: comma-separated model ids, or JSON like [{\"id\":\"claude-opus-4-8\",\"label\":\"Opus 4.8\"}] — an OVERRIDE, list every model users should see",
+    validate: (v) => {
+      const t = v.trim();
+      if (!t.startsWith("[") && !t.startsWith("{")) {
+        return t.split(",").some((id) => !id.trim()) ? ["blank entry in comma-separated id list"] : [];
+      }
+      let parsed;
+      try {
+        parsed = JSON.parse(t);
+      } catch (e) {
+        throw new Error(`available_models is not valid JSON: ${e.message}`);
+      }
+      const arr = Array.isArray(parsed) ? parsed : [parsed];
+      return arr.flatMap((entry, i) => {
+        if (typeof entry === "string") return entry.trim() ? [] : [`entry[${i}]: blank id`];
+        if (typeof entry === "object" && entry !== null) {
+          return typeof entry.id === "string" && entry.id.trim() ? [] : [`entry[${i}]: missing string "id"`];
+        }
+        return [`entry[${i}]: expected an id string or {id, label} object`];
+      });
+    },
+  },
   access_policies: {
     pattern: /^\[.*\]$/s,
     hint: "JSON array of policy statements — see commands/access-policies.md; e.g. [{\"effect\":\"deny\",\"action\":\"addin.access\",\"resource\":{...}}]",
