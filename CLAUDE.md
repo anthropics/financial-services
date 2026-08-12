@@ -41,7 +41,7 @@ Run `python3 scripts/check.py` before committing — it lints every manifest, ve
 - `commands/*.md`: Slash commands invoked as `/plugin:command-name`
 - `skills/*/SKILL.md`: Detailed knowledge and workflows for specific tasks
 - `*.local.md`: User-specific configuration (gitignored)
-- `mcp-categories.json`: Canonical MCP category definitions shared across plugins
+- `mcp-categories.json` (repo root): Canonical MCP category definitions shared across plugins
 
 ## Development Workflow
 
