@@ -8,121 +8,273 @@
       "name": "financial-analysis",
       "displayName": "Financial Analysis",
       "source": "./plugins/vertical-plugins/financial-analysis",
-      "description": "Core financial modeling and analysis tools: DCF, comps, LBO, 3-statement models, competitive analysis, and deck QC"
+      "description": "Core financial modeling and analysis tools: DCF, comps, LBO, 3-statement models, competitive analysis, and deck QC",
+      "classification": {
+        "object_acted_on": [
+          "finances",
+          "data"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "investment-banking",
       "displayName": "Investment Banking",
       "source": "./plugins/vertical-plugins/investment-banking",
-      "description": "Investment banking productivity tools - client and market insights, deck creation, financial analysis, and transaction management"
+      "description": "Investment banking productivity tools - client and market insights, deck creation, financial analysis, and transaction management",
+      "classification": {
+        "object_acted_on": [
+          "finances",
+          "files-documents"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "equity-research",
       "displayName": "Equity Research",
       "source": "./plugins/vertical-plugins/equity-research",
-      "description": "Equity research tools: earnings analysis, initiating coverage reports, and research workflows"
+      "description": "Equity research tools: earnings analysis, initiating coverage reports, and research workflows",
+      "classification": {
+        "object_acted_on": [
+          "finances",
+          "papers-articles"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "private-equity",
       "displayName": "Private Equity",
       "source": "./plugins/vertical-plugins/private-equity",
-      "description": "Private equity deal sourcing and workflow tools: company discovery, CRM integration, and founder outreach"
+      "description": "Private equity deal sourcing and workflow tools: company discovery, CRM integration, and founder outreach",
+      "classification": {
+        "object_acted_on": [
+          "contacts-leads",
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "wealth-management",
       "displayName": "Wealth Management",
       "source": "./plugins/vertical-plugins/wealth-management",
-      "description": "Wealth management and financial advisory tools: client reviews, financial planning, portfolio analysis, and client reporting"
+      "description": "Wealth management and financial advisory tools: client reviews, financial planning, portfolio analysis, and client reporting",
+      "classification": {
+        "object_acted_on": [
+          "finances",
+          "contacts-leads"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "fund-admin",
       "displayName": "Fund Administration",
       "source": "./plugins/vertical-plugins/fund-admin",
-      "description": "Fund administration and finance ops: GL reconciliation, break tracing, accruals, roll-forwards, variance commentary, NAV tie-out"
+      "description": "Fund administration and finance ops: GL reconciliation, break tracing, accruals, roll-forwards, variance commentary, NAV tie-out",
+      "classification": {
+        "object_acted_on": [
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "operations",
       "displayName": "Operations",
       "source": "./plugins/vertical-plugins/operations",
-      "description": "Operational workflows: KYC document parsing and rules-grid evaluation"
+      "description": "Operational workflows: KYC document parsing and rules-grid evaluation",
+      "classification": {
+        "object_acted_on": [
+          "files-documents"
+        ],
+        "work_department": "operations",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "pitch-agent",
       "displayName": "Pitch Agent",
       "source": "./plugins/agent-plugins/pitch-agent",
-      "description": "Comps, precedents, LBO to a branded pitch deck, end to end"
+      "description": "Comps, precedents, LBO to a branded pitch deck, end to end",
+      "classification": {
+        "object_acted_on": [
+          "files-documents",
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "market-researcher",
       "displayName": "Market Researcher",
       "source": "./plugins/agent-plugins/market-researcher",
-      "description": "Sector or theme to industry overview, competitive landscape, peer comps, and ideas shortlist"
+      "description": "Sector or theme to industry overview, competitive landscape, peer comps, and ideas shortlist",
+      "classification": {
+        "object_acted_on": [
+          "data",
+          "papers-articles"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "earnings-reviewer",
       "displayName": "Earnings Reviewer",
       "source": "./plugins/agent-plugins/earnings-reviewer",
-      "description": "Earnings call and filings to model update to note draft"
+      "description": "Earnings call and filings to model update to note draft",
+      "classification": {
+        "object_acted_on": [
+          "finances",
+          "papers-articles"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "meeting-prep-agent",
       "displayName": "Meeting Prep Agent",
       "source": "./plugins/agent-plugins/meeting-prep-agent",
-      "description": "Briefing pack before every client meeting"
+      "description": "Briefing pack before every client meeting",
+      "classification": {
+        "object_acted_on": [
+          "contacts-leads",
+          "files-documents"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "model-builder",
       "displayName": "Model Builder",
       "source": "./plugins/agent-plugins/model-builder",
-      "description": "DCF, LBO, 3-statement, comps - live in Excel"
+      "description": "DCF, LBO, 3-statement, comps - live in Excel",
+      "classification": {
+        "object_acted_on": [
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "gl-reconciler",
       "displayName": "GL Reconciler",
       "source": "./plugins/agent-plugins/gl-reconciler",
-      "description": "Finds breaks, traces root cause, routes for sign-off"
+      "description": "Finds breaks, traces root cause, routes for sign-off",
+      "classification": {
+        "object_acted_on": [
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "kyc-screener",
       "displayName": "KYC Screener",
       "source": "./plugins/agent-plugins/kyc-screener",
-      "description": "Parses onboarding docs, runs the rules engine, flags gaps"
+      "description": "Parses onboarding docs, runs the rules engine, flags gaps",
+      "classification": {
+        "object_acted_on": [
+          "files-documents"
+        ],
+        "work_department": "operations",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "valuation-reviewer",
       "displayName": "Valuation Reviewer",
       "source": "./plugins/agent-plugins/valuation-reviewer",
-      "description": "Ingests GP packages, runs valuation template, stages LP reporting"
+      "description": "Ingests GP packages, runs valuation template, stages LP reporting",
+      "classification": {
+        "object_acted_on": [
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "month-end-closer",
       "displayName": "Month-End Closer",
       "source": "./plugins/agent-plugins/month-end-closer",
-      "description": "Accruals, roll-forwards, variance commentary"
+      "description": "Accruals, roll-forwards, variance commentary",
+      "classification": {
+        "object_acted_on": [
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "statement-auditor",
       "displayName": "Statement Auditor",
       "source": "./plugins/agent-plugins/statement-auditor",
-      "description": "Audits pre-generated LP statements before distribution"
+      "description": "Audits pre-generated LP statements before distribution",
+      "classification": {
+        "object_acted_on": [
+          "files-documents",
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "lseg",
       "displayName": "LSEG",
       "source": "./plugins/partner-built/lseg",
-      "description": "Price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards using LSEG financial data and analytics."
+      "description": "Price bonds, analyze yield curves, evaluate FX carry trades, value options, and build macro dashboards using LSEG financial data and analytics.",
+      "classification": {
+        "object_acted_on": [
+          "data",
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "sp-global",
       "displayName": "S&P Global",
       "source": "./plugins/partner-built/spglobal",
-      "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
+      "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries",
+      "classification": {
+        "object_acted_on": [
+          "data",
+          "finances"
+        ],
+        "work_department": "finance",
+        "industry": "financial-services"
+      }
     },
     {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
-      "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Microsoft 365 add-in. Generates the customized manifest, walks through Azure admin consent, and writes per-user config via Graph extension attributes."
+      "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Microsoft 365 add-in. Generates the customized manifest, walks through Azure admin consent, and writes per-user config via Graph extension attributes.",
+      "classification": {
+        "object_acted_on": [
+          "servers-cloud",
+          "claude-settings"
+        ],
+        "work_department": "it-security"
+      }
     }
   ]
 }
