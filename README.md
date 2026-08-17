@@ -5,6 +5,7 @@ Reference agents, skills, and data connectors for the financial-services workflo
 Everything here is available **two ways from one source**: install it as a [Claude Cowork](https://claude.com/product/cowork) plugin, or deploy it through the [Claude Managed Agents API](https://docs.claude.com/en/api/managed-agents) behind your own workflow engine. Same system prompt, same skills — you choose where it runs.
 
 > [!IMPORTANT]
+> This is the Randy's anthropic test version for a pull request course
 > Nothing in this repository constitutes investment, legal, tax, or accounting advice. These agents draft analyst work product — models, memos, research notes, reconciliations — for review by a qualified professional. They do not make investment recommendations, execute transactions, bind risk, post to a ledger, or approve onboarding; every output is staged for human sign-off. You are responsible for verifying outputs and for compliance with the laws and regulations that apply to your firm.
 
 What's in the repo:
@@ -256,5 +257,6 @@ Everything here is markdown and YAML. Fork, edit, PR. For new content:
 - Run `python3 scripts/check.py` before pushing — it lints every manifest, verifies all cross-file references resolve, and fails if any bundled skill has drifted from its vertical source.
 
 ## License
+## file appended successfully by Randy
 
 [Apache License 2.0](./LICENSE)
