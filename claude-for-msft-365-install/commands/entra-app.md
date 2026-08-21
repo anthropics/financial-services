@@ -13,7 +13,7 @@ You need this when setting any of:
 |---|---|
 | `graph_client_id` (Outlook) | Graph permissions are consented against your app, not Anthropic's |
 | `entra_scope` | Access token must be audienced to *your* API resource |
-| `gateway_auth_source=entra` | Gateway validates a token audienced to your API |
+| `gateway_auth_source=entra` | Your gateway — or a Foundry resource — validates a token audienced to that resource |
 | `graph_cloud` ≠ `global` | Anthropic's app exists only in the commercial cloud |
 
 ## Register the app
@@ -43,6 +43,7 @@ What you configure here depends on what the token is for:
 |---|---|
 | **Outlook (Graph)** | *API permissions* → *Microsoft Graph* → Delegated → `Mail.ReadWrite`, `Calendars.Read`, `People.Read`, `User.Read`, `offline_access`. |
 | **Gateway / bootstrap auth** (`entra_scope`, `gateway_auth_source=entra`) | *Expose an API* → set Application ID URI `api://<app-guid>` → *Add a scope* (e.g. `access_as_user`, admin-consent enabled). Then *API permissions* → *My APIs* → add that scope as a delegated permission (the app to itself, in single-app topology). |
+| **Foundry direct, keyless** (`gateway_auth_source=entra` + `azure_resource_name`) | *API permissions* → *Azure Cognitive Services* → Delegated → `user_impersonation`. No *Expose an API* step — the token is audienced to Azure's `https://cognitiveservices.azure.com`, not your own app, so set `entra_scope=https://cognitiveservices.azure.com/.default`. Also grant each user the **Cognitive Services User** role on the Foundry resource (Azure Portal → resource → *Access control (IAM)*). |
 | **Bedrock WIF** (`aws_role_arn`) | No API permissions needed — the ID token alone is the web identity. |
 
 In all cases finish with *API permissions* → **Grant admin consent for
@@ -67,6 +68,12 @@ sends as `Authorization: Bearer` carries:
 | `aud` | your Application ID URI (`api://<app-guid>`) |
 | `scp` | the scope(s) you exposed, space-separated |
 | JWKS | `https://login.microsoftonline.com/<tenant-id>/discovery/v2.0/keys` |
+
+For **Foundry direct keyless** there is no backend of yours — Azure validates the
+token. The `aud` is `https://cognitiveservices.azure.com` and `scp` is
+`user_impersonation`; Azure checks the signature and audience, then authorizes
+the call by the user's **Cognitive Services User** role on the resource. You do
+not set *Expose an API* or `accessTokenAcceptedVersion` for this path.
 
 ## GCC High / DoD / 21Vianet
 

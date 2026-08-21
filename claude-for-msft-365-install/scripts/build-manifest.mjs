@@ -48,7 +48,7 @@ const KEYS = {
   gateway_api_format: { pattern: /^(anthropic|bedrock|vertex)$/i, hint: "anthropic | bedrock | vertex" },
   gateway_auth_source: {
     pattern: /^entra$/,
-    hint: "'entra' to use the Entra SSO access token as the gateway Bearer (no gateway_token needed); requires entra_scope",
+    hint: "'entra' to send the Entra SSO access token as the Bearer to your gateway, or to a Foundry resource named by azure_resource_name (no gateway_token / azure_api_key needed); requires entra_scope",
   },
   mcp_servers: { pattern: /^\[.*\]$/, hint: "JSON array of {url, label, headers?, discover?}" },
   inference_headers: { pattern: /^\{.*\}$/, hint: "JSON object of extra headers to attach to every model request" },
@@ -69,7 +69,7 @@ const KEYS = {
     // Any non-blank string — Entra validates scope syntax, not us. May be a comma- or
     // whitespace-separated list (the add-in splits it); requires graph_client_id (enforced below).
     pattern: /\S/,
-    hint: "scope(s) for your Entra-protected API, e.g. api://<your-app-guid>/.default — comma/space-separated list allowed, requires graph_client_id",
+    hint: "scope(s) for the resource the token targets: api://<your-app-guid>/.default for your own API, or https://cognitiveservices.azure.com/.default for Foundry direct — comma/space-separated list allowed, requires graph_client_id",
   },
   graph_cloud: {
     // The add-in rejects unrecognized values at load and falls back to global,

@@ -42,6 +42,7 @@ an LLM gateway (LiteLLM, Portkey, Kong, etc.)?**
 | `vertex` | Add-in → Google Vertex AI, directly | Google OAuth client | `gcp_project_id`, `gcp_region`, `google_client_id`, `google_client_secret` |
 | `bedrock` | Add-in → AWS Bedrock, directly | IAM OIDC provider + role | `aws_role_arn`, `aws_region` |
 | `foundry` | Add-in → Azure AI Foundry, directly | Foundry resource + API key | `azure_resource_name`, `azure_api_key` |
+| `foundry` (keyless) | Add-in → Azure AI Foundry, per-user Entra sign-in | Foundry resource + your Entra app | `azure_resource_name`, `entra_sso=1`, `graph_client_id`, `entra_scope=https://cognitiveservices.azure.com/.default`, `gateway_auth_source=entra` |
 
 Bedrock and per-user config (bootstrap endpoint or extension attrs) need
 `entra_sso=1` — the add-in acquires the user's Entra ID token to authenticate
@@ -229,9 +230,20 @@ resource, so no model config is needed here.
 
 Capture: `azure_resource_name`, `azure_api_key`.
 
-Continue to [Step 3](#step-3--decide-whats-org-wide-vs-per-user). Foundry auth
-is key-based, not Entra, so admin consent isn't needed unless you also opt
-into per-user config (in which case come back to Step 2 after deciding in Step 3).
+### 1c. Keyless alternative: per-user Entra sign-in
+
+To avoid distributing the resource key, skip it and have each user authenticate
+with their own Entra identity. Instead of the API key, capture
+`azure_resource_name`, `entra_sso=1`, `graph_client_id` (your own Entra app),
+`entra_scope=https://cognitiveservices.azure.com/.default`, and
+`gateway_auth_source=entra`. This needs the Entra app configured with the Azure
+Cognitive Services `user_impersonation` permission and each user granted the
+**Cognitive Services User** role on the resource — see [entra-app](entra-app.md).
+
+Continue to [Step 3](#step-3--decide-whats-org-wide-vs-per-user). Key-based
+Foundry auth needs no admin consent unless you also opt into per-user config;
+the keyless Entra path always needs admin consent on the Cognitive Services
+permission (Step 2).
 
 ---
 
