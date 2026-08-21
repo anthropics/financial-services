@@ -75,6 +75,14 @@ token. The `aud` is `https://cognitiveservices.azure.com` and `scp` is
 the call by the user's **Cognitive Services User** role on the resource. You do
 not set *Expose an API* or `accessTokenAcceptedVersion` for this path.
 
+The role is specifically **Cognitive Services User** — the data-plane role for
+direct model inference. Not *Cognitive Services OpenAI User* (OpenAI models
+only), and not *Foundry User* / *Azure AI User* (the renamed role for the Foundry
+agent and project plane, a different data plane). The `user_impersonation`
+permission is a delegated permission for the add-in's per-user interactive
+sign-in; it is not a server-side on-behalf-of exchange, which Azure AI resources
+do not support.
+
 ## GCC High / DoD / 21Vianet
 
 Same steps, different portal and endpoints — apps don't replicate across

@@ -193,6 +193,18 @@ The Entra app needs the Azure Cognitive Services `user_impersonation` delegated
 permission (not a self-exposed API); see [entra-app](entra-app.md). If both
 `azure_api_key` and `gateway_auth_source=entra` are present, the key is ignored.
 
+**Why `cognitiveservices.azure.com`, not `ai.azure.com`.** The add-in signs each
+user in through Nested App Authentication against your Entra app, and that
+per-user *delegated* flow pairs with the app's Azure Cognitive Services
+`user_impersonation` permission, whose audience is
+`https://cognitiveservices.azure.com`. This is the same scope Claude Desktop's
+Foundry sign-in uses, so an Entra app already registered for Desktop works
+unchanged. Microsoft's SDK and managed-identity docs use `https://ai.azure.com/.default`
+instead; a Foundry resource accepts both audiences, but that scope belongs to the
+credential-based SDK flow (`DefaultAzureCredential`, `az login`, service
+principal), which doesn't use an app-registration delegated permission. For the
+add-in's per-user sign-in, use `cognitiveservices.azure.com/.default`.
+
 **Entra setup:** see [entra-app](entra-app.md) — the *Gateway / bootstrap auth*
 row of the permissions table, plus the
 [backend validation](entra-app.md#what-your-backend-validates) section for the
