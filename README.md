@@ -1,53 +1,55 @@
-# Claude for Financial Services
 
-Reference agents, skills, and data connectors for the financial-services workflows we see most — investment banking, equity research, private equity, and wealth management.
+```markdown
+# Claude for Financial Services 🏦
+
+**Reference agents, skills, and data connectors for the financial-services workflows we see most — investment banking, equity research, private equity, and wealth management.**
 
 Everything here is available **two ways from one source**: install it as a [Claude Cowork](https://claude.com/product/cowork) plugin, or deploy it through the [Claude Managed Agents API](https://docs.claude.com/en/api/managed-agents) behind your own workflow engine. Same system prompt, same skills — you choose where it runs.
 
-> [!IMPORTANT]
+> [!IMPORTANT]  
 > Nothing in this repository constitutes investment, legal, tax, or accounting advice. These agents draft analyst work product — models, memos, research notes, reconciliations — for review by a qualified professional. They do not make investment recommendations, execute transactions, bind risk, post to a ledger, or approve onboarding; every output is staged for human sign-off. You are responsible for verifying outputs and for compliance with the laws and regulations that apply to your firm.
 
-What's in the repo:
+## ✨ What's in the Repo
 
 - **[Agents](#agents)** — named, end-to-end workflow agents (Pitch Agent, Market Researcher, GL Reconciler, …). Each ships as a Cowork plugin **and** as a [Claude Managed Agent template](./managed-agent-cookbooks) you deploy via `/v1/agents`.
 - **[Vertical plugins](#vertical-plugins)** — the underlying skills, slash commands, and data connectors, bundled by FSI vertical. Install these on their own if you just want `/comps`, `/dcf`, `/earnings` and the connectors without a full agent.
 
-## Agents
+## 🚀 Agents
 
 Each agent is named for the workflow it runs. They're starting points: install the ones that match your work, then tune the prompts, skills, and connectors to how your firm does it.
 
 Each agent plugin is **self-contained** — it bundles the skills it uses, so installing the agent is all you need.
 
-| Function | Agent | What it does |
-|---|---|---|
+| Function              | Agent                          | What it does |
+|-----------------------|--------------------------------|--------------|
 | **Coverage & advisory** | **[Pitch Agent](./plugins/agent-plugins/pitch-agent)** | Comps, precedents, LBO → branded pitch deck, end to end |
-| | **[Meeting Prep Agent](./plugins/agent-plugins/meeting-prep-agent)** | Briefing pack before every client meeting |
+|                       | **[Meeting Prep Agent](./plugins/agent-plugins/meeting-prep-agent)** | Briefing pack before every client meeting |
 | **Research & modeling** | **[Market Researcher](./plugins/agent-plugins/market-researcher)** | Sector or theme → industry overview, competitive landscape, peer comps, ideas shortlist |
-| | **[Earnings Reviewer](./plugins/agent-plugins/earnings-reviewer)** | Earnings call + filings → model update → note draft |
-| | **[Model Builder](./plugins/agent-plugins/model-builder)** | DCF, LBO, 3-statement, comps — live in Excel |
+|                       | **[Earnings Reviewer](./plugins/agent-plugins/earnings-reviewer)** | Earnings call + filings → model update → note draft |
+|                       | **[Model Builder](./plugins/agent-plugins/model-builder)** | DCF, LBO, 3-statement, comps — live in Excel |
 | **Fund admin & finance ops** | **[Valuation Reviewer](./plugins/agent-plugins/valuation-reviewer)** | Ingests GP packages, runs valuation template, stages LP reporting |
-| | **[GL Reconciler](./plugins/agent-plugins/gl-reconciler)** | Finds breaks, traces root cause, routes for sign-off |
-| | **[Month-End Closer](./plugins/agent-plugins/month-end-closer)** | Accruals, roll-forwards, variance commentary |
-| | **[Statement Auditor](./plugins/agent-plugins/statement-auditor)** | Audits LP statements before distribution |
+|                       | **[GL Reconciler](./plugins/agent-plugins/gl-reconciler)** | Finds breaks, traces root cause, routes for sign-off |
+|                       | **[Month-End Closer](./plugins/agent-plugins/month-end-closer)** | Accruals, roll-forwards, variance commentary |
+|                       | **[Statement Auditor](./plugins/agent-plugins/statement-auditor)** | Audits LP statements before distribution |
 | **Operations & onboarding** | **[KYC Screener](./plugins/agent-plugins/kyc-screener)** | Parses onboarding docs, runs the rules engine, flags gaps |
 
 For Managed Agent deployment — `agent.yaml`, leaf-worker subagents, steering-event examples, and per-agent security notes — see **[managed-agent-cookbooks/](./managed-agent-cookbooks)**.
 
-## Repository Layout
+## 📁 Repository Layout
 
-```
+```bash
 plugins/
-  agent-plugins/               # Named agents — one self-contained plugin each
-  vertical-plugins/            # Skill + command bundles by FSI vertical, plus MCP connectors
-  partner-built/               # Partner-authored plugins (LSEG, S&P Global)
-managed-agent-cookbooks/       # Claude Managed Agent cookbooks — one dir per agent
-claude-for-msft-365-install/   # Admin tooling to provision the Claude Microsoft 365 add-in
-scripts/                       # deploy-managed-agent.sh · check.py · validate.py · orchestrate.py · sync-agent-skills.py
+  agent-plugins/     # Named agents — one self-contained plugin each
+  vertical-plugins/  # Skill + command bundles by FSI vertical, plus MCP connectors
+  partner-built/     # Partner-authored plugins (LSEG, S&P Global)
+managed-agent-cookbooks/ # Claude Managed Agent cookbooks — one dir per agent
+claude-for-msft-365-install/ # Admin tooling to provision the Claude Microsoft 365 add-in
+scripts/           # deploy-managed-agent.sh · check.py · validate.py · orchestrate.py · sync-agent-skills.py
 ```
 
-## Getting Started
+## 🛠 Getting Started
 
-### Cowork
+### Claude Cowork
 
 In Cowork, open **Settings → Plugins → Add plugin** and either:
 
@@ -86,24 +88,24 @@ Each template under [`managed-agent-cookbooks/`](./managed-agent-cookbooks) refe
 
 > **Research Preview:** subagent delegation (`callable_agents`) is a preview capability. See per-agent READMEs for security and handoff guidance.
 
-## How It Fits Together
+## 🔄 How It Fits Together
 
-| | What it is | Where it lives |
-|---|---|---|
-| **Agents** | Self-contained plugins that own a workflow end to end — system prompt plus the skills it uses. Cowork and the Managed Agent wrapper both reference the same directory. | `plugins/agent-plugins/<slug>/` |
-| **Skills** | Domain expertise, conventions, and step-by-step methods Claude draws on automatically when relevant. Authored once in the verticals; each agent bundles a synced copy of the ones it needs. | `plugins/vertical-plugins/<vertical>/skills/` (source) · `plugins/agent-plugins/<slug>/skills/` (bundled) |
-| **Commands** | Slash actions you trigger explicitly (`/comps`, `/earnings`, `/ic-memo`). | `plugins/vertical-plugins/<vertical>/commands/` |
-| **Connectors** | [MCP servers](https://modelcontextprotocol.io/) that wire Claude to your data — terminals, research platforms, document stores. | `plugins/vertical-plugins/financial-analysis/.mcp.json` |
+| Component          | What it is                                      | Where it lives |
+|--------------------|-------------------------------------------------|----------------|
+| **Agents**         | Self-contained plugins that own a workflow end to end — system prompt plus the skills it uses. | `plugins/agent-plugins/<slug>/` |
+| **Skills**         | Domain expertise, conventions, and step-by-step methods Claude draws on automatically when relevant. | `plugins/vertical-plugins/<vertical>/skills/` (source) · `plugins/agent-plugins/<slug>/skills/` (bundled) |
+| **Commands**       | Slash actions you trigger explicitly (`/comps`, `/earnings`, `/ic-memo`). | `plugins/vertical-plugins/<vertical>/commands/` |
+| **Connectors**     | [MCP servers](https://modelcontextprotocol.io/) that wire Claude to your data — terminals, research platforms, document stores. | `plugins/vertical-plugins/financial-analysis/.mcp.json` |
 | **Managed-agent wrappers** | `agent.yaml` + depth-1 subagents + steering examples for headless deployment. | `managed-agent-cookbooks/<slug>/` |
 
 Everything is file-based — markdown and JSON, no build step.
 
-## Vertical Plugins
+## 📊 Vertical Plugins
 
 Start with **financial-analysis** — it carries the shared modeling skills and all data connectors. Add verticals for the workflows you need.
 
 | Plugin | What it adds |
-|---|---|
+|--------|--------------|
 | **[financial-analysis](./plugins/vertical-plugins/financial-analysis)** *(core)* | Comps, DCF, LBO, 3-statement, deck QC, Excel audit. All 11 data connectors. |
 | **[investment-banking](./plugins/vertical-plugins/investment-banking)** | CIMs, teasers, process letters, buyer lists, merger models, deal tracking. |
 | **[equity-research](./plugins/vertical-plugins/equity-research)** | Earnings notes, initiations, model updates, thesis and catalyst tracking. |
@@ -114,12 +116,12 @@ Start with **financial-analysis** — it carries the shared modeling skills and 
 | **[lseg](./plugins/partner-built/lseg)** *(partner)* | Bond RV, swap curves, FX carry, options vol, macro-rates monitoring on LSEG data. |
 | **[sp-global](./plugins/partner-built/spglobal)** *(partner)* | Tear sheets, earnings previews, funding digests on S&P Capital IQ. |
 
-## MCP Integrations
+## 🔌 MCP Integrations
 
 All connectors are centralized in the **financial-analysis** core plugin and shared across the rest.
 
 | Provider | URL |
-|---|---|
+|----------|-----|
 | [Daloopa](https://www.daloopa.com/) | `https://mcp.daloopa.com/server/mcp` |
 | [Morningstar](https://www.morningstar.com/) | `https://mcp.morningstar.com/mcp` |
 | [S&P Global](https://www.spglobal.com/) | `https://kfinance.kensho.com/integrations/mcp` |
@@ -135,7 +137,7 @@ All connectors are centralized in the **financial-analysis** core plugin and sha
 
 > MCP access may require a subscription or API key from the provider.
 
-## Claude for Microsoft 365 — Install Tooling
+## 💼 Claude for Microsoft 365 — Install Tooling
 
 If your firm runs Claude inside Excel, PowerPoint, Word, and Outlook via the Microsoft 365 add-in, [`claude-for-msft-365-install/`](./claude-for-msft-365-install) is the admin tooling to provision it against **your own cloud** — Vertex AI, Bedrock, or an internal LLM gateway — instead of Anthropic's API.
 
@@ -148,7 +150,7 @@ claude plugin install claude-for-msft-365-install@claude-for-financial-services
 
 This is separate from the agents and vertical plugins above — it's the on-ramp that gets the add-in deployed in a tenant, after which the agents and skills here are what runs inside it.
 
-## Making It Yours
+## 🛠 Making It Yours
 
 These are reference templates — they get better when you tune them to how your firm works.
 
@@ -158,13 +160,12 @@ These are reference templates — they get better when you tune them to how your
 - **Adjust agent scope** — edit `agents/<slug>.md` to match how your team actually runs the workflow.
 - **Add your own** — copy the structure for workflows we haven't covered.
 
-## Skill & Command Reference
+## 📋 Skill & Command Reference
 
-<details>
-<summary><b>financial-analysis</b> — core modeling, Excel, deck QC</summary>
+### financial-analysis — core modeling, Excel, deck QC
 
 | Skill | Command | Description |
-|---|---|---|
+|-------|---------|-------------|
 | comps-analysis | `/comps` | Comparable company analysis with trading multiples |
 | dcf-model | `/dcf` | DCF valuation with WACC and sensitivity analysis |
 | lbo-model | `/lbo` | Leveraged buyout model |
@@ -179,13 +180,10 @@ These are reference templates — they get better when you tune them to how your
 | ppt-template-creator | `/ppt-template` | Create reusable PPT template skills |
 | skill-creator | — | Guide for creating new skills |
 
-</details>
-
-<details>
-<summary><b>investment-banking</b> — deal materials and execution</summary>
+### investment-banking — deal materials and execution
 
 | Skill | Command | Description |
-|---|---|---|
+|-------|---------|-------------|
 | strip-profile | `/one-pager` | One-page company profiles for pitch books |
 | pitch-deck | — | Populate pitch deck templates with data |
 | datapack-builder | — | Build data packs from CIMs and filings |
@@ -196,13 +194,10 @@ These are reference templates — they get better when you tune them to how your
 | process-letter | `/process-letter` | Bid instructions and process correspondence |
 | deal-tracker | `/deal-tracker` | Track live deals, milestones, and action items |
 
-</details>
-
-<details>
-<summary><b>equity-research</b> — coverage and publishing</summary>
+### equity-research — coverage and publishing
 
 | Skill | Command | Description |
-|---|---|---|
+|-------|---------|-------------|
 | earnings-analysis | `/earnings` | Post-earnings quarterly update reports |
 | earnings-preview | `/earnings-preview` | Pre-earnings scenario analysis and key metrics |
 | initiating-coverage | `/initiate` | Institutional-quality initiation reports |
@@ -213,13 +208,10 @@ These are reference templates — they get better when you tune them to how your
 | catalyst-calendar | `/catalysts` | Track upcoming catalysts across coverage |
 | idea-generation | `/screen` | Stock screening and idea sourcing |
 
-</details>
-
-<details>
-<summary><b>private-equity</b> — sourcing through portfolio ops</summary>
+### private-equity — sourcing through portfolio ops
 
 | Skill | Command | Description |
-|---|---|---|
+|-------|---------|-------------|
 | deal-sourcing | `/source` | Discover companies, check CRM, draft founder outreach |
 | deal-screening | `/screen-deal` | Quick pass/fail on inbound CIMs and teasers |
 | dd-checklist | `/dd-checklist` | Diligence checklists by workstream |
@@ -231,13 +223,10 @@ These are reference templates — they get better when you tune them to how your
 | value-creation-plan | `/value-creation` | Post-close 100-day plans and EBITDA bridges |
 | ai-readiness | `/ai-readiness` | Assess a portfolio company's AI readiness |
 
-</details>
-
-<details>
-<summary><b>wealth-management</b> — advisor workflows</summary>
+### wealth-management — advisor workflows
 
 | Skill | Command | Description |
-|---|---|---|
+|-------|---------|-------------|
 | client-review | `/client-review` | Prep for client meetings with performance and talking points |
 | financial-plan | `/financial-plan` | Retirement, education, estate, and cash-flow projections |
 | portfolio-rebalance | `/rebalance` | Allocation drift analysis and tax-aware rebalancing |
@@ -245,9 +234,7 @@ These are reference templates — they get better when you tune them to how your
 | investment-proposal | `/proposal` | Proposals for prospective clients |
 | tax-loss-harvesting | `/tlh` | Identify TLH opportunities and manage wash sales |
 
-</details>
-
-## Contributing
+## 🤝 Contributing
 
 Everything here is markdown and YAML. Fork, edit, PR. For new content:
 
@@ -255,6 +242,8 @@ Everything here is markdown and YAML. Fork, edit, PR. For new content:
 - New agent → `plugins/agent-plugins/<slug>/` (with `agents/<slug>.md` + `skills/`) and a matching `managed-agent-cookbooks/<slug>/`.
 - Run `python3 scripts/check.py` before pushing — it lints every manifest, verifies all cross-file references resolve, and fails if any bundled skill has drifted from its vertical source.
 
-## License
+## 📜 License
 
 [Apache License 2.0](./LICENSE)
+```
+
