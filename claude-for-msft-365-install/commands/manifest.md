@@ -303,6 +303,7 @@ locked for users. Slugs use `<domain>.<action>` form. Currently enforced:
 | `thumbs` | Blocks response feedback (thumbs up / down and the follow-up prompt). |
 | `addin.access` | Kill switch — the add-in refuses to run. Almost always wants a document `resource`; use [access-policies](access-policies.md). |
 | `file.upload` | Blocks attaching files to the conversation. Same — usually scoped by `resource`. |
+| `web_search` | Removes the native web_search and web_fetch server tools (queries otherwise egress to Anthropic's third-party search provider) and the user-facing web-search toggle. Code execution is unaffected. Pair with [`mcp_servers`](#mcp_servers) to substitute your own in-network search tool — with native search disabled, the model uses the tool you attach. |
 
 ```bash
 disabled_features='skills.authoring'

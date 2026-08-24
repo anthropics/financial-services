@@ -83,7 +83,7 @@ const KEYS = {
   },
   disabled_features: {
     pattern: /^[\w.]+(,[\w.]+)*$/,
-    hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring",
+    hint: "comma-separated feature slugs to lock for users, e.g. skills.authoring or web_search (disables native web search/fetch; pair with mcp_servers for an in-network replacement)",
   },
   available_models: {
     // Comma-separated model ids, or JSON: an array of ids and/or {id, label}
