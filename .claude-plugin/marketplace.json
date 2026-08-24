@@ -119,6 +119,11 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "phronesis",
+      "source": "./plugins/partner-built/phronesis",
+      "description": "Phronesis - Verified-correctness forecasting substrate across energy, compute/AI, healthcare, climate, regulatory, supply-chain, space, and robotics; calibration scorecard + methodology ledger transparency; MCP-primary, agent-native"
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
