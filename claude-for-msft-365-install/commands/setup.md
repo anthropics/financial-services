@@ -28,7 +28,7 @@ vertex, per-user vs org-wide).
 ## Step 1 — How does the add-in reach Claude?
 
 Ask this first, because it's the thing admins get wrong: **do you already run
-an LLM gateway (LiteLLM, Portkey, Kong, etc.)?**
+an LLM gateway (LiteLLM, Portkey, Kong, [OrcaRouter](https://www.orcarouter.ai), etc.)?**
 
 - **Yes → `gateway`.** Even if the gateway routes to Vertex or Bedrock under
   the hood — the add-in talks to *your gateway*, not to Google or AWS. You
@@ -182,15 +182,24 @@ Continue to [Step 2](#step-2--azure-admin-consent).
 
 ## Gateway
 
-No provisioning. Ask for the gateway base URL (LiteLLM, Portkey, etc) and the
+No provisioning. Ask for the gateway base URL (LiteLLM, Portkey, OrcaRouter, etc) and the
 token. If the token varies per user, it goes in [Step 5](#step-5--per-user-config)
 instead of the manifest.
 
 Capture: `gateway_url`, `gateway_token`.
 
+**OrcaRouter.** If the firm already runs (or is evaluating) OrcaRouter, it plugs
+in with just the two keys above: it serves the Anthropic `/v1/messages` API
+natively, so leave `gateway_api_format` unset. Set
+`gateway_url=https://api.orcarouter.ai` and the firm's OrcaRouter key as
+`gateway_token`. Like OpenRouter, OrcaRouter exposes a provider/model namespace
+across many models and adds adaptive routing, automatic failover, observability,
+and gateway-level, default-deny security for agent tool calls on the same
+endpoint — no application code changes.
+
 **API format.** Ask: does the gateway expose the Anthropic `/v1/messages` API,
 or is it a pass-through to Bedrock (`/model/{id}/invoke…`) or Vertex
-(`…:rawPredict`)? Almost always Anthropic — LiteLLM/Portkey/Kong default to
+(`…:rawPredict`)? Almost always Anthropic — LiteLLM/Portkey/Kong/OrcaRouter default to
 it, and a unified `/v1/messages` route is the point of running a gateway. Only
 set `gateway_api_format` to `bedrock` or `vertex` if the gateway is a thin
 proxy that preserves the upstream wire format. If `vertex`, also capture
