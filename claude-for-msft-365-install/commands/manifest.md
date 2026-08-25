@@ -245,6 +245,14 @@ operate. Set it to the collector's base HTTPS URL — the add-in appends
 `/v1/traces` and posts OTLP/HTTP. gRPC isn't supported (the add-in runs in a
 browser WebView). Leave it unset and no custom collector is configured.
 
+`otlp_protocol` selects the wire encoding for that collector: `http/json`
+(the default) or `http/protobuf` for collectors that only accept binary
+protobuf (for example an Azure Monitor Data Collection Endpoint). The
+protobuf encoding is rolling out gradually: until it is enabled for your
+organization the add-in keeps sending OTLP/JSON, so pair a protobuf-only
+collector with a JSON converter until you confirm protobuf is active for
+you. `grpc` is not supported.
+
 `otlp_headers` supplies authentication headers for that collector, in the same
 `key1=value1,key2=value2` format as the standard
 `OTEL_EXPORTER_OTLP_HEADERS` variable. URL-encode the value in the manifest.
