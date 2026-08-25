@@ -54,6 +54,10 @@ const KEYS = {
   inference_headers: { pattern: /^\{.*\}$/, hint: "JSON object of extra headers to attach to every model request" },
   bootstrap_url: { pattern: /^https:\/\//, hint: "HTTPS endpoint returning per-user config" },
   otlp_endpoint: { pattern: /^https:\/\//, hint: "OTLP/HTTP traces collector URL" },
+  otlp_protocol: {
+    pattern: /^(http\/json|http\/protobuf)$/,
+    hint: "OTLP wire encoding for the collector: http/json (default) or http/protobuf (rolling out; JSON until enabled for your org)",
+  },
   otlp_headers: { pattern: /./, hint: "comma-separated k=v pairs for the OTLP exporter" },
   otlp_resource_attributes: {
     pattern: /^([^=,\s]+=[^,]*)(,[^=,\s]+=[^,]*)*$/,
