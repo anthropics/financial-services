@@ -249,6 +249,9 @@ These are reference templates — they get better when you tune them to how your
 
 ## Contributing
 
+Read the [contribution guidelines](./CONTRIBUTING.md) for setup, validation,
+plugin-versioning, security, and pull-request expectations.
+
 Everything here is markdown and YAML. Fork, edit, PR. For new content:
 
 - New skill → add it under `plugins/vertical-plugins/<vertical>/skills/`, then run `python3 scripts/sync-agent-skills.py` to propagate to any agent that bundles it.
