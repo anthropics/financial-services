@@ -119,6 +119,12 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "riskmodels",
+      "displayName": "RiskModels",
+      "source": "./plugins/partner-built/riskmodels",
+      "description": "Decompose US equity and portfolio risk into market, sector, subsector, and stock-specific components with tradeable ETF hedge ratios, pull point-in-time fundamentals with a CAPM cost-of-capital layer, and rank names on residual risk using the hosted RiskModels MCP."
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
