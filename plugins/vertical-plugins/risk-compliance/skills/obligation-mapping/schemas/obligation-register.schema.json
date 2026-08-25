@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Obligation register",
+  "description": "Structured output produced by the obligation-mapping skill. One register per scoped engagement, containing many obligation rows. Downstream skills (control-matrix, policy-gap-review, evidence-binder, exam-brief, issue-writeup) consume this record by obligation_id.",
+  "type": "object",
+  "required": [
+    "register_id",
+    "as_of_date",
+    "scope",
+    "sources",
+    "obligations",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "properties": {
+    "register_id": {
+      "type": "string",
+      "description": "Stable identifier for this register, scoped to the engagement."
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "The date this version of the register was produced."
+    },
+    "scope_ref": {
+      "type": "string",
+      "description": "Pointer to the scope record this register was produced under, when one exists."
+    },
+    "scope": {
+      "type": "object",
+      "required": ["process", "jurisdiction"],
+      "properties": {
+        "process": {"type": "string", "description": "Process, product, function, or domain the register covers."},
+        "product": {"type": "string"},
+        "business_unit": {"type": "string"},
+        "jurisdiction": {"type": "string"},
+        "period_start": {"type": "string", "format": "date"},
+        "period_end": {"type": "string", "format": "date"},
+        "register_type": {
+          "type": "string",
+          "enum": ["fresh-build", "refresh", "re-mapping"],
+          "description": "Whether this register is a new build, a refresh against an updated source, or a re-mapping after a process change."
+        }
+      }
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "public-plus-firm-policy",
+        "public-plus-firm-policy-plus-evidence",
+        "connector-aware"
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "description": "The source list. If a source is not on the list, it is not a permitted citation in any row.",
+      "items": {
+        "type": "object",
+        "required": ["source_name", "url"],
+        "properties": {
+          "source_name": {"type": "string"},
+          "issuer": {"type": "string", "description": "Regulator, agency, standard-setter, counterparty, or internal owner."},
+          "edition": {"type": "string", "description": "Edition, version, or amendment label."},
+          "date": {"type": "string", "description": "Publication, effective, or execution date as the source uses it."},
+          "url": {"type": "string"},
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "rule-text",
+              "supervisory-guidance",
+              "exam-manual",
+              "exam-request",
+              "supervisory-letter",
+              "regulator-speech",
+              "interagency-statement",
+              "internal-policy",
+              "third-party-sla",
+              "contract-clause",
+              "industry-standard",
+              "other"
+            ]
+          }
+        }
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/obligation"}
+    },
+    "open_question_summary": {
+      "type": "array",
+      "description": "Open questions grouped by reviewer (legal, compliance, function head, sponsor) so routing is one read away.",
+      "items": {
+        "type": "object",
+        "required": ["question", "reviewer"],
+        "properties": {
+          "obligation_ids": {"type": "array", "items": {"type": "string"}},
+          "question": {"type": "string"},
+          "reviewer": {
+            "type": "string",
+            "enum": ["legal", "compliance", "function-head", "sponsor", "external-counsel", "other"]
+          },
+          "target_resolution_date": {"type": "string", "format": "date"}
+        }
+      }
+    },
+    "applicability_notes": {
+      "type": "string",
+      "description": "Rationale for not-applicable decisions and threshold reasoning for tier-dependent obligations."
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "mixed"],
+      "description": "Overall confidence label. Mixed is common; per-row confidence lives on each obligation."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "description": "Always true. The skill stops at draft; a named reviewer attests."
+    },
+    "reviewer": {
+      "type": "object",
+      "properties": {
+        "role": {"type": "string"},
+        "review_status": {
+          "type": "string",
+          "enum": ["pending", "in-review", "attested", "returned-for-revision"]
+        },
+        "review_date": {"type": "string", "format": "date"}
+      }
+    },
+    "revisions": {
+      "type": "array",
+      "description": "Append-only revision log.",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "reason": {"type": "string"},
+          "delta": {"type": "string"},
+          "approved_by": {"type": "string"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "obligation": {
+      "type": "object",
+      "required": [
+        "obligation_id",
+        "source_citation",
+        "source_section",
+        "requirement_summary",
+        "applicability",
+        "owner",
+        "evidence_required",
+        "status"
+      ],
+      "properties": {
+        "obligation_id": {"type": "string"},
+        "source_citation": {
+          "type": "string",
+          "description": "Regulator or issuer, document, edition or date, URL. Free-text citation."
+        },
+        "source_section": {
+          "type": "string",
+          "description": "Section, paragraph, article, or clause reference. Mandatory; a bare URL is not a citation. Use [verify section] when the precise section is genuinely unknown."
+        },
+        "source_url": {"type": "string"},
+        "regulator": {"type": "string"},
+        "jurisdiction": {"type": "string"},
+        "requirement_summary": {
+          "type": "string",
+          "description": "One sentence stating what specifically must be done and on whom."
+        },
+        "applicability": {
+          "type": "string",
+          "description": "Institution type, product, activity, geography, threshold."
+        },
+        "applicability_thresholds": {
+          "type": "object",
+          "properties": {
+            "asset_threshold": {"type": "number"},
+            "transaction_volume_threshold": {"type": "number"},
+            "covered_origination_threshold": {"type": "number"},
+            "notes": {"type": "string"}
+          }
+        },
+        "effective_date": {
+          "type": "string",
+          "description": "Effective date as the source defines it. Use ISO date when unambiguous; free text when the source uses a phrased trigger."
+        },
+        "effective_date_phase_in": {
+          "type": "string",
+          "description": "Phase-in stages where the source specifies them (tier-by-tier compliance dates, deferred-effective-date provisions, sunset clauses, transition periods)."
+        },
+        "impacted_process": {
+          "type": "string",
+          "description": "Named process or function the obligation lands on."
+        },
+        "control_objective": {
+          "type": "string",
+          "description": "One sentence on the condition that must be true for the obligation to be satisfied."
+        },
+        "evidence_required": {
+          "type": "array",
+          "description": "What proves operation: named system-of-record outputs, records, sign-off logs, training rosters, model documentation, vendor file contents.",
+          "items": {"type": "string"}
+        },
+        "owner": {
+          "type": "string",
+          "description": "Named role with accountability. Departments are not owners."
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "draft",
+            "in-review",
+            "approved",
+            "not-applicable",
+            "open-question"
+          ]
+        },
+        "open_questions": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "linked_control_ids": {
+          "type": "array",
+          "description": "Foreign keys into a control-matrix output. Optional at extraction time.",
+          "items": {"type": "string"}
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Per-row confidence. High where source text is unambiguous; medium where interpretation is involved; low where reading between the lines or relying on a single secondary source."
+        },
+        "tags": {
+          "type": "array",
+          "description": "Optional tags: sector overlay, cross-cutting overlay, COSO component, or firm-overlay-defined taxonomy.",
+          "items": {"type": "string"}
+        },
+        "human_review_required": {"type": "boolean"}
+      }
+    }
+  }
+}

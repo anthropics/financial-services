@@ -1,0 +1,9 @@
+{
+  "name": "risk-compliance",
+  "version": "0.1.0",
+  "description": "Second-line GRC workflows: scoping, obligation mapping, control matrices, evidence binders, issue write-ups, human-review gates, and policy-gap reviews. Drafts work product for qualified human review.",
+  "author": {
+    "name": "anotb",
+    "url": "https://github.com/anotb/second-line-financial-services"
+  }
+}
