@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "securitisation-edgar": {
+      "command": "python",
+      "args": [
+        "-m",
+        "edgar_sf.server"
+      ],
+      "cwd": "${CLAUDE_PLUGIN_ROOT}/connector",
+      "env": {
+        "PYTHONPATH": "${CLAUDE_PLUGIN_ROOT}/connector"
+      }
+    }
+  }
+}
