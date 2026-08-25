@@ -140,8 +140,13 @@ for yml in sorted(MANAGED.rglob("*.yaml")):
     check_refs(yml)
 
 # --- 4b. agent-plugin bundled skills match vertical source -----------------
-import filecmp  # noqa: E402
 import re  # noqa: E402
+
+
+def skill_files(d: Path) -> dict[Path, Path]:
+    """Every file in the skill tree, keyed by path relative to the skill root."""
+    return {p.relative_to(d): p for p in d.rglob("*") if p.is_file()}
+
 
 src_by_name = {p.name: p for p in PLUGINS.glob("vertical-plugins/*/skills/*") if p.is_dir()}
 for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
@@ -151,8 +156,13 @@ for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
     if not src:
         err(f"bundled-skill: {rel(bundled)}: no vertical-plugins source named '{bundled.name}'")
         continue
-    cmp = filecmp.dircmp(src, bundled)
-    if cmp.diff_files or cmp.left_only or cmp.right_only:
+    # Compare the whole tree by content. filecmp.dircmp is not recursive
+    # (its diff_files/left_only/right_only cover only the top level), so a
+    # drifted file in e.g. skills/<name>/scripts/ would slip through the gate.
+    src_files, bundled_files = skill_files(src), skill_files(bundled)
+    if src_files.keys() != bundled_files.keys() or any(
+        src_files[k].read_bytes() != bundled_files[k].read_bytes() for k in src_files
+    ):
         err(
             f"bundled-skill: {rel(bundled)}: drifted from {rel(src)} "
             f"(run scripts/sync-agent-skills.py)"
