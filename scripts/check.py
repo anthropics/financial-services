@@ -58,10 +58,23 @@ except ImportError:
 
 
 def err(msg: str) -> None:
+    """Append an error message to the errors list.
+
+    Args:
+        msg: The error message to append.
+    """
     errors.append(msg)
 
 
 def rel(p: Path) -> str:
+    """Convert a Path to a string relative to the project root.
+
+    Args:
+        p: The absolute path to convert.
+
+    Returns:
+        The relative path as a string.
+    """
     return str(p.relative_to(ROOT))
 
 
@@ -107,6 +120,14 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
 
 # --- 4. reference resolution -----------------------------------------------
 def check_refs(yml: Path) -> None:
+    """Check that all file references in a YAML manifest resolve to existing files.
+
+    Checks system.file, skills[].path, skills[].from_plugin, and
+    callable_agents[].manifest references.
+
+    Args:
+        yml: Path to the YAML file to check.
+    """
     try:
         data = yaml.safe_load(yml.read_text()) or {}
     except yaml.YAMLError:
