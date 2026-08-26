@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGINS = ROOT / "plugins"
 MANAGED = ROOT / "managed-agent-cookbooks"
 errors: list[str] = []
-checked = 0
+checked: int = 0
 
 
 def ensure_hooks_installed() -> None:
