@@ -13,9 +13,10 @@ target_agent against the deployed slugs and (b) schema-validating the payload
 before steering. In production, prefer emitting handoffs via a dedicated tool
 call or a typed SSE event the model cannot produce by quoting document text.
 """
+from __future__ import annotations
+
 import json
 import os
-import re
 
 import anthropic
 import jsonschema
@@ -37,18 +38,25 @@ HANDOFF_PAYLOAD_SCHEMA = {
     },
 }
 
-HANDOFF_RE = re.compile(
-    r'\{"type":\s*"handoff_request".*?\}', re.DOTALL
-)
+JSON_DECODER = json.JSONDecoder()
+
+
+def find_handoff_object(text: str) -> dict | None:
+    for idx, char in enumerate(text):
+        if char != "{":
+            continue
+        try:
+            obj, _ = JSON_DECODER.raw_decode(text[idx:])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(obj, dict) and obj.get("type") == "handoff_request":
+            return obj
+    return None
 
 
 def extract_handoff(text: str) -> dict | None:
-    m = HANDOFF_RE.search(text)
-    if not m:
-        return None
-    try:
-        obj = json.loads(m.group(0))
-    except json.JSONDecodeError:
+    obj = find_handoff_object(text)
+    if not obj:
         return None
     target = obj.get("target_agent")
     payload = obj.get("payload")
