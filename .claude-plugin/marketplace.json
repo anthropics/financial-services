@@ -119,6 +119,11 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "certnode-provenance",
+      "source": "./plugins/partner-built/certnode-provenance",
+      "description": "CertNode - Cryptographic provenance for finance-agent outputs. Signs every pitch deck, IC memo, earnings note, KYC output, and valuation report with FRE 902(13)/(14)-framed evidence + EU AI Act Article 50 disclosure surface."
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
