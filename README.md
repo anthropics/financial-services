@@ -239,6 +239,7 @@ These are reference templates — they get better when you tune them to how your
 | Skill | Command | Description |
 |---|---|---|
 | client-review | `/client-review` | Prep for client meetings with performance and talking points |
+| meeting-notes | `/meeting-notes` | Write up a meeting into recap, action items, follow-up, and file note |
 | financial-plan | `/financial-plan` | Retirement, education, estate, and cash-flow projections |
 | portfolio-rebalance | `/rebalance` | Allocation drift analysis and tax-aware rebalancing |
 | client-report | `/client-report` | Client-facing performance reports |
