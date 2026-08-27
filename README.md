@@ -49,10 +49,11 @@ scripts/                       # deploy-managed-agent.sh · check.py · validate
 
 ### Cowork
 
-In Cowork, open **Settings → Plugins → Add plugin** and either:
+In the Claude Desktop app, click the **Cowork** tab → **Customize** in the left sidebar → **+** → **Add marketplace from GitHub**. Paste this repo URL:
 
-- **Paste this repo URL** — `https://github.com/anthropics/financial-services` — then pick the agents and verticals you want from the marketplace list, or
-- **Upload a zip** — zip any directory under `plugins/` (e.g. `plugins/agent-plugins/pitch-agent/`) and drop it in.
+`https://github.com/anthropics/financial-services-plugins`
+
+Then pick the agents and verticals you want from the marketplace list. Alternatively, **Upload a zip** — zip any directory under `plugins/` (e.g. `plugins/agent-plugins/pitch-agent/`) and drop it in.
 
 ### Claude Code
 
