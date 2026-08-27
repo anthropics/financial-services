@@ -5,10 +5,12 @@ Lint all plugin + managed-agent manifests and verify cross-file references.
 Checks:
   1. Every *.yaml under managed-agents/ parses.
   2. Every plugin.json / marketplace.json / steering-examples.json parses.
-  3. Every <vertical>/agents/*.md has valid YAML frontmatter with name + description.
-  4. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
+  3. Every agent plugin agents/*.md has valid YAML frontmatter with name + description.
+  4. Every plugin skill SKILL.md has valid YAML frontmatter with name + description.
+  5. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
      and subagent yamls resolves to an existing file/dir.
-  5. Every managed-agents/<slug>/ has agent.yaml, README.md, steering-examples.json.
+  6. Every managed-agent-cookbooks/<slug>/ has agent.yaml, README.md,
+     steering-examples.json.
 
 Exit 0 if clean, 1 otherwise. Requires: pyyaml.
 """
@@ -88,24 +90,37 @@ for pat in json_globs:
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
 
+def check_frontmatter(md: Path, required: tuple[str, ...], label: str) -> None:
+    """Require a YAML mapping with the specified keys at the start of a file."""
+    text = md.read_text()
+    if not text.startswith("---"):
+        err(f"{label}: {rel(md)}: missing leading ---")
+        return
+    try:
+        _, fm, _ = text.split("---", 2)
+        meta = yaml.safe_load(fm) or {}
+        if not isinstance(meta, dict):
+            err(f"{label}: {rel(md)}: frontmatter must be a YAML mapping")
+            return
+        for k in required:
+            if k not in meta:
+                err(f"{label}: {rel(md)}: missing '{k}'")
+    except (ValueError, yaml.YAMLError) as e:
+        err(f"{label}: {rel(md)}: {e}")
+
+
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
     checked += 1
-    text = md.read_text()
-    if not text.startswith("---"):
-        err(f"frontmatter: {rel(md)}: missing leading ---")
-        continue
-    try:
-        _, fm, _ = text.split("---", 2)
-        meta = yaml.safe_load(fm)
-        for k in ("name", "description"):
-            if k not in meta:
-                err(f"frontmatter: {rel(md)}: missing '{k}'")
-    except (ValueError, yaml.YAMLError) as e:
-        err(f"frontmatter: {rel(md)}: {e}")
+    check_frontmatter(md, ("name", "description"), "frontmatter")
+
+# --- 4. skill frontmatter --------------------------------------------------
+for md in sorted(PLUGINS.glob("**/skills/*/SKILL.md")):
+    checked += 1
+    check_frontmatter(md, ("name", "description"), "skill-frontmatter")
 
 
-# --- 4. reference resolution -----------------------------------------------
+# --- 5. reference resolution -----------------------------------------------
 def check_refs(yml: Path) -> None:
     try:
         data = yaml.safe_load(yml.read_text()) or {}
@@ -139,7 +154,7 @@ def check_refs(yml: Path) -> None:
 for yml in sorted(MANAGED.rglob("*.yaml")):
     check_refs(yml)
 
-# --- 4b. agent-plugin bundled skills match vertical source -----------------
+# --- 5b. agent-plugin bundled skills match vertical source -----------------
 import filecmp  # noqa: E402
 import re  # noqa: E402
 
@@ -158,7 +173,7 @@ for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
             f"(run scripts/sync-agent-skills.py)"
         )
 
-# --- 4b2. agent.md skill references exist in the agent's own bundle --------
+# --- 5b2. agent.md skill references exist in the agent's own bundle --------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
     slug = md.parents[1].name
     sk_dir = PLUGINS / "agent-plugins" / slug / "skills"
@@ -170,14 +185,14 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
                 f"plugins/agent-plugins/{slug}/skills/{ref}/ is not bundled"
             )
 
-# --- 4c. marketplace source paths resolve ----------------------------------
+# --- 5c. marketplace source paths resolve ----------------------------------
 mp = ROOT / ".claude-plugin" / "marketplace.json"
 for p in json.loads(mp.read_text()).get("plugins", []):
     src = (ROOT / p["source"]).resolve()
     if not (src / ".claude-plugin" / "plugin.json").is_file():
         err(f"marketplace: {p['name']} source -> {p['source']} (no plugin.json)")
 
-# --- 5. required files per managed-agent -----------------------------------
+# --- 6. required files per managed-agent -----------------------------------
 for d in sorted(MANAGED.iterdir()):
     if not d.is_dir():
         continue
@@ -185,7 +200,7 @@ for d in sorted(MANAGED.iterdir()):
         if not (d / req).is_file():
             err(f"missing: {rel(d)}/{req}")
 
-# --- 6. PowerShell scripts must be pure ASCII -------------------------------
+# --- 7. PowerShell scripts must be pure ASCII -------------------------------
 # Windows PowerShell 5.1 -- still the default shell on managed Windows -- reads
 # a .ps1 with no BOM using the machine's ANSI code page, not UTF-8. A smart dash
 # or curly quote then decodes to mojibake that can contain a literal '"',
