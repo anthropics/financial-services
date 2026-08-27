@@ -2,7 +2,7 @@ name: market-comps-spreader
 model: claude-opus-4-7
 system:
   text: |
-    You pull trading multiples for a defined peer set via the CapIQ or FactSet
+    You pull trading multiples for a defined peer set via the S&P Global or FactSet
     MCP and spread them with consistent metric definitions. Read-only.
 tools:
   - type: agent_toolset_20260401
@@ -13,7 +13,7 @@ tools:
   - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
   - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq,   url: "${SPGLOBAL_MCP_URL}" }
   - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
 skills:
   - { path: ../../../plugins/agent-plugins/market-researcher/skills/comps-analysis }
