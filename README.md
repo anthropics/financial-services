@@ -238,6 +238,7 @@ These are reference templates — they get better when you tune them to how your
 
 | Skill | Command | Description |
 |---|---|---|
+| prospect-intake | `/prospect` | Intake, qualify, and dedupe inbound prospects; draft first-touch for review |
 | client-review | `/client-review` | Prep for client meetings with performance and talking points |
 | financial-plan | `/financial-plan` | Retirement, education, estate, and cash-flow projections |
 | portfolio-rebalance | `/rebalance` | Allocation drift analysis and tax-aware rebalancing |
