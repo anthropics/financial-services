@@ -123,6 +123,12 @@
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
       "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Microsoft 365 add-in. Generates the customized manifest, walks through Azure admin consent, and writes per-user config via Graph extension attributes."
+    },
+    {
+      "name": "fundos",
+      "displayName": "FundOS by VantedgeAI",
+      "source": "./plugins/partner-built/fundos",
+      "description": "AI-native fund operations for emerging VC and private credit managers — capital calls, LP reporting, waterfall calculations, covenant monitoring, and VDR workflow"
     }
   ]
 }
