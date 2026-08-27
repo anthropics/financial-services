@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harvest Now vs. Wait for a Bounce</title>
+<style>
+  :root{--bg:#0d0f14;--panel:#161a23;--panel2:#1d222e;--line:#2a3140;--gold:#d4af37;--gold-bright:#ffd75e;--silver:#cfd6e4;--text:#e6e9ef;--muted:#8b93a4;--green:#3ecf8e;--red:#ff6b6b;--amber:#ffb454;--blue:#5b9dff;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;padding:24px;max-width:1080px;margin:0 auto}
+  header{border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+  h1{font-size:23px;font-weight:700} h1 .dot{color:var(--gold)}
+  .sub-h{color:var(--muted);font-size:13px;margin-top:4px}
+  h2{font-size:14px;text-transform:uppercase;letter-spacing:.5px;color:var(--gold);margin:0 0 12px;font-weight:600}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+  .live .led{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .live.ok .led{background:var(--green)}.live.err .led{background:var(--red)}
+  .strip{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;margin-top:6px;color:var(--muted)}
+  .strip b{color:var(--gold-bright);font-variant-numeric:tabular-nums}
+  .inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  input[type=number]{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:8px 10px;font-size:15px;font-variant-numeric:tabular-nums}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:780px){.two{grid-template-columns:1fr}}
+  .res{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:16px}
+  .res h3{font-size:13px;margin:0 0 8px} .res .big{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  td{padding:6px 4px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;text-align:right}
+  td:first-child{text-align:left;color:var(--muted)} tr:last-child td{border-bottom:none}
+  .up{color:var(--green)}.down{color:var(--red)}.gold{color:var(--gold-bright)}.mut{color:var(--muted)}
+  canvas{width:100%;height:auto;display:block;margin-top:8px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin-top:8px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}.sw{width:14px;height:3px;border-radius:2px}
+  .callout{background:var(--panel2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 14px;margin-top:12px;font-size:13px}
+  .disc{font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:10px;margin-top:12px}
+  footer{color:var(--muted);font-size:12px;margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+  footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>Harvest Now vs. Wait for a Bounce<span class="dot">.</span></h1>
+  <div class="sub-h">After-tax comparison for trimming GLD into a realized gain · <span id="live" class="live"><span class="led"></span><span id="lt">loading…</span></span></div>
+  <div class="strip">Gold <b id="s-gold">—</b> · GLD <b id="s-gld">—</b> · Silver <b id="s-slvr">—</b> · SLV <b id="s-slv">—</b></div>
+</header>
+
+<section>
+  <h2>Your inputs</h2>
+  <div class="inputs">
+    <div><label>Shares to trim</label><input type="number" id="i-sh" value="400"></div>
+    <div><label>Cost basis / share ($)</label><input type="number" id="i-basis" value="450"></div>
+    <div><label>Current GLD price ($)</label><input type="number" id="i-now" value="387.50" step="0.01"></div>
+    <div><label>Realized gain to offset ($)</label><input type="number" id="i-gain" value="100000"></div>
+    <div><label>Capital-gains tax rate (%)</label><input type="number" id="i-rate" value="32"></div>
+    <div><label>Assumed bounce before selling (%)</label><input type="number" id="i-bounce" value="5" step="0.5"></div>
+  </div>
+</section>
+
+<section>
+  <h2>Head-to-head at your assumed bounce</h2>
+  <div class="two">
+    <div class="res">
+      <h3 class="gold">A · Harvest NOW (+ swap to IAU)</h3>
+      <div class="big up" id="a-tax">—</div>
+      <table>
+        <tr><td>Loss realized</td><td id="a-loss">—</td></tr>
+        <tr><td>Tax saved (vs $100k gain)</td><td class="up" id="a-tax2">—</td></tr>
+        <tr><td>Keep the bounce?</td><td class="up">Yes — via IAU</td></tr>
+        <tr><td>Asset value if it bounces</td><td id="a-val">—</td></tr>
+      </table>
+    </div>
+    <div class="res">
+      <h3 class="blue">B · WAIT for the bounce, then harvest</h3>
+      <div class="big" id="b-tax">—</div>
+      <table>
+        <tr><td>Loss realized (after bounce)</td><td id="b-loss">—</td></tr>
+        <tr><td>Tax saved (vs $100k gain)</td><td id="b-tax2">—</td></tr>
+        <tr><td>Keep the bounce?</td><td class="mut">Yes — but smaller loss</td></tr>
+        <tr><td>Asset value if it bounces</td><td id="b-val">—</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="callout" id="verdict">—</div>
+</section>
+
+<section>
+  <h2>Tax benefit across the whole range of outcomes</h2>
+  <p class="mut" style="font-size:13px">X-axis = how GLD moves before you'd sell. <b style="color:var(--gold-bright)">Gold</b> line = harvest now (fixed, set at today's price). <b style="color:var(--blue)">Blue</b> line = wait then harvest (shrinks as price rises). The gap is what waiting <em>costs</em> you in tax — while the IAU swap means your asset value is identical either way.</p>
+  <canvas id="chart" width="1040" height="380"></canvas>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--gold-bright)"></span>Tax saved — harvest now</span>
+    <span><span class="sw" style="background:var(--blue)"></span>Tax saved — wait then harvest</span>
+  </div>
+</section>
+
+<div class="disc"><strong>Disclaimer.</strong> Educational illustration, not tax/investment advice. Assumes the harvested loss fully falls within your realizable gain and a single blended tax rate; real netting (short- vs long-term, $3k ordinary-income cap, carryforwards) and wash-sale treatment of your GLD options require a CPA. The IAU swap assumes IAU is not "substantially identical" to GLD (common practice, not IRS-settled).</div>
+
+<footer>
+  Key idea: with an IAU swap your <strong>asset outcome is the same</strong> whether you harvest now or wait — so the only thing "waiting for a bounce" changes is your <strong>tax benefit, downward</strong>. Live data: <a href="https://stooq.com">Stooq</a>.
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const usd=(n,d=0)=>(n<0?'−$':'$')+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+// live strip (honors GLD+SLV rule)
+const STOOQ=s=>`https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`,PROXY=u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
+async function txt(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.text();}
+async function csv(s){try{return await txt(STOOQ(s));}catch(e){return await txt(PROXY(STOOQ(s)));}}
+function px(c){const l=c.trim().split('\n').pop().split(',');const v=+l[6];if(!isFinite(v)||v<=0)throw 0;return v;}
+async function live(){try{const[g,d,a,l]=await Promise.all([csv('xauusd'),csv('gld.us'),csv('xagusd'),csv('slv.us')]);
+  $('s-gold').textContent='$'+px(g).toFixed(2);$('s-gld').textContent='$'+px(d).toFixed(2);
+  $('s-slvr').textContent='$'+px(a).toFixed(2);$('s-slv').textContent='$'+px(l).toFixed(2);
+  $('i-now').value=px(d).toFixed(2);$('live').className='live ok';$('lt').textContent='Live · '+new Date().toLocaleTimeString();calc();
+}catch(e){$('s-gold').textContent='$4,197';$('s-gld').textContent='$387.50';$('s-slvr').textContent='$66.00';$('s-slv').textContent='$59.40';$('live').className='live err';$('lt').textContent='offline — snapshot';}}
+
+function val(id){return parseFloat($(id).value)||0;}
+function taxSaved(loss,gain,rate){return Math.min(Math.max(loss,0),gain)*rate/100;}
+
+function calc(){
+  const sh=val('i-sh'),basis=val('i-basis'),now=val('i-now'),gain=val('i-gain'),rate=val('i-rate'),b=val('i-bounce')/100;
+  const lossNow=(basis-now)*sh;
+  const pFut=now*(1+b), lossWait=(basis-pFut)*sh;
+  const taxNow=taxSaved(lossNow,gain,rate), taxWait=taxSaved(lossWait,gain,rate);
+  const valFut=pFut*sh; // identical asset value either path
+  $('a-tax').textContent=usd(taxNow); $('a-tax2').textContent=usd(taxNow); $('a-loss').textContent=usd(-lossNow); $('a-val').textContent=usd(valFut);
+  $('b-tax').textContent=usd(taxWait); $('b-tax').className='big '+(taxWait<taxNow?'down':''); $('b-tax2').textContent=usd(taxWait);
+  $('b-tax2').className=taxWait<taxNow?'down':''; $('b-loss').textContent=usd(-lossWait); $('b-val').textContent=usd(valFut);
+  const adv=taxNow-taxWait;
+  $('verdict').innerHTML = b>0
+    ? `Waiting for a <b>+${(b*100).toFixed(1)}%</b> bounce shrinks your harvested loss by <b>${usd((pFut-now)*sh)}</b>, costing <b class="down">${usd(adv)}</b> in lost tax offset — while your asset value (<b>${usd(valFut)}</b>) is <b>identical</b> because IAU rides the same bounce. <b class="gold">Harvest now wins by ${usd(adv)}.</b>`
+    : `At a flat/negative move, harvesting now still locks this year's offset; if it falls further you can harvest the extra loss again later. <b class="gold">No reason to wait.</b>`;
+  draw(sh,basis,now,gain,rate);
+}
+
+function draw(sh,basis,now,gain,rate){
+  const cv=$('chart'),ctx=cv.getContext('2d'),W=cv.width,H=cv.height,x0=70,x1=W-20,y0=18,y1=H-34;
+  const mMin=-15,mMax=15;
+  const taxNow=taxSaved((basis-now)*sh,gain,rate);
+  const vals=[]; for(let m=mMin;m<=mMax;m+=0.5){const p=now*(1+m/100);vals.push(taxSaved((basis-p)*sh,gain,rate));}
+  const vMax=Math.max(taxNow,...vals)*1.15||1;
+  const X=m=>x0+(m-mMin)/(mMax-mMin)*(x1-x0), Y=v=>y1-v/vMax*(y1-y0);
+  ctx.clearRect(0,0,W,H);ctx.font='12px sans-serif';
+  for(let m=mMin;m<=mMax;m+=5){ctx.strokeStyle='#1d222e';ctx.beginPath();ctx.moveTo(X(m),y0);ctx.lineTo(X(m),y1);ctx.stroke();ctx.fillStyle='#8b93a4';ctx.textAlign='center';ctx.fillText((m>0?'+':'')+m+'%',X(m),y1+15);}
+  for(let v=0;v<=vMax;v+=Math.max(2000,Math.round(vMax/5/2000)*2000)){const yy=Y(v);ctx.strokeStyle='#1d222e';ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();ctx.fillStyle='#8b93a4';ctx.textAlign='right';ctx.fillText('$'+(v/1000)+'k',x0-8,yy+4);}
+  // wait-then-harvest curve
+  ctx.strokeStyle='#5b9dff';ctx.lineWidth=2.4;ctx.beginPath();let i=0;
+  for(let m=mMin;m<=mMax;m+=0.5){const yy=Y(vals[i++]);m===mMin?ctx.moveTo(X(m),yy):ctx.lineTo(X(m),yy);}ctx.stroke();
+  // harvest-now flat line
+  ctx.strokeStyle='#ffd75e';ctx.lineWidth=2.4;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(X(mMin),Y(taxNow));ctx.lineTo(X(mMax),Y(taxNow));ctx.stroke();ctx.setLineDash([]);
+  // now marker
+  ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(X(0),y0);ctx.lineTo(X(0),y1);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('today',X(0),y0+11);
+}
+
+['i-sh','i-basis','i-now','i-gain','i-rate','i-bounce'].forEach(id=>$(id).addEventListener('input',calc));
+calc(); live(); setInterval(live,60000);
+</script>
+</body>
+</html>
