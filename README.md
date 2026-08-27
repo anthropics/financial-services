@@ -127,6 +127,7 @@ All connectors are centralized in the **financial-analysis** core plugin and sha
 | [Moody's](https://www.moodys.com/) | `https://api.moodys.com/genai-ready-data/m1/mcp` |
 | [MT Newswires](https://www.mtnewswires.com/) | `https://vast-mcp.blueskyapi.com/mtnewswires` |
 | [Aiera](https://www.aiera.com/) | `https://mcp-pub.aiera.com` |
+| [Longbridge](https://longbridge.com/) | `https://mcp.longbridge.com` |
 | [LSEG](https://www.lseg.com/) | `https://api.analytics.lseg.com/lfa/mcp` |
 | [PitchBook](https://pitchbook.com/) | `https://premium.mcp.pitchbook.com/mcp` |
 | [Chronograph](https://www.chronograph.pe/) | `https://ai.chronograph.pe/mcp` |
