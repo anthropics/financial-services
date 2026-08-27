@@ -1,0 +1,21 @@
+name: pos-reconciler-resolver
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Receive the verified reconciliation set
+    (already critic-checked and schema-validated), produce the daily reconciliation
+    report, and write it to ./out/. Never open staff-submitted files; never run
+    bash. Emit a handoff_request for month-end-closer if a clean weekly dataset
+    is requested.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/pos-reconciler/skills/pos-pull }
+  - { path: ../../../plugins/agent-plugins/pos-reconciler/skills/sales-reconcile }
+callable_agents: []

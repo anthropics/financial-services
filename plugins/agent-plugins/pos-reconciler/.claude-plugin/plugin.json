@@ -1,0 +1,8 @@
+{
+  "name": "pos-reconciler",
+  "version": "0.1.0",
+  "description": "Pulls daily sales data from the POS system, reconciles cash takings vs POS totals, flags discrepancies, and feeds clean sales data into the Month-End Closer",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

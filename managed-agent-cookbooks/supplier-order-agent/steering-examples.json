@@ -1,0 +1,14 @@
+[
+  {
+    "event": "Place weekly dry goods order with supplier: Coco Supplies, items: oat milk x 48, espresso beans x 20kg, cups 8oz x 500",
+    "description": "Weekly standing order to primary dry-goods supplier"
+  },
+  {
+    "event": "Check delivery status for order ref ORD-2026-0518-0001 from Fresh Dairy Co",
+    "description": "Status check on a specific outstanding order"
+  },
+  {
+    "event": "Confirm all outstanding orders placed this week and flag any unconfirmed after 24h",
+    "description": "Bulk overdue-order sweep across all open orders for the week"
+  }
+]

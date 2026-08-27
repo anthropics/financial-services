@@ -1,0 +1,8 @@
+{
+  "name": "supplier-order-agent",
+  "version": "0.1.0",
+  "description": "Sends purchase orders to suppliers via WhatsApp Business API, tracks delivery confirmations, and logs order history",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}

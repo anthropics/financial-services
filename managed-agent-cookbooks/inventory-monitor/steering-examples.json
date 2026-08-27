@@ -1,0 +1,14 @@
+[
+  {
+    "event": "Run stock check across all locations and flag anything below par level",
+    "description": "Full par-level sweep across every active location"
+  },
+  {
+    "event": "Check oat milk levels at all sites — we had a shortfall yesterday",
+    "description": "SKU-specific investigation for a known problem item"
+  },
+  {
+    "event": "Generate weekly reorder list based on current stock vs par levels",
+    "description": "Weekly reorder-list run producing grouped purchase order drafts by supplier"
+  }
+]

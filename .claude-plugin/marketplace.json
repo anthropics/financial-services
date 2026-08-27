@@ -101,6 +101,21 @@
       "description": "Accruals, roll-forwards, variance commentary"
     },
     {
+      "name": "supplier-order-agent",
+      "source": "./plugins/agent-plugins/supplier-order-agent",
+      "description": "Sends purchase orders to suppliers via WhatsApp Business API, tracks delivery confirmations, and logs order history"
+    },
+    {
+      "name": "pos-reconciler",
+      "source": "./plugins/agent-plugins/pos-reconciler",
+      "description": "Pulls daily POS sales data, reconciles cash takings vs POS totals, flags discrepancies, feeds clean data to Month-End Closer"
+    },
+    {
+      "name": "inventory-monitor",
+      "source": "./plugins/agent-plugins/inventory-monitor",
+      "description": "Monitors stock levels across coffee shop locations, detects shortfalls vs par levels, triggers reorder alerts to Supplier Order Agent"
+    },
+    {
       "name": "statement-auditor",
       "displayName": "Statement Auditor",
       "source": "./plugins/agent-plugins/statement-auditor",

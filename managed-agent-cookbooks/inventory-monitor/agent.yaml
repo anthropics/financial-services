@@ -1,0 +1,42 @@
+# Inventory Monitor — orchestrator
+#
+# Deploy manifest for `POST /v1/agents`. Field names match the API; the deploy
+# script resolves {file:} / {path:} / {manifest:} references before posting.
+# See ../README.md for the manifest→API mapping.
+
+name: inventory-monitor
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/inventory-monitor/agents/inventory-monitor.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+# The orchestrator never reads staff count sheets directly and never holds
+# bash or write — it dispatches, aggregates, and hands off. See ./README.md.
+tools:
+  - type: agent_toolset_20260401
+    default_config:
+      enabled: false
+    configs:
+      - name: read
+        enabled: true
+      - name: grep
+        enabled: true
+      - name: glob
+        enabled: true
+  - type: mcp_toolset
+    mcp_server_name: inventory-system
+    default_config:
+      enabled: true   # read-only inventory server
+
+mcp_servers:
+  - type: url
+    name: inventory-system
+    url: ${INVENTORY_MCP_URL}
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/inventory-monitor }
+
+callable_agents:
+  - manifest: ./subagents/reader.yaml
+  - manifest: ./subagents/resolver.yaml
