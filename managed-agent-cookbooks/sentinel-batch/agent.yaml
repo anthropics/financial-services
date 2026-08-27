@@ -1,0 +1,5 @@
+name: kaelum-sentinel-batch
+model: claude-sonnet-4-6
+
+system:
+  file: sentinel-batch.md

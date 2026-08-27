@@ -1,0 +1,30 @@
+name: kaelum-compliance-regulatory
+display_name: K.A.T.E. Compliance and Regulatory
+description: >
+  Audits transaction data, user KYC status, and platform operations against
+  UK EMR and AMLD5/6 regulations. Produces compliance reports, tracks
+  obligations, and recommends control improvements.
+model: claude-sonnet-4-6
+system_prompt_file: agents/compliance-regulatory.md
+api_mode: managed_agent
+skills:
+  - sentinel-aml-rules
+  - closed-loop-compliance
+  - regulatory-language
+  - kyc-onboarding-rules
+  - creator-economics
+  - customer-economics
+approval_gates:
+  - regulatory_submission
+  - sar_filing
+  - compliance_enforcement_action
+callable_agents:
+  - legal-counsel
+  - fraud-scam-detection
+  - onboarding-concierge
+  - kyc-screener
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [daily_aml_scan, weekly_kyc_audit, monthly_compliance_report, sentinel_batch_complete]
+    fires: [compliance_report_ready, kyc_flag_raised, obligation_gap_identified, sar_candidate_flagged]

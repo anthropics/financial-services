@@ -1,0 +1,6 @@
+[
+  {
+    "input": "Assess KST application: Applicant: Merchant A, KYC verified 45 days ago, SENTINEL clean, business turnover \u00a3800K/year, proposes to circulate sub-token across 200 retail locations",
+    "output": "Score: 13/15. Recommendation: Approved. Strong applicant verification, credible circulation network, adequate financial capacity. Regulatory alignment confirmed. Recommend CEO sign-off."
+  }
+]

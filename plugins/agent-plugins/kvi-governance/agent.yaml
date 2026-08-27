@@ -1,0 +1,31 @@
+name: kaelum-kvi-governance
+display_name: K.A.T.E. KVI Governance
+description: >
+  Assesses ecosystem health against the KVI Framework. Produces quarterly
+  governance reports with appreciation recommendations and system adjustment
+  proposals for CEO review. Opus-only.
+model: claude-opus-4-6
+system_prompt_file: agents/kvi-governance.md
+api_mode: managed_agent
+skills:
+  - kvi-governance-framework
+  - klm-token-governance
+  - kst-sub-token-mechanics
+  - kpr-tpr-distribution
+  - merchant-economics
+  - creator-economics 
+  - customer-economics
+approval_gates:
+  - appreciation_proposal
+  - governance_report_release
+callable_agents:
+  - finance
+  - transaction-insights
+paperclip:
+  heartbeat_interval: 86400
+  event_bridge:
+    triggers: [quarterly_assessment_trigger, kvi_data_received, manual_assessment_request]
+    fires: [governance_report_ready, appreciation_proposal_staged, kvi_score_updated]
+security_notes: >
+  Opus-only. All appreciation proposals require CEO approval before any price
+  change is implemented. Governance reports are confidential CEO-only documents.

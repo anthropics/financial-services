@@ -1,0 +1,23 @@
+name: kaelum-user-personal
+display_name: K.A.T.E. User Personal Agent
+description: >
+  User-facing autonomous commerce assistant. Observes activity patterns
+  and triggers permitted actions based on user-set permission levels
+  (Observe, Recommend, Autonomous) per capability.
+model: claude-haiku-4-5
+system_prompt_file: agents/user-personal.md
+api_mode: standard_api
+skills:
+  - klm-token-governance
+  - merchant-economics
+  - kpr-tpr-distribution
+  - kyc-onboarding-rules
+  - regulatory-language
+  - customer-economics 
+callable_agents:
+  - transaction-insights
+paperclip:
+  heartbeat_interval: 900
+  event_bridge:
+    triggers: [user_session_active, transaction_completed, permission_level_changed]
+    fires: [insight_delivered, autonomous_action_taken, recommendation_staged]

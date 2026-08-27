@@ -1,0 +1,22 @@
+name: kaelum-platform-health
+display_name: K.A.T.E. Platform Health
+description: >
+  Continuously monitors API response times, transaction success rates,
+  webhook reliability, and system errors. Generates health triage reports
+  and triggers incident alerts.
+model: claude-haiku-4-5
+system_prompt_file: agents/platform-health.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+approval_gates:
+  - emergency_response_execution
+callable_agents:
+  - platform-engineer
+  - cybersecurity
+  - fraud-scam-detection
+paperclip:
+  heartbeat_interval: 300
+  event_bridge:
+    triggers: [continuous_monitoring_tick, threshold_breach, manual_health_check]
+    fires: [health_triage_report, incident_alert, platform_health_score_updated]

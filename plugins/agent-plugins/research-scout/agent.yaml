@@ -1,0 +1,26 @@
+name: kaelum-research-scout
+display_name: K.A.T.E. Research Scout
+description: >
+  Autonomous market intelligence agent. Monitors competitor activity,
+  regulatory changes, media coverage, and investor landscape.
+  Produces structured Intelligence Briefs and dispatches cross-agent signals.
+model: claude-sonnet-4-6
+system_prompt_file: agents/research-scout.md
+api_mode: managed_agent
+skills:
+  - commerce-intelligence
+  - regulatory-language
+  - kate-agent-orchestration
+approval_gates: []
+callable_agents:
+  - market-researcher
+  - creator-studio
+  - merchant-support
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [scheduled_deep_scan, scheduled_quick_scan, manual_scan_request]
+    fires: [intelligence_brief_ready, cross_agent_signal]
+security_notes: >
+  Read-only intelligence gathering only. No autonomous actions. All outputs
+  staged in Paperclip event bridge for admin review before cross-agent dispatch.

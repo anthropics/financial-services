@@ -1,0 +1,5 @@
+name: kaelum-commerce-drop-moderation
+model: claude-sonnet-4-6
+
+system:
+  file: moderation.md

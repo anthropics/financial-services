@@ -1,0 +1,21 @@
+name: kaelum-quality-assurance
+display_name: K.A.T.E. Quality Assurance
+description: >
+  Automated QA agent running test suites, compliance scans, performance
+  benchmarks, and end-to-end user journey tests across the KAELUM platform.
+model: claude-sonnet-4-6
+system_prompt_file: agents/quality-assurance.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+  - regulatory-language
+  - closed-loop-compliance
+approval_gates:
+  - production_deployment
+callable_agents:
+  - platform-engineer
+paperclip:
+  heartbeat_interval: 1800
+  event_bridge:
+    triggers: [scheduled_daily_check, scheduled_weekly_full, pre_deploy_scan, manual_test_run]
+    fires: [test_report_ready, regression_flagged, compliance_scan_complete]

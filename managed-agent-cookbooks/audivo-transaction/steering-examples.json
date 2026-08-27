@@ -1,0 +1,6 @@
+[
+  {
+    "input": "Execute KLM transfer: sender kaelum_user_001, merchant kaelum_merchant_001, amount 100 KLM, SENTINEL token abc123",
+    "output": "Transaction completed. Receipt: txn_001, 100 KLM transferred, 1.2 KLM TPR allocated to KPR, clearance confirmed."
+  }
+]
