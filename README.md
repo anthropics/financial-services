@@ -1,5 +1,7 @@
 # Claude for Financial Services
 
+> **English** | [Português (Brasil)](./README.pt-BR.md)
+
 Reference agents, skills, and data connectors for the financial-services workflows we see most — investment banking, equity research, private equity, and wealth management.
 
 Everything here is available **two ways from one source**: install it as a [Claude Cowork](https://claude.com/product/cowork) plugin, or deploy it through the [Claude Managed Agents API](https://docs.claude.com/en/api/managed-agents) behind your own workflow engine. Same system prompt, same skills — you choose where it runs.
@@ -253,6 +255,7 @@ Everything here is markdown and YAML. Fork, edit, PR. For new content:
 
 - New skill → add it under `plugins/vertical-plugins/<vertical>/skills/`, then run `python3 scripts/sync-agent-skills.py` to propagate to any agent that bundles it.
 - New agent → `plugins/agent-plugins/<slug>/` (with `agents/<slug>.md` + `skills/`) and a matching `managed-agent-cookbooks/<slug>/`.
+- New translation → create `README.<lang-code>.md` (e.g. `README.pt-BR.md`) and add a link in the language switcher at the top of `README.md` and each existing translation.
 - Run `python3 scripts/check.py` before pushing — it lints every manifest, verifies all cross-file references resolve, and fails if any bundled skill has drifted from its vertical source.
 
 ## License
