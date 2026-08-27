@@ -119,6 +119,19 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "morningstar",
+      "displayName": "Morningstar",
+      "description": "The Morningstar plugin enables financial analysis using Morningstar’s proprietary data and research through the Morningstar MCP server.",
+      "author": { "name": "Morningstar" },
+      "source": {
+        "source": "git-subdir",
+        "url": "Morningstar/morningstar-plugins",
+        "path": "plugins/morningstar",
+        "sha": "1e02fcd380ec59dcb3087c4b5c7f0d7b7d2beac4"
+      },
+      "homepage": "https://www.morningstar.com/business/products/direct-ai-solutions"
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
