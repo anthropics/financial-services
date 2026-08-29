@@ -4,7 +4,7 @@ Lint all plugin + managed-agent manifests and verify cross-file references.
 
 Checks:
   1. Every *.yaml under managed-agents/ parses.
-  2. Every plugin.json / marketplace.json / steering-examples.json parses.
+  2. Every plugin, marketplace, steering example, and MCP JSON file parses.
   3. Every <vertical>/agents/*.md has valid YAML frontmatter with name + description.
   4. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
      and subagent yamls resolves to an existing file/dir.
@@ -78,6 +78,7 @@ for yml in sorted(MANAGED.rglob("*.yaml")):
 json_globs = [
     ".claude-plugin/marketplace.json",
     "plugins/**/.claude-plugin/plugin.json",
+    "plugins/**/.mcp.json",
     "managed-agent-cookbooks/*/steering-examples.json",
 ]
 for pat in json_globs:
