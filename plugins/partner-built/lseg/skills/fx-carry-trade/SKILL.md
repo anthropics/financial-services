@@ -1,6 +1,11 @@
 ---
 name: fx-carry-trade
-description: Evaluate FX carry trade opportunities by combining spot rates, forward points, interest rate differentials, volatility surface analysis, and historical price trends. Use when analyzing carry trades, comparing FX forward curves, assessing carry-to-vol ratios, or evaluating currency pair opportunities.
+description: Evaluate FX carry trade opportunities by combining spot rates, forward
+  points, interest rate differentials, volatility surface analysis, and historical
+  price trends. Use when analyzing carry trades, comparing FX forward curves, assessing
+  carry-to-vol ratios, or evaluating currency pair opportunities.
+enhances_with_mcp:
+- lseg
 ---
 
 # FX Carry Trade Analysis

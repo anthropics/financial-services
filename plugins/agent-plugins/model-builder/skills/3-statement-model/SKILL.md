@@ -1,6 +1,17 @@
 ---
 name: 3-statement-model
-description: Complete, populate and fill out 3-statement financial model templates (Income Statement, Balance Sheet, Cash Flow Statement) . Use when asked to fill out model templates, complete existing model frameworks, populate financial models with data, complete a partially filled IS/BS/CF framework, or link integrated financial statements within an existing template structure. Triggers include requests to fill in, complete, or populate a 3-statement model template
+description: Complete, populate and fill out 3-statement financial model templates
+  (Income Statement, Balance Sheet, Cash Flow Statement) . Use when asked to fill
+  out model templates, complete existing model frameworks, populate financial models
+  with data, complete a partially filled IS/BS/CF framework, or link integrated financial
+  statements within an existing template structure. Triggers include requests to fill
+  in, complete, or populate a 3-statement model template
+enhances_with_mcp:
+- daloopa
+- sp-global
+- factset
+optional_mcp:
+- chronograph
 ---
 
 # 3-Statement Financial Model Template Completion

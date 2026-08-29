@@ -1,6 +1,11 @@
 ---
 name: equity-research
-description: Generate comprehensive equity research snapshots combining analyst consensus estimates, company fundamentals, historical prices, and macroeconomic context. Use when researching stocks, comparing estimates to actuals, analyzing company financials, assessing equity valuations, or building investment cases.
+description: Generate comprehensive equity research snapshots combining analyst consensus
+  estimates, company fundamentals, historical prices, and macroeconomic context. Use
+  when researching stocks, comparing estimates to actuals, analyzing company financials,
+  assessing equity valuations, or building investment cases.
+enhances_with_mcp:
+- lseg
 ---
 
 # Equity Research Analysis

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "categories": {
+    "market-data": {
+      "name": "Market Data & Pricing",
+      "description": "Real-time and historical pricing, market quotes, yield curves, and market analytics",
+      "servers": ["factset", "sp-global", "lseg", "morningstar"]
+    },
+    "financial-data": {
+      "name": "Financial Data & Fundamentals",
+      "description": "Company financial statements, reported line items, financial ratios, and consensus estimates",
+      "servers": ["daloopa", "factset", "sp-global", "lseg", "morningstar"]
+    },
+    "company-intelligence": {
+      "name": "Company Intelligence & Research",
+      "description": "Company profiles, corporate hierarchies, executive intelligence, industry benchmarks, and filings",
+      "servers": ["sp-global", "pitchbook", "daloopa"]
+    },
+    "private-markets": {
+      "name": "Private Markets & Deal Intelligence",
+      "description": "Private equity, venture capital, M&A transactions, valuations, and portfolio tracking",
+      "servers": ["pitchbook", "chronograph"]
+    },
+    "credit-ratings": {
+      "name": "Credit Ratings & Risk Analysis",
+      "description": "Credit ratings, default risk assessments, credit spread curves, and fixed income research",
+      "servers": ["moodys", "lseg"]
+    },
+    "news": {
+      "name": "News & Market Commentary",
+      "description": "Real-time global financial news feeds, breaking market developments, and market commentary",
+      "servers": ["mtnewswire"]
+    },
+    "transcripts": {
+      "name": "Earnings Transcripts & Audio Intelligence",
+      "description": "Live earnings call audio, real-time conference call transcripts, and corporate events",
+      "servers": ["aiera", "sp-global"]
+    },
+    "document-management": {
+      "name": "Document Management & VDR",
+      "description": "Enterprise cloud storage, virtual data room document access, and file governance",
+      "servers": ["box", "egnyte"]
+    },
+    "fund-accounting": {
+      "name": "Fund Accounting & General Ledger",
+      "description": "Internal GL records, subledger trade matching, NAV calculation packs, and reconciliations",
+      "servers": ["internal-gl", "subledger", "nav"]
+    },
+    "compliance-screening": {
+      "name": "Compliance & KYC Screening",
+      "description": "Sanctions lists, PEP screening, and adverse media verification",
+      "servers": ["screening"]
+    }
+  }
+}

@@ -1,6 +1,12 @@
 ---
 name: swap-curve-strategy
-description: Analyze the interest rate swap curve by pricing swaps at multiple tenors, overlaying government and inflation curves, and identifying curve trade opportunities. Use when analyzing swap curves, computing swap spreads, decomposing real rates, identifying steepener/flattener/butterfly trades, or comparing swap rates across currencies.
+description: Analyze the interest rate swap curve by pricing swaps at multiple tenors,
+  overlaying government and inflation curves, and identifying curve trade opportunities.
+  Use when analyzing swap curves, computing swap spreads, decomposing real rates,
+  identifying steepener/flattener/butterfly trades, or comparing swap rates across
+  currencies.
+enhances_with_mcp:
+- lseg
 ---
 
 # Swap Curve Strategy Analysis

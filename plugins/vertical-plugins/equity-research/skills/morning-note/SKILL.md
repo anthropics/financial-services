@@ -1,6 +1,13 @@
 ---
 name: morning-note
-description: Draft concise morning meeting notes summarizing overnight developments, trade ideas, and key events for coverage stocks. Designed for the 7am morning meeting format — tight, opinionated, actionable. Triggers on "morning note", "morning meeting", "what happened overnight", "trade idea", "morning call prep", or "daily note".
+description: Draft concise morning meeting notes summarizing overnight developments,
+  trade ideas, and key events for coverage stocks. Designed for the 7am morning meeting
+  format — tight, opinionated, actionable. Triggers on "morning note", "morning meeting",
+  "what happened overnight", "trade idea", "morning call prep", or "daily note".
+enhances_with_mcp:
+- factset
+- mtnewswire
+- aiera
 ---
 
 # Morning Note

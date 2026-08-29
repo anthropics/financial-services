@@ -2,7 +2,29 @@
   "mcpServers": {
     "lseg": {
       "type": "http",
-      "url": "https://api.analytics.lseg.com/lfa/mcp/server-cl"
+      "url": "https://api.analytics.lseg.com/lfa/mcp/server-cl",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data",
+        "credit-ratings"
+      ],
+      "description": "LSEG Financial Analytics MCP server for pricing, curves, valuation, IBES estimates, and fundamentals",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "LSEG_API_KEY"
+      },
+      "skills": [
+        "bond-futures-basis",
+        "bond-relative-value",
+        "equity-research",
+        "fixed-income-portfolio",
+        "fx-carry-trade",
+        "macro-rates-monitor",
+        "option-vol-analysis",
+        "swap-curve-strategy"
+      ],
+      "docs_url": "https://developer.lseg.com"
     }
   }
 }

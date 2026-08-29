@@ -1,0 +1,60 @@
+{
+  "mcpServers": {
+    "internal-gl": {
+      "type": "http",
+      "url": "https://mcp.internal-gl.anthropic.com/mcp",
+      "required": false,
+      "categories": [
+        "fund-accounting"
+      ],
+      "description": "General ledger query and audit trail MCP connector for accounting reconciliations",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "GL_API_KEY"
+      },
+      "skills": [
+        "gl-recon",
+        "break-trace",
+        "accrual-schedule",
+        "roll-forward",
+        "variance-commentary"
+      ],
+      "docs_url": "https://docs.anthropic.com"
+    },
+    "subledger": {
+      "type": "http",
+      "url": "https://mcp.subledger.anthropic.com/mcp",
+      "required": false,
+      "categories": [
+        "fund-accounting"
+      ],
+      "description": "Subledger transaction feed connector for trade-level reconciliation matching",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SUBLEDGER_API_KEY"
+      },
+      "skills": [
+        "gl-recon",
+        "break-trace"
+      ],
+      "docs_url": "https://docs.anthropic.com"
+    },
+    "nav": {
+      "type": "http",
+      "url": "https://mcp.nav.anthropic.com/mcp",
+      "required": false,
+      "categories": [
+        "fund-accounting"
+      ],
+      "description": "NAV pack extraction and capital account calculation connector",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "NAV_API_KEY"
+      },
+      "skills": [
+        "nav-tieout"
+      ],
+      "docs_url": "https://docs.anthropic.com"
+    }
+  }
+}

@@ -1,6 +1,10 @@
 ---
 name: roll-forward
-description: Build a roll-forward schedule for a balance-sheet account — beginning balance plus activity less reversals equals ending balance, with each component tied to GL. Use for month-end close packages and audit support.
+description: Build a roll-forward schedule for a balance-sheet account — beginning
+  balance plus activity less reversals equals ending balance, with each component
+  tied to GL. Use for month-end close packages and audit support.
+enhances_with_mcp:
+- internal-gl
 ---
 
 # Roll-forward

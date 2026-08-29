@@ -1,6 +1,11 @@
 ---
 name: option-vol-analysis
-description: Analyze option volatility by combining vol surface data, option pricing with Greeks, and historical price data to assess implied vs realized volatility. Use when pricing options, analyzing volatility surfaces, computing Greeks, assessing vol premiums, or evaluating vol trading strategies.
+description: Analyze option volatility by combining vol surface data, option pricing
+  with Greeks, and historical price data to assess implied vs realized volatility.
+  Use when pricing options, analyzing volatility surfaces, computing Greeks, assessing
+  vol premiums, or evaluating vol trading strategies.
+enhances_with_mcp:
+- lseg
 ---
 
 # Option Volatility Analysis

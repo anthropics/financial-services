@@ -1,6 +1,11 @@
 ---
 name: kyc-rules
-description: Apply the firm's KYC/AML rules grid to a parsed onboarding record — assign a risk rating, list every rule outcome with the rule cited, and flag what's missing or escalation-worthy. Use after kyc-doc-parse; this skill decides nothing, it scores and routes.
+description: Apply the firm's KYC/AML rules grid to a parsed onboarding record — assign
+  a risk rating, list every rule outcome with the rule cited, and flag what's missing
+  or escalation-worthy. Use after kyc-doc-parse; this skill decides nothing, it scores
+  and routes.
+enhances_with_mcp:
+- screening
 ---
 
 # Apply the rules grid

@@ -4,11 +4,13 @@ Lint all plugin + managed-agent manifests and verify cross-file references.
 
 Checks:
   1. Every *.yaml under managed-agents/ parses.
-  2. Every plugin.json / marketplace.json / steering-examples.json parses.
-  3. Every <vertical>/agents/*.md has valid YAML frontmatter with name + description.
-  4. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
+  2. Every plugin.json / marketplace.json / steering-examples.json / .mcp.json / mcp-categories.json parses.
+  3. Every .mcp.json adheres to the standardized schema and references valid categories/skills.
+  4. Every <vertical>/agents/*.md and skills/*/SKILL.md has valid YAML frontmatter.
+  5. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
      and subagent yamls resolves to an existing file/dir.
-  5. Every managed-agents/<slug>/ has agent.yaml, README.md, steering-examples.json.
+  6. Every managed-agents/<slug>/ has agent.yaml, README.md, steering-examples.json.
+  7. Pure ASCII check for PowerShell scripts.
 
 Exit 0 if clean, 1 otherwise. Requires: pyyaml.
 """
@@ -77,7 +79,10 @@ for yml in sorted(MANAGED.rglob("*.yaml")):
 # --- 2. JSON parse ----------------------------------------------------------
 json_globs = [
     ".claude-plugin/marketplace.json",
+    "mcp-categories.json",
     "plugins/**/.claude-plugin/plugin.json",
+    "plugins/**/.mcp.json",
+    "plugins/**/hooks/*.json",
     "managed-agent-cookbooks/*/steering-examples.json",
 ]
 for pat in json_globs:
@@ -87,6 +92,56 @@ for pat in json_globs:
             json.loads(jf.read_text())
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
+
+# --- 2b. MCP categories and .mcp.json schema validation --------------------
+mcp_cat_file = ROOT / "mcp-categories.json"
+known_categories: set[str] = set()
+if mcp_cat_file.is_file():
+    checked += 1
+    try:
+        cat_data = json.loads(mcp_cat_file.read_text())
+        known_categories = set(cat_data.get("categories", {}).keys())
+    except Exception as e:
+        err(f"mcp-categories: {e}")
+else:
+    err("mcp-categories.json missing from repository root")
+
+for mcp_file in sorted(PLUGINS.glob("**/.mcp.json")):
+    checked += 1
+    try:
+        data = json.loads(mcp_file.read_text())
+    except json.JSONDecodeError:
+        continue  # already reported in step 2
+    if not isinstance(data, dict) or "mcpServers" not in data:
+        err(f"mcp-schema: {rel(mcp_file)}: missing 'mcpServers' object")
+        continue
+    servers = data["mcpServers"]
+    if not isinstance(servers, dict):
+        err(f"mcp-schema: {rel(mcp_file)}: 'mcpServers' must be a dictionary")
+        continue
+    plugin_dir = mcp_file.parent
+    available_skills = {p.name for p in (plugin_dir / "skills").iterdir() if p.is_dir()} if (plugin_dir / "skills").is_dir() else set()
+    for s_name, s_cfg in servers.items():
+        if not isinstance(s_cfg, dict):
+            err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' must be an object")
+            continue
+        for req_field in ("type", "url", "description", "categories", "auth", "skills", "docs_url"):
+            if req_field not in s_cfg:
+                err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' missing field '{req_field}'")
+        if "categories" in s_cfg:
+            if not isinstance(s_cfg["categories"], list):
+                err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' categories must be a list")
+            elif known_categories:
+                for cat in s_cfg["categories"]:
+                    if cat not in known_categories:
+                        err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' unknown category '{cat}'")
+        if "skills" in s_cfg:
+            if not isinstance(s_cfg["skills"], list):
+                err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' skills must be a list")
+            elif available_skills:
+                for sk in s_cfg["skills"]:
+                    if sk not in available_skills:
+                        err(f"mcp-schema: {rel(mcp_file)}: server '{s_name}' references skill '{sk}' not found in {rel(plugin_dir)}/skills")
 
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
@@ -101,6 +156,25 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
         for k in ("name", "description"):
             if k not in meta:
                 err(f"frontmatter: {rel(md)}: missing '{k}'")
+    except (ValueError, yaml.YAMLError) as e:
+        err(f"frontmatter: {rel(md)}: {e}")
+
+# --- 3b. skill frontmatter validation --------------------------------------
+for md in sorted(PLUGINS.glob("**/skills/*/SKILL.md")):
+    checked += 1
+    text = md.read_text()
+    if not text.startswith("---"):
+        err(f"frontmatter: {rel(md)}: missing leading ---")
+        continue
+    try:
+        _, fm, _ = text.split("---", 2)
+        meta = yaml.safe_load(fm)
+        for k in ("name", "description"):
+            if k not in meta:
+                err(f"frontmatter: {rel(md)}: missing '{k}'")
+        for k in ("enhances_with_mcp", "optional_mcp"):
+            if k in meta and not isinstance(meta[k], list):
+                err(f"frontmatter: {rel(md)}: '{k}' must be a list")
     except (ValueError, yaml.YAMLError) as e:
         err(f"frontmatter: {rel(md)}: {e}")
 

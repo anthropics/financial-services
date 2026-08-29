@@ -1,3 +1,86 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "factset": {
+      "type": "http",
+      "url": "https://mcp.factset.com/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data"
+      ],
+      "description": "FactSet MCP server for real-time market data, consensus estimates, and financial multiples",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "FACTSET_API_KEY"
+      },
+      "skills": [
+        "strip-profile",
+        "pitch-deck",
+        "merger-model",
+        "buyer-list"
+      ],
+      "docs_url": "https://developer.factset.com"
+    },
+    "sp-global": {
+      "type": "http",
+      "url": "https://kfinance.kensho.com/integrations/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data",
+        "company-intelligence"
+      ],
+      "description": "S&P Global Kensho LLM-ready API for Capital IQ financial data, earnings transcripts, and company intelligence",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SPGLOBAL_API_KEY"
+      },
+      "skills": [
+        "cim-builder",
+        "strip-profile",
+        "teaser",
+        "datapack-builder"
+      ],
+      "docs_url": "https://docs.kensho.com/llmreadyapi/mcp/third-party/claude"
+    },
+    "pitchbook": {
+      "type": "http",
+      "url": "https://premium.mcp.pitchbook.com/mcp",
+      "required": false,
+      "categories": [
+        "private-markets",
+        "company-intelligence"
+      ],
+      "description": "PitchBook MCP server for private equity, venture capital, and M&A transaction benchmarking",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "PITCHBOOK_API_KEY"
+      },
+      "skills": [
+        "buyer-list",
+        "cim-builder",
+        "teaser",
+        "deal-tracker"
+      ],
+      "docs_url": "https://pitchbook.com"
+    },
+    "box": {
+      "type": "http",
+      "url": "https://mcp.box.com",
+      "required": false,
+      "categories": [
+        "document-management"
+      ],
+      "description": "Box MCP server for secure cloud storage, virtual data room (VDR) document access, and collaboration",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "BOX_API_KEY"
+      },
+      "skills": [
+        "datapack-builder",
+        "pitch-deck"
+      ],
+      "docs_url": "https://developer.box.com"
+    }
+  }
 }

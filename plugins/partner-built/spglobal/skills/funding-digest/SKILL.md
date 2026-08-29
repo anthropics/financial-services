@@ -1,6 +1,16 @@
 ---
 name: funding-digest
-description: "Generate a polished one-page PowerPoint slide summarizing key takeaways from recent funding rounds and notable capital markets activity across a user's watched sectors or companies. Use this skill when the user asks for a deal flow summary, weekly recap, funding digest, transaction roundup, or capital markets briefing. Triggers on: 'deal flow digest', 'weekly funding recap', 'deal roundup', 'transaction summary this week', 'what happened in [sector] this week', 'capital markets update', or any request to compile recent funding activity into a briefing slide. Produces a professional single-slide PPTX with key takeaways, valuation data, and Capital IQ deal links."
+description: 'Generate a polished one-page PowerPoint slide summarizing key takeaways
+  from recent funding rounds and notable capital markets activity across a user''s
+  watched sectors or companies. Use this skill when the user asks for a deal flow
+  summary, weekly recap, funding digest, transaction roundup, or capital markets briefing.
+  Triggers on: ''deal flow digest'', ''weekly funding recap'', ''deal roundup'', ''transaction
+  summary this week'', ''what happened in [sector] this week'', ''capital markets
+  update'', or any request to compile recent funding activity into a briefing slide.
+  Produces a professional single-slide PPTX with key takeaways, valuation data, and
+  Capital IQ deal links.'
+enhances_with_mcp:
+- spglobal
 ---
 
 **AI DISCLAIMER (MANDATORY):**

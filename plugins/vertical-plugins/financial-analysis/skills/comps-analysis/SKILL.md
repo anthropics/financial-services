@@ -1,22 +1,45 @@
 ---
 name: comps-analysis
-description: |
-  Build institutional-grade comparable company analyses with operating metrics, valuation multiples, and statistical benchmarking in Excel/spreadsheet format.
+description: 'Build institutional-grade comparable company analyses with operating
+  metrics, valuation multiples, and statistical benchmarking in Excel/spreadsheet
+  format.
+
 
   **Perfect for:**
+
   - Public company valuation (M&A, investment analysis)
+
   - Benchmarking performance vs. industry peers
+
   - Pricing IPOs or funding rounds
+
   - Identifying valuation outliers (over/under-valued)
+
   - Supporting investment committee presentations
+
   - Creating sector overview reports
 
+
   **Not ideal for:**
+
   - Private companies without comparable public peers
+
   - Highly diversified conglomerates
+
   - Distressed/bankrupt companies
+
   - Pre-revenue startups
+
   - Companies with unique business models
+
+  '
+enhances_with_mcp:
+- factset
+- sp-global
+- daloopa
+optional_mcp:
+- morningstar
+- lseg
 ---
 
 # Comparable Company Analysis

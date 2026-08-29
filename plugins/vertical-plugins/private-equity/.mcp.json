@@ -1,3 +1,83 @@
 {
-  "mcpServers": {}
+  "mcpServers": {
+    "pitchbook": {
+      "type": "http",
+      "url": "https://premium.mcp.pitchbook.com/mcp",
+      "required": false,
+      "categories": [
+        "private-markets",
+        "company-intelligence"
+      ],
+      "description": "PitchBook MCP server for private equity, venture capital, and M&A transaction benchmarking",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "PITCHBOOK_API_KEY"
+      },
+      "skills": [
+        "deal-sourcing",
+        "deal-screening",
+        "ic-memo",
+        "returns-analysis"
+      ],
+      "docs_url": "https://pitchbook.com"
+    },
+    "chronograph": {
+      "type": "http",
+      "url": "https://ai.chronograph.pe/mcp",
+      "required": false,
+      "categories": [
+        "private-markets"
+      ],
+      "description": "Chronograph MCP server for private equity portfolio company reporting, metrics, and valuation tracking",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "CHRONOGRAPH_API_KEY"
+      },
+      "skills": [
+        "portfolio-monitoring",
+        "value-creation-plan"
+      ],
+      "docs_url": "https://chronograph.pe"
+    },
+    "sp-global": {
+      "type": "http",
+      "url": "https://kfinance.kensho.com/integrations/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data",
+        "company-intelligence"
+      ],
+      "description": "S&P Global Kensho LLM-ready API for Capital IQ financial data, earnings transcripts, and company intelligence",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SPGLOBAL_API_KEY"
+      },
+      "skills": [
+        "dd-checklist",
+        "dd-meeting-prep",
+        "unit-economics"
+      ],
+      "docs_url": "https://docs.kensho.com/llmreadyapi/mcp/third-party/claude"
+    },
+    "box": {
+      "type": "http",
+      "url": "https://mcp.box.com",
+      "required": false,
+      "categories": [
+        "document-management"
+      ],
+      "description": "Box MCP server for secure cloud storage, virtual data room (VDR) document access, and collaboration",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "BOX_API_KEY"
+      },
+      "skills": [
+        "ai-readiness",
+        "dd-checklist",
+        "portfolio-monitoring"
+      ],
+      "docs_url": "https://developer.box.com"
+    }
+  }
 }

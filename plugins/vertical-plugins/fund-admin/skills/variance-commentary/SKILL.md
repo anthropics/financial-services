@@ -1,6 +1,10 @@
 ---
 name: variance-commentary
-description: Write flux commentary for every P&L and balance-sheet line over threshold — current vs prior period and vs budget, with the driver explained from underlying activity. Use for the month-end close package and management reporting.
+description: Write flux commentary for every P&L and balance-sheet line over threshold
+  — current vs prior period and vs budget, with the driver explained from underlying
+  activity. Use for the month-end close package and management reporting.
+enhances_with_mcp:
+- internal-gl
 ---
 
 # Variance commentary

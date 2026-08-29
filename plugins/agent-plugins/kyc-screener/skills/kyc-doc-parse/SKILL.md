@@ -1,6 +1,10 @@
 ---
 name: kyc-doc-parse
-description: Parse an investor or client onboarding packet into structured KYC fields — identity, ownership, control, source of funds, and document inventory. Use as the first step of KYC screening; output feeds the rules engine.
+description: Parse an investor or client onboarding packet into structured KYC fields
+  — identity, ownership, control, source of funds, and document inventory. Use as
+  the first step of KYC screening; output feeds the rules engine.
+enhances_with_mcp:
+- screening
 ---
 
 # Parse the onboarding packet
