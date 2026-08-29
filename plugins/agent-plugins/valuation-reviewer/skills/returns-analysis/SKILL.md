@@ -1,6 +1,12 @@
 ---
 name: returns-analysis
-description: Build quick IRR/MOIC sensitivity tables for PE deal evaluation. Models returns across entry multiple, leverage, exit multiple, growth, and hold period scenarios. Use when sizing up a deal, stress-testing assumptions, or preparing IC returns exhibits. Triggers on "returns analysis", "IRR sensitivity", "MOIC table", "what's the return at", "model the returns", or "back of the envelope".
+description: Build quick IRR/MOIC sensitivity tables for PE deal evaluation. Models
+  returns across entry multiple, leverage, exit multiple, growth, and hold period
+  scenarios. Use when sizing up a deal, stress-testing assumptions, or preparing IC
+  returns exhibits. Triggers on "returns analysis", "IRR sensitivity", "MOIC table",
+  "what's the return at", "model the returns", or "back of the envelope".
+enhances_with_mcp:
+- pitchbook
 ---
 
 # Returns Analysis

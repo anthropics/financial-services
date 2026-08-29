@@ -1,0 +1,64 @@
+{
+  "mcpServers": {
+    "morningstar": {
+      "type": "http",
+      "url": "https://mcp.morningstar.com/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data"
+      ],
+      "description": "Morningstar MCP server for mutual fund data, peer fund analysis, and equity metrics",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "MORNINGSTAR_API_KEY"
+      },
+      "skills": [
+        "portfolio-rebalance",
+        "investment-proposal",
+        "client-report",
+        "client-review"
+      ],
+      "docs_url": "https://developer.morningstar.com"
+    },
+    "factset": {
+      "type": "http",
+      "url": "https://mcp.factset.com/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data"
+      ],
+      "description": "FactSet MCP server for real-time market data, consensus estimates, and financial multiples",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "FACTSET_API_KEY"
+      },
+      "skills": [
+        "client-report",
+        "financial-plan",
+        "tax-loss-harvesting"
+      ],
+      "docs_url": "https://developer.factset.com"
+    },
+    "lseg": {
+      "type": "http",
+      "url": "https://api.analytics.lseg.com/lfa/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data"
+      ],
+      "description": "LSEG Financial Analytics MCP server for pricing, curves, valuation, IBES estimates, and fundamentals",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "LSEG_API_KEY"
+      },
+      "skills": [
+        "portfolio-rebalance",
+        "investment-proposal"
+      ],
+      "docs_url": "https://developer.lseg.com"
+    }
+  }
+}

@@ -1,6 +1,11 @@
 ---
 name: fixed-income-portfolio
-description: Review fixed income portfolios by pricing multiple bonds, retrieving reference data, analyzing cashflows, and running scenario analysis. Use when reviewing bond portfolios, computing portfolio duration and DV01, analyzing cashflow waterfalls, stress testing rate scenarios, or assessing portfolio composition.
+description: Review fixed income portfolios by pricing multiple bonds, retrieving
+  reference data, analyzing cashflows, and running scenario analysis. Use when reviewing
+  bond portfolios, computing portfolio duration and DV01, analyzing cashflow waterfalls,
+  stress testing rate scenarios, or assessing portfolio composition.
+enhances_with_mcp:
+- lseg
 ---
 
 # Fixed Income Portfolio Analysis

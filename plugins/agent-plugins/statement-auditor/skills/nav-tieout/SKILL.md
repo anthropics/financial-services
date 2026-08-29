@@ -1,6 +1,10 @@
 ---
 name: nav-tieout
-description: Tie an LP statement to the fund's NAV pack — recompute the LP's capital account from the NAV components and flag any line that doesn't agree. Use before LP statements are distributed.
+description: Tie an LP statement to the fund's NAV pack — recompute the LP's capital
+  account from the NAV components and flag any line that doesn't agree. Use before
+  LP statements are distributed.
+enhances_with_mcp:
+- nav
 ---
 
 # NAV tie-out

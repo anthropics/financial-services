@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "screening": {
+      "type": "http",
+      "url": "https://mcp.screening.anthropic.com/mcp",
+      "required": false,
+      "categories": [
+        "compliance-screening"
+      ],
+      "description": "Sanctions, PEP, and adverse media screening MCP connector for KYC rules evaluation",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SCREENING_API_KEY"
+      },
+      "skills": [
+        "kyc-rules",
+        "kyc-doc-parse"
+      ],
+      "docs_url": "https://docs.anthropic.com"
+    }
+  }
+}

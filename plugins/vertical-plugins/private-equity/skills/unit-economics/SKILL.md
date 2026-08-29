@@ -1,6 +1,13 @@
 ---
 name: unit-economics
-description: Analyze unit economics for PE targets — ARR cohorts, LTV/CAC, net retention, payback periods, revenue quality, and margin waterfall. Essential for software/SaaS, recurring revenue, and subscription businesses. Use when evaluating revenue quality, building a cohort analysis, or assessing customer economics. Triggers on "unit economics", "cohort analysis", "ARR analysis", "LTV CAC", "net retention", "revenue quality", or "customer economics".
+description: Analyze unit economics for PE targets — ARR cohorts, LTV/CAC, net retention,
+  payback periods, revenue quality, and margin waterfall. Essential for software/SaaS,
+  recurring revenue, and subscription businesses. Use when evaluating revenue quality,
+  building a cohort analysis, or assessing customer economics. Triggers on "unit economics",
+  "cohort analysis", "ARR analysis", "LTV CAC", "net retention", "revenue quality",
+  or "customer economics".
+enhances_with_mcp:
+- sp-global
 ---
 
 # Unit Economics Analysis

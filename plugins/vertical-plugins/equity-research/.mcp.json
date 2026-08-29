@@ -1,0 +1,108 @@
+{
+  "mcpServers": {
+    "factset": {
+      "type": "http",
+      "url": "https://mcp.factset.com/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data"
+      ],
+      "description": "FactSet MCP server for real-time market data, consensus estimates, and financial multiples",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "FACTSET_API_KEY"
+      },
+      "skills": [
+        "earnings-analysis",
+        "earnings-preview",
+        "model-update",
+        "morning-note",
+        "initiating-coverage",
+        "sector-overview",
+        "thesis-tracker",
+        "idea-generation"
+      ],
+      "docs_url": "https://developer.factset.com"
+    },
+    "sp-global": {
+      "type": "http",
+      "url": "https://kfinance.kensho.com/integrations/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data",
+        "company-intelligence"
+      ],
+      "description": "S&P Global Kensho LLM-ready API for Capital IQ financial data, earnings transcripts, and company intelligence",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SPGLOBAL_API_KEY"
+      },
+      "skills": [
+        "initiating-coverage",
+        "sector-overview",
+        "thesis-tracker",
+        "catalyst-calendar",
+        "earnings-preview"
+      ],
+      "docs_url": "https://docs.kensho.com/llmreadyapi/mcp/third-party/claude"
+    },
+    "daloopa": {
+      "type": "http",
+      "url": "https://mcp.daloopa.com/server/mcp",
+      "required": false,
+      "categories": [
+        "financial-data"
+      ],
+      "description": "Daloopa MCP server for fundamental financial data, detailed model line-item extractions, and KPIs",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "DALOOPA_API_KEY"
+      },
+      "skills": [
+        "model-update",
+        "earnings-analysis"
+      ],
+      "docs_url": "https://docs.daloopa.com"
+    },
+    "aiera": {
+      "type": "http",
+      "url": "https://mcp-pub.aiera.com",
+      "required": false,
+      "categories": [
+        "transcripts"
+      ],
+      "description": "Aiera MCP server for live earnings call audio, real-time transcripts, and event analysis",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "AIERA_API_KEY"
+      },
+      "skills": [
+        "earnings-analysis",
+        "earnings-preview",
+        "morning-note"
+      ],
+      "docs_url": "https://aiera.com"
+    },
+    "mtnewswire": {
+      "type": "http",
+      "url": "https://vast-mcp.blueskyapi.com/mtnewswires",
+      "required": false,
+      "categories": [
+        "news"
+      ],
+      "description": "MT Newswires MCP server for real-time global financial news and market commentary",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "MTNEW_API_KEY"
+      },
+      "skills": [
+        "morning-note",
+        "catalyst-calendar",
+        "idea-generation"
+      ],
+      "docs_url": "https://www.mtnewswires.com"
+    }
+  }
+}

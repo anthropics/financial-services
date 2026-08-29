@@ -1,6 +1,11 @@
 ---
 name: break-trace
-description: Root-cause a reconciliation break to its source transaction or posting — follow the audit trail from the break row back to the originating entry on each side and state what differs and why. Use after gl-recon has classified a break.
+description: Root-cause a reconciliation break to its source transaction or posting
+  — follow the audit trail from the break row back to the originating entry on each
+  side and state what differs and why. Use after gl-recon has classified a break.
+enhances_with_mcp:
+- internal-gl
+- subledger
 ---
 
 # Root-cause a break

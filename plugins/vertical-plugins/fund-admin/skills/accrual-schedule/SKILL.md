@@ -1,6 +1,10 @@
 ---
 name: accrual-schedule
-description: Build the period-end accrual schedule — for each accrual, compute the entry, cite the support, and draft the JE. Use during month-end close; the JE is a draft for controller approval, not a posting.
+description: Build the period-end accrual schedule — for each accrual, compute the
+  entry, cite the support, and draft the JE. Use during month-end close; the JE is
+  a draft for controller approval, not a posting.
+enhances_with_mcp:
+- internal-gl
 ---
 
 # Accrual schedule

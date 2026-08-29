@@ -1,7 +1,7 @@
 {
   "name": "sp-global",
   "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Kensho Technologies",
     "email": "spglobal-agent-skills-maintainers@kensho.com"

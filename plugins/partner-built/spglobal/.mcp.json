@@ -2,7 +2,24 @@
   "mcpServers": {
     "spglobal": {
       "type": "http",
-      "url": "https://kfinance.kensho.com/integrations/mcp"
+      "url": "https://kfinance.kensho.com/integrations/mcp",
+      "required": false,
+      "categories": [
+        "market-data",
+        "financial-data",
+        "company-intelligence"
+      ],
+      "description": "S&P Global Kensho LLM-ready API for Capital IQ financial data, earnings transcripts, and company intelligence",
+      "auth": {
+        "type": "bearer_token",
+        "env_var": "SPGLOBAL_API_KEY"
+      },
+      "skills": [
+        "earnings-preview-beta",
+        "funding-digest",
+        "tear-sheet"
+      ],
+      "docs_url": "https://docs.kensho.com/llmreadyapi/mcp/third-party/claude"
     }
   }
 }

@@ -1,6 +1,11 @@
 ---
 name: bond-futures-basis
-description: Analyze the bond futures basis by pricing futures, identifying the cheapest-to-deliver, and comparing with yield curves to assess delivery option value and basis trading opportunities. Use when analyzing bond futures, computing the basis, identifying CTD bonds, calculating implied repo rates, or evaluating basis trades.
+description: Analyze the bond futures basis by pricing futures, identifying the cheapest-to-deliver,
+  and comparing with yield curves to assess delivery option value and basis trading
+  opportunities. Use when analyzing bond futures, computing the basis, identifying
+  CTD bonds, calculating implied repo rates, or evaluating basis trades.
+enhances_with_mcp:
+- lseg
 ---
 
 # Bond Futures Basis Analysis

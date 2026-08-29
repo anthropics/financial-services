@@ -1,6 +1,11 @@
 ---
 name: bond-relative-value
-description: Perform relative value analysis on bonds by combining pricing, yield curve context, credit spreads, and scenario stress testing. Use when analyzing bond richness/cheapness, computing spread decomposition, comparing bonds, assessing bond value vs curves, or running rate shock scenarios.
+description: Perform relative value analysis on bonds by combining pricing, yield
+  curve context, credit spreads, and scenario stress testing. Use when analyzing bond
+  richness/cheapness, computing spread decomposition, comparing bonds, assessing bond
+  value vs curves, or running rate shock scenarios.
+enhances_with_mcp:
+- lseg
 ---
 
 # Bond Relative Value Analysis

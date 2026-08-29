@@ -1,6 +1,13 @@
 ---
 name: model-update
-description: Update financial models with new data — quarterly earnings, management guidance, macro changes, or revised assumptions. Adjusts estimates, recalculates valuation, and flags material changes. Use after earnings, guidance updates, or when assumptions need refreshing. Triggers on "update model", "plug earnings", "refresh estimates", "update numbers for [company]", "new guidance", or "revise estimates".
+description: Update financial models with new data — quarterly earnings, management
+  guidance, macro changes, or revised assumptions. Adjusts estimates, recalculates
+  valuation, and flags material changes. Use after earnings, guidance updates, or
+  when assumptions need refreshing. Triggers on "update model", "plug earnings", "refresh
+  estimates", "update numbers for [company]", "new guidance", or "revise estimates".
+enhances_with_mcp:
+- daloopa
+- factset
 ---
 
 # Model Update

@@ -1,6 +1,11 @@
 ---
 name: macro-rates-monitor
-description: Build macroeconomic and rates dashboards combining macro indicators, yield curves, inflation breakevens, and swap rates. Use when monitoring macro conditions, analyzing yield curve shape, decomposing real vs nominal rates, assessing policy rate expectations, or evaluating financial conditions.
+description: Build macroeconomic and rates dashboards combining macro indicators,
+  yield curves, inflation breakevens, and swap rates. Use when monitoring macro conditions,
+  analyzing yield curve shape, decomposing real vs nominal rates, assessing policy
+  rate expectations, or evaluating financial conditions.
+enhances_with_mcp:
+- lseg
 ---
 
 # Macroeconomic and Rates Monitor

@@ -1,6 +1,14 @@
 ---
 name: initiating-coverage
-description: Create institutional-quality equity research initiation reports through a 5-task workflow. Tasks must be executed individually with verified prerequisites - (1) company research, (2) financial modeling, (3) valuation analysis, (4) chart generation, (5) final report assembly. Each task produces specific deliverables (markdown docs, Excel models, charts, or DOCX reports). Tasks 3-5 have dependencies on earlier tasks.
+description: Create institutional-quality equity research initiation reports through
+  a 5-task workflow. Tasks must be executed individually with verified prerequisites
+  - (1) company research, (2) financial modeling, (3) valuation analysis, (4) chart
+  generation, (5) final report assembly. Each task produces specific deliverables
+  (markdown docs, Excel models, charts, or DOCX reports). Tasks 3-5 have dependencies
+  on earlier tasks.
+enhances_with_mcp:
+- sp-global
+- factset
 ---
 
 # Initiating Coverage

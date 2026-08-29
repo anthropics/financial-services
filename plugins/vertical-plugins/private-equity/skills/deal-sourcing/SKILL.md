@@ -1,6 +1,12 @@
 ---
 name: deal-sourcing
-description: PE deal sourcing workflow — discover target companies, check CRM for existing relationships, and draft personalized founder outreach emails. Use when sourcing new deals, prospecting companies in a sector, or reaching out to founders. Triggers on "find companies", "source deals", "draft founder email", "check if we've seen this company", or "outreach to founder".
+description: PE deal sourcing workflow — discover target companies, check CRM for
+  existing relationships, and draft personalized founder outreach emails. Use when
+  sourcing new deals, prospecting companies in a sector, or reaching out to founders.
+  Triggers on "find companies", "source deals", "draft founder email", "check if we've
+  seen this company", or "outreach to founder".
+enhances_with_mcp:
+- pitchbook
 ---
 
 # Deal Sourcing
