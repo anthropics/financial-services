@@ -1,6 +1,9 @@
-# Portfolio Monitoring
-
+---
+name: portfolio-monitoring
 description: Track and analyze portfolio company performance against plan. Ingests monthly/quarterly financial packages (Excel, PDF), extracts KPIs, flags variances to budget, and produces summary dashboards. Use when reviewing portfolio company financials, preparing board materials, or monitoring covenant compliance. Triggers on "review portfolio company", "monthly financials", "how is [company] performing", "covenant check", or "portfolio update".
+---
+
+# Portfolio Monitoring
 
 ## Workflow
 

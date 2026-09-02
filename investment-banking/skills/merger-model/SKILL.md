@@ -1,6 +1,9 @@
-# Merger Model
-
+---
+name: merger-model
 description: Build accretion/dilution analysis for M&A transactions. Models pro forma EPS impact, synergy sensitivities, and purchase price allocation. Use when evaluating a potential acquisition, preparing merger consequences analysis for a pitch, or advising on deal terms. Triggers on "merger model", "accretion dilution", "M&A model", "pro forma EPS", "merger consequences", or "deal impact analysis".
+---
+
+# Merger Model
 
 ## Workflow
 

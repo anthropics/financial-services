@@ -1,6 +1,9 @@
-# Diligence Meeting Prep
-
+---
+name: dd-meeting-prep
 description: Prepare for due diligence meetings — management presentations, expert network calls, customer references, and advisor sessions. Generates targeted question lists, benchmarks to reference, and red flags to probe. Use before any diligence meeting or call. Triggers on "prep for management meeting", "diligence call prep", "expert call questions", "customer reference questions", or "meeting prep for [company]".
+---
+
+# Diligence Meeting Prep
 
 ## Workflow
 
