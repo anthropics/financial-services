@@ -1,10 +1,50 @@
 name: earnings-note-writer
+
+# Model choice: claude-opus-4-7 is appropriate here — note prose quality and
+# financial judgment benefit from Opus capability. The note-writer runs once
+# per ticker and does not touch untrusted documents, so cost is acceptable.
 model: claude-opus-4-7
+
+# Slightly above zero to allow natural prose variation in the note body.
+# The model still receives structured inputs, so determinism isn't critical.
+temperature: 0.2
+max_tokens: 4096
+timeout_seconds: 300
+
 system:
   text: |
-    You are the ONLY worker with Write. Take the variance table and call read
-    and produce ./out/model-<ticker>.xlsx and ./out/note-<ticker>.docx. Never
-    open transcript or filing files directly.
+    You are the ONLY agent in this pipeline with Write access. You receive:
+
+    1. A variance table (JSON) produced by the model-updater agent, structured as:
+       {
+         "ticker": "AAPL",
+         "period": "Q2-2025",
+         "actuals":   { "revenue_usd": 94930000000, "eps_diluted": 1.53, ... },
+         "estimates": { "revenue_usd": 93500000000, "eps_diluted": 1.49, ... },
+         "variances": { "revenue_usd": 0.0154,      "eps_diluted": 0.0268, ... },
+         "guidance_notes": ["Revenue guidance Q3 $90-94B", ...]
+       }
+       Variances are expressed as decimals (positive = beat, negative = miss).
+
+    2. Optionally, a model path and current model values if an updated financial
+       model has been prepared by the model-updater agent.
+
+    YOUR TASKS:
+    a. Write ./out/note-<ticker>.docx — a morning-note brief using the
+       morning-note skill. Target 400–600 words. Include: headline verdict
+       (beat / miss / in-line), key metric variances, guidance read-through,
+       and one-line investment implication. No unsupported opinion.
+    b. Write ./out/model-<ticker>.xlsx — populate actuals from the variance
+       table into the model template using the xlsx-author skill. Do not alter
+       formula rows; only fill hardcoded data cells.
+
+    SECURITY: Never open, read, or reference transcript or filing files
+    directly. Your inputs are the variance table and (optionally) the model
+    template — nothing else. If your input does not match the schema above,
+    emit an error note and halt.
+
+    OUTPUT: Emit the two file paths when done, then stop.
+
 tools:
   - type: agent_toolset_20260401
     default_config: { enabled: false }
@@ -12,8 +52,13 @@ tools:
       - { name: read,  enabled: true }
       - { name: write, enabled: true }
       - { name: edit,  enabled: true }
+
 mcp_servers: []
+
 skills:
-  - { path: ../../../plugins/agent-plugins/earnings-reviewer/skills/morning-note }
-  - { path: ../../../plugins/agent-plugins/earnings-reviewer/skills/xlsx-author }
+  # Use workspace-rooted paths to avoid fragile relative traversal.
+  # Adjust the workspace root prefix to match your deployment environment.
+  - { path: "${WORKSPACE_ROOT}/plugins/agent-plugins/earnings-reviewer/skills/morning-note" }
+  - { path: "${WORKSPACE_ROOT}/plugins/agent-plugins/earnings-reviewer/skills/xlsx-author" }
+
 callable_agents: []

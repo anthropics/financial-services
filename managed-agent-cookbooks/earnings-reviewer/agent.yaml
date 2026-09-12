@@ -1,11 +1,53 @@
-# Earnings Reviewer — managed-agent cookbook
-
 name: earnings-reviewer
+
+# Orchestrator — coordinates subagents and calls FactSet/Daloopa.
+# Does NOT touch untrusted documents directly; that is transcript-reader's job.
+# claude-opus-4-7 is appropriate here: multi-step planning and financial
+# judgment over MCP tool outputs benefit from Opus-level reasoning.
 model: claude-opus-4-7
 
+temperature: 0        # deterministic routing; subagents handle prose variation
+max_tokens: 4096
+timeout_seconds: 600  # full earnings cycle across subagents can take several minutes
+
 system:
-  file: ../../plugins/agent-plugins/earnings-reviewer/agents/earnings-reviewer.md
-  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+  # Inline the system prompt rather than loading from a plugin file.
+  # Externalising system prompts into plugin files that can drift independently
+  # of this manifest creates silent prompt-injection and version-skew risks.
+  # If the prompt must live in a file for length reasons, pin it by content-hash
+  # and validate at deploy time via scripts/deploy-managed-agent.sh.
+  #
+  # file: ../../plugins/agent-plugins/earnings-reviewer/agents/earnings-reviewer.md
+  # append: "You are running headless. Produce files in ./out/; ..."
+  text: |
+    You are the earnings-reviewer orchestrator. You coordinate a three-agent
+    pipeline for a single ticker per session:
+
+    PIPELINE:
+    1. Call transcript-reader with the transcript and press-release paths.
+       It returns schema-validated JSON (actuals, period, guidance_notes).
+       If it returns an error key, log it and halt — do not proceed.
+    2. Using the actuals JSON, fetch consensus estimates from FactSet and
+       current model data from Daloopa. Compute variances
+       (actual - estimate) / |estimate| for each metric. Assemble the
+       variance table:
+         { ticker, period, actuals, estimates, variances, guidance_notes }
+    3. Call note-writer with the variance table. It produces:
+         ./out/note-<ticker>.docx   — morning-note brief
+         ./out/model-<ticker>.xlsx  — actuals written into model template
+    4. Emit the two output paths and halt.
+
+    SECURITY:
+    - Never read transcript or filing files directly. Delegate all document
+      access to transcript-reader.
+    - FactSet and Daloopa calls are read-only. Do not attempt write operations
+      on either MCP server.
+    - If any subagent returns an unexpected schema, halt and emit an error
+      report to ./out/error-<ticker>.json rather than passing bad data forward.
+
+    HEADLESS MODE: You are running without an open Office document. All output
+    files must be written to ./out/ by note-writer. Do not assume interactive
+    confirmation is available.
 
 tools:
   - type: agent_toolset_20260401
@@ -14,17 +56,51 @@ tools:
       - { name: read,  enabled: true }
       - { name: grep,  enabled: true }
       - { name: glob,  enabled: true }
-  - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
-  - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+      # Write and edit are intentionally disabled on the orchestrator.
+      # Only note-writer (the single Write-holder) may produce output files.
+
+  - type: mcp_toolset
+    mcp_server_name: factset
+    default_config: { enabled: true }
+    # Scope to read-only tools only. Adjust tool names to match your
+    # FactSet MCP server's actual tool manifest.
+    configs:
+      - { name: get_estimates,       enabled: true }
+      - { name: get_consensus,       enabled: true }
+      - { name: get_historical_data, enabled: true }
+
+  - type: mcp_toolset
+    mcp_server_name: daloopa
+    default_config: { enabled: true }
+    configs:
+      - { name: get_model,           enabled: true }
+      - { name: get_line_items,      enabled: true }
 
 mcp_servers:
-  - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
-  - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+  - type: url
+    name: factset
+    url: "${FACTSET_MCP_URL}"
+    # FACTSET_MCP_URL must be set in the deployment environment.
+    # See scripts/deploy-managed-agent.sh for validation logic.
+
+  - type: url
+    name: daloopa
+    url: "${DALOOPA_MCP_URL}"
 
 skills:
-  - { from_plugin: ../../plugins/agent-plugins/earnings-reviewer }
+  # Use workspace-rooted paths; relative ../.. traversal breaks when the
+  # agent's working directory differs between local dev and production.
+  - { path: "${WORKSPACE_ROOT}/plugins/agent-plugins/earnings-reviewer" }
 
 callable_agents:
-  - { manifest: ./subagents/transcript-reader.yaml }
-  - { manifest: ./subagents/model-updater.yaml }
-  - { manifest: ./subagents/note-writer.yaml }   # only leaf with Write
+  - manifest: ./subagents/transcript-reader.yaml
+    # Tier 1: touches untrusted docs; read + grep only; no MCP.
+
+  - manifest: ./subagents/model-updater.yaml
+    # Tier 2: receives clean JSON from transcript-reader; calls FactSet/Daloopa;
+    # no Write. NOTE: create subagents/model-updater.yaml if it does not exist —
+    # it is referenced here but was absent from the original repo.
+
+  - manifest: ./subagents/note-writer.yaml
+    # Tier 3 (Write-holder): receives variance table; produces .docx + .xlsx;
+    # no MCP access; never reads transcript or filing files.
