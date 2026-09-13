@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Investor Outlook — GLD Position Analysis</title>
+<style>
+  :root{
+    --bg:#0d0f14; --panel:#161a23; --panel2:#1d222e; --line:#2a3140;
+    --gold:#d4af37; --gold-bright:#ffd75e; --silver:#cfd6e4; --text:#e6e9ef; --muted:#8b93a4;
+    --green:#3ecf8e; --red:#ff6b6b; --amber:#ffb454; --blue:#5b9dff; --purple:#b78cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;padding:24px;max-width:1180px;margin:0 auto}
+  header{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+  h1 .dot{color:var(--gold)}
+  .sub-h{color:var(--muted);font-size:13px;margin-top:4px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin:0 0 14px;font-weight:600}
+  h3{font-size:14px;margin:14px 0 6px;color:var(--gold-bright)}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+  p{margin:8px 0;font-size:14px}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:6px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .card .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .card .big{font-size:23px;font-weight:700;font-variant-numeric:tabular-nums}
+  .card .sub{font-size:12px;margin-top:3px}
+  .up{color:var(--green)} .down{color:var(--red)} .gold{color:var(--gold-bright)} .mut{color:var(--muted)} .silver{color:var(--silver)}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  .two{grid-template-columns:1fr 1fr}
+  @media(max-width:860px){.two{grid-template-columns:1fr}}
+  canvas{width:100%;height:auto;display:block}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:13px}
+  .bar-row .nm{flex:0 0 130px;color:var(--silver)}
+  .bar-track{flex:1;background:var(--panel2);border-radius:6px;height:24px;position:relative;overflow:hidden;border:1px solid var(--line)}
+  .bar-fill{height:100%;border-radius:6px 0 0 6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:12px;font-weight:600;color:#0d0f14}
+  .bar-row .vv{flex:0 0 120px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+  .t-good{background:rgba(62,207,142,.15);color:var(--green)}
+  .t-bad{background:rgba(255,107,107,.15);color:var(--red)}
+  .t-mid{background:rgba(255,180,84,.15);color:var(--amber)}
+  ul{margin:6px 0 6px 18px;font-size:14px} li{margin:4px 0}
+  .pill{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin:8px 0}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .callout{background:var(--panel2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 14px;margin:12px 0;font-size:14px}
+  .disc{font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:12px;margin-top:8px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+  .live .led{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .live.ok .led{background:var(--green)} .live.err .led{background:var(--red)}
+  footer{color:var(--muted);font-size:12px;margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+  footer a{color:var(--gold);text-decoration:none}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Gold Investor Outlook<span class="dot">.</span> <span class="pill">GLD position analysis</span></h1>
+  <div class="sub-h">Position: <strong>1,100 sh GLD</strong> @ <strong>$450.00</strong> cost · As of June 22, 2026 · <span id="live" class="live"><span class="led"></span><span id="live-text">loading live prices…</span></span></div>
+</header>
+
+<!-- LIVE PRICE STRIP (GLD+SLV rule honored) -->
+<div class="grid cards">
+  <div class="card"><div class="label">Gold spot</div><div class="big gold" id="spot">—</div><div class="sub" id="spot-c">—</div></div>
+  <div class="card"><div class="label">GLD</div><div class="big gold" id="gld">—</div><div class="sub" id="gld-c">—</div></div>
+  <div class="card"><div class="label">Silver spot</div><div class="big silver" id="slvr">—</div><div class="sub" id="slvr-c">—</div></div>
+  <div class="card"><div class="label">SLV</div><div class="big silver" id="slv">—</div><div class="sub" id="slv-c">—</div></div>
+  <div class="card"><div class="label">Your unrealized P&amp;L</div><div class="big" id="pnl">—</div><div class="sub" id="pnl-c">vs $450 basis</div></div>
+</div>
+
+<!-- 1. POSITION & BREAKEVEN -->
+<section>
+  <h2>1 · Where you stand</h2>
+  <div class="grid two">
+    <div>
+      <table>
+        <tr><td>Shares</td><td id="t-sh">1,100</td></tr>
+        <tr><td>Cost basis / share</td><td>$450.00</td></tr>
+        <tr><td>Cost basis total</td><td>$495,000</td></tr>
+        <tr><td>Current GLD (live)</td><td id="t-gld">—</td></tr>
+        <tr><td>Market value (live)</td><td id="t-mv">—</td></tr>
+        <tr><td>Unrealized P&amp;L (live)</td><td id="t-pnl">—</td></tr>
+        <tr><td>Breakeven GLD price</td><td>$450.00</td></tr>
+        <tr><td>Move needed to breakeven</td><td id="t-move">—</td></tr>
+        <tr><td>Implied gold spot at breakeven</td><td id="t-goldbe">~$4,876/oz</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="callout">
+        <strong>The key insight.</strong> Your $450 breakeven maps to gold ≈ <strong>$4,876/oz</strong> (using the live GLD↔gold backing ratio). That is <em>below every major bank's end-2026 target</em> ($5,000–$6,300). If the Street's base case is even roughly right, you reach breakeven within ~12 months by simply holding — and move into profit beyond it.
+      </div>
+      <p class="mut" style="font-size:13px">✅ Basis confirmed: <strong>$450.00 is your cost basis</strong> (inclusive of options activity). All P&amp;L, breakeven, scenario, and strategy math in this report uses $450. The broker's $404.74 display is disregarded.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. OUTLOOK -->
+<section>
+  <h2>2 · The outlook — bull vs. bear</h2>
+  <div class="grid two">
+    <div>
+      <h3 class="up">▲ Structural bull case</h3>
+      <ul>
+        <li><strong>Record central-bank demand</strong> — WGC survey: 45% of central banks plan to add gold (price-insensitive floor).</li>
+        <li><strong>Stagflation / fiscal risk</strong> — large deficits, sticky CPI (4.2%) keep the inflation hedge bid.</li>
+        <li><strong>Goldman's thesis: "structural demand, not Fed policy"</strong> — the bull case doesn't need rate cuts.</li>
+        <li><strong>Dollar de-dollarization</strong> trend intact.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="down">▼ Bear / headwind case</h3>
+      <ul>
+        <li><strong>Hawkish Warsh Fed</strong> — stripped guidance, 2026 dots imply ~+25bps; higher real rates raise gold's opportunity cost.</li>
+        <li><strong>Stronger dollar</strong> on the hawkish turn.</li>
+        <li><strong>Iran de-escalation</strong> removed a safe-haven premium (interim deal).</li>
+        <li><strong>Positioning</strong> — crowded longs after a 30%+ run; corrections can be sharp.</li>
+      </ul>
+    </div>
+  </div>
+  <p>Net: the <strong>near-term</strong> (1–3 mo) is a tug-of-war that favors chop/downside risk on the hawkish Fed; the <strong>12-month structural</strong> picture remains constructive and is where the analyst targets live.</p>
+</section>
+
+<!-- 3. WALL STREET COMPARISON -->
+<section>
+  <h2>3 · Wall Street targets vs. your breakeven</h2>
+  <p class="mut" style="font-size:13px">End-2026 gold targets, converted to GLD-equivalent at the live backing ratio (~0.0923 oz/share). Your $450 breakeven shown as the dashed line — note it's below the entire analyst range.</p>
+  <div id="analyst-bars"></div>
+  <p style="font-size:13px;margin-top:10px"><strong>Read:</strong> consensus (~$5,500 gold ≈ <strong>GLD ~$508</strong>) implies <strong>+13% above your basis</strong>. Even the most conservative target (Commerzbank $5,000 ≈ GLD $461) clears your breakeven. The bear risk is timing, not whether the level is reachable.</p>
+</section>
+
+<!-- 4. SCENARIO / EV -->
+<section>
+  <h2>4 · Probability-weighted scenarios (12-mo, hold-only)</h2>
+  <table>
+    <tr><th>Scenario</th><th>Gold</th><th>GLD</th><th>Prob.</th><th>P&amp;L (1,100 sh)</th><th>Contribution</th></tr>
+    <tr><td><span class="tag t-bad">Deep bear</span> Fed hikes, correction</td><td>$3,800</td><td>$351</td><td>15%</td><td class="down">−$108,900</td><td class="down">−$16,335</td></tr>
+    <tr><td><span class="tag t-mid">Mild bear</span> grind sideways</td><td>$4,300</td><td>$397</td><td>20%</td><td class="down">−$58,300</td><td class="down">−$11,660</td></tr>
+    <tr><td><span class="tag t-good">Base</span> consensus path</td><td>$5,200</td><td>$480</td><td>35%</td><td class="up">+$33,000</td><td class="up">+$11,550</td></tr>
+    <tr><td><span class="tag t-good">Bull</span> structural breakout</td><td>$6,000</td><td>$554</td><td>30%</td><td class="up">+$114,400</td><td class="up">+$34,320</td></tr>
+    <tr><td colspan="5"><strong>Expected value</strong> (probability-weighted)</td><td class="up"><strong>+$17,875</strong></td></tr>
+  </table>
+  <p style="font-size:13px;margin-top:8px"><strong>Interpretation:</strong> EV is modestly positive (~+3.6% on cost) but the distribution is <em>wide</em> (−$109k to +$114k). That dispersion — not the central tendency — is what your strategy choice should manage. These probabilities are illustrative; adjust them to your own conviction.</p>
+  <div id="scenario-bars" style="margin-top:12px"></div>
+</section>
+
+<!-- 5. OPTIONS STRATEGIES -->
+<section>
+  <h2>5 · Options strategies to "climb out faster"</h2>
+  <p class="mut" style="font-size:13px">Payoff at expiry vs. GLD price, for your 1,100 shares. Premiums are <em>approximate</em> (≈20% IV, ~6-mo); real fills depend on the live chain. Dashed vertical = current GLD; solid horizontal = $0 P&amp;L.</p>
+  <canvas id="payoff" width="1120" height="460"></canvas>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--silver)"></span>Hold (do nothing)</span>
+    <span><span class="sw" style="background:var(--blue)"></span>Covered call ($480)</span>
+    <span><span class="sw" style="background:var(--gold-bright)"></span>Stock repair (1×2, $390/$430)</span>
+    <span><span class="sw" style="background:var(--purple)"></span>Collar ($370 put / $460 call)</span>
+  </div>
+  <div class="grid two" style="margin-top:8px">
+    <div>
+      <h3 class="gold">⚒️ Stock repair (1×2 call ratio) — the "climb out faster" play</h3>
+      <p style="font-size:13px">Buy 11 calls @ $390, sell 22 calls @ $430, ~near-zero cost. <strong>Drops your breakeven from $450 → ~$423.</strong> Recovers your loss if GLD grinds to the $390–430 sweet spot. <span class="tag t-bad">Cost:</span> caps gains ~$430 (you forfeit the moonshot) and below $390 it tracks hold. Best if you expect a <em>moderate</em> recovery, not a melt-up.</p>
+    </div>
+    <div>
+      <h3 class="blue">📈 Covered call ($480)</h3>
+      <p style="font-size:13px">Sell 11 calls @ $480, collect ~$7/sh (~$7,700). Lowers breakeven to ~$443, harvests elevated IV. <span class="tag t-good">Good:</span> strike is <em>above</em> your basis so you still profit to $480. <span class="tag t-bad">Cost:</span> caps at ~+$40.7k; assignment risk in a strong rally. Sensible income while you wait.</p>
+    </div>
+    <div>
+      <h3 class="purple">🛡️ Collar ($370 put / $460 call)</h3>
+      <p style="font-size:13px">Buy a $370 put, fund it by selling a $460 call (~zero cost). <strong>This does NOT help you climb out</strong> — it's insurance: floors further downside (~−$88k worst case) and caps upside ~+$11k. Use only if the hawkish-Fed downside would force you to capitulate.</p>
+    </div>
+    <div>
+      <h3 class="down">🚫 What to avoid</h3>
+      <p style="font-size:13px"><strong>Covered calls below $450</strong> (caps you under breakeven — locks in a loss). <strong>Cash-secured puts to add more</strong> — you're already ~40% concentrated; doubling down raises single-asset risk. <strong>Naked long calls</strong> as a "recovery" — adds leverage/theta decay, not a repair.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. REDISTRIBUTE -->
+<section>
+  <h2>6 · Should you redistribute?</h2>
+  <div class="grid two">
+    <div>
+      <p><strong>Concentration is the real issue.</strong> Your screenshot showed GLD ≈ <strong>40% of the portfolio</strong> (~$425k). One commodity ETF at 40% is a large single-factor bet — fine if intentional, risky if not.</p>
+      <h3>Redistribution menu (same gold thesis, less single-name risk)</h3>
+      <ul>
+        <li><strong>SLV / silver</strong> — higher beta to the same macro <em>plus</em> a 6th straight supply deficit &amp; industrial demand. More upside, more volatility.</li>
+        <li><strong>GDX / gold miners</strong> — operating leverage; record ~$2,800/oz margins (AISC ~$1,700). Can outrun bullion in an up-move.</li>
+        <li><strong>Non-correlated sleeve</strong> — trim into equities/bonds/cash to cut the 40% concentration.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="callout"><strong>Tax-loss harvesting.</strong> A ~$70k unrealized loss is a real asset. Selling part realizes a loss to offset other gains. To keep gold exposure without a <strong>wash sale</strong> (no "substantially identical" repurchase within 30 days), rotate proceeds into a <em>different-issuer</em> gold fund (e.g. IAU or GLDM) rather than re-buying GLD. Lower fees too (GLDM 0.10% vs GLD 0.40%).</div>
+      <h3>A balanced default</h3>
+      <ul>
+        <li><strong>Trim ~25–35%</strong> of GLD → harvest the loss, cut concentration.</li>
+        <li><strong>Redeploy</strong> part into SLV + GDX (keep the bullish metals thesis, add diversification/beta).</li>
+        <li><strong>On the retained core,</strong> run a covered call ≥$480 or a light stock-repair to accelerate recovery while keeping bull upside.</li>
+        <li><strong>Add a collar only</strong> if the bear case would force capitulation.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 7. DECISION FRAMEWORK -->
+<section>
+  <h2>7 · Decision framework — match the move to your view</h2>
+  <table>
+    <tr><th>Your situation</th><th>Suggested action</th><th>Why</th></tr>
+    <tr><td>Bullish + patient + can tolerate drawdown</td><td><strong>Hold</strong> (+ optional $480 covered call)</td><td>Consensus implies breakeven in ~12 mo; don't cap the upside you're betting on</td></tr>
+    <tr><td>Want to recover faster, expect <em>moderate</em> rebound</td><td><strong>Stock repair 1×2</strong></td><td>Breakeven $450→$423 at ~zero cost; accelerates recovery in the sweet spot</td></tr>
+    <tr><td>Nervous about hawkish-Fed downside</td><td><strong>Collar</strong></td><td>Caps catastrophic downside; accept a capped upside</td></tr>
+    <tr><td>Over-concentrated (likely)</td><td><strong>Trim 25–35% + harvest loss + diversify</strong></td><td>Cuts 40% single-asset risk; tax benefit; keep thesis via SLV/GDX</td></tr>
+    <tr><td>Need the cash / lost conviction</td><td><strong>Exit, bank the tax loss</strong></td><td>Don't hold a 40% position you no longer believe in</td></tr>
+  </table>
+</section>
+
+<!-- 8. METHODOLOGY -->
+<section>
+  <h2>8 · Methodology — "what skills were used &amp; how it's calculated"</h2>
+  <div class="grid two">
+    <div>
+      <h3>Calculations</h3>
+      <ul>
+        <li><strong>P&amp;L / breakeven:</strong> <code>(price − 450) × 1,100</code>; breakeven = basis.</li>
+        <li><strong>GLD↔gold mapping:</strong> backing ratio <code>ρ = GLD ÷ spot</code> (live ≈ 0.0923 oz/sh); gold-equiv = <code>GLD ÷ ρ</code>.</li>
+        <li><strong>Scenario EV:</strong> <code>Σ pᵢ × P&amp;Lᵢ</code> across bear/base/bull.</li>
+        <li><strong>Option payoffs:</strong> intrinsic value at expiry + premium; e.g. covered call = <code>(S−450) + prem − max(0,S−K)</code>; repair = <code>(S−450) + max(0,S−K₁) − 2·max(0,S−K₂) − debit</code>.</li>
+        <li><strong>Premiums</strong> estimated from ~20% implied vol (mean-reverting; elevated IV favors selling).</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Analytical "skills" applied</h3>
+      <ul>
+        <li><strong>Live market data</strong> — Stooq feed (gold, GLD, silver, SLV) per the repo's GLD/SLV display rule.</li>
+        <li><strong>Web research / source triangulation</strong> — bank targets (Goldman, JPM, UBS, BofA, MS, Commerzbank).</li>
+        <li><strong>Scenario &amp; expected-value modeling.</strong></li>
+        <li><strong>Options payoff / Greeks-aware structuring</strong> (repair, covered call, collar).</li>
+        <li><strong>Portfolio construction</strong> — concentration &amp; position-sizing.</li>
+        <li><strong>Tax-aware optimization</strong> — loss harvesting + wash-sale rules.</li>
+      </ul>
+      <p class="mut" style="font-size:12px">Note: the repo's bundled agents (equity-research, financial-analysis) target single-stock fundamentals; this commodity+options analysis was composed from the above framework rather than a single packaged skill.</p>
+    </div>
+  </div>
+  <div class="disc"><strong>Disclaimer.</strong> Educational analysis, not investment, tax, or legal advice. Option premiums and probabilities are illustrative estimates, not quotes. Options carry risk including assignment and total loss of premium; ratio spreads add risk if the underlying moves sharply. Verify live quotes and consult a licensed advisor before acting. You are responsible for your own decisions.</div>
+</section>
+
+<footer>
+  <strong>Live data:</strong> <a href="https://stooq.com">Stooq</a> (XAUUSD, GLD.US, XAGUSD, SLV.US).
+  <strong>Targets:</strong>
+  <a href="https://goldsilver.com/industry-news/article/gold-price-forecast-2026-2027-key-predictions-from-top-analysts/">GoldSilver</a> ·
+  <a href="https://www.jpmorgan.com/insights/global-research/commodities/gold-prices">J.P. Morgan</a> ·
+  <a href="https://www.indmoney.com/blog/us-stocks/gold-price-dollar-6000-forecast-2026-by-major-us-banks">IndMoney (bank roundup)</a>.
+  <strong>Options:</strong>
+  <a href="https://www.optionseducation.org/strategies/all-strategies/stock-repair">OIC — Stock Repair</a>.
+</footer>
+
+<script>
+// ===== config =====
+const SHARES=1100, BASIS=450, RHO_FALLBACK=0.0923;
+const FALLBACK={spot:{c:4188.42,o:4160.26},gld:{c:386.50,o:384.00},silver:{c:65.00,o:66.35},slv:{c:58.91,o:60.00}};
+// analyst end-2026 gold targets ($/oz)
+const ANALYSTS=[
+  {n:'Commerzbank',v:5000},{n:'Goldman Sachs',v:5400},{n:'Morgan Stanley',v:5200},
+  {n:'UBS (Dec)',v:5900},{n:'Bank of America',v:6000},{n:'J.P. Morgan',v:6300}
+];
+// scenarios: [label, gldPrice, prob, color]
+const SCEN=[['Deep bear',351,.15,'#ff6b6b'],['Mild bear',397,.20,'#ffb454'],['Base',480,.35,'#3ecf8e'],['Bull',554,.30,'#3ecf8e']];
+
+const $=id=>document.getElementById(id);
+const usd=(n,d=2)=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const usd0=n=>(n<0?'−':'')+'$'+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const pctOf=(now,o)=>o?((now-o)/o*100):0;
+const chg=(now,o)=>{const p=pctOf(now,o);const c=p>=0?'up':'down';return `<span class="${c}">${p>=0?'▲ +':'▼ '}${p.toFixed(2)}% day</span>`;};
+
+// ---- live data ----
+const STOOQ=s=>`https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`;
+const PROXY=u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
+async function txt(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.text();}
+async function csv(s){try{return await txt(STOOQ(s));}catch(e){return await txt(PROXY(STOOQ(s)));}}
+function q(c){const l=c.trim().split('\n').pop().split(',');const o=+l[3],cl=+l[6];if(!isFinite(cl)||cl<=0)throw 0;return {o:isFinite(o)?o:cl,c:cl};}
+
+function paint(d,live){
+  $('spot').innerHTML=usd(d.spot.c)+'<span style="font-size:13px;color:var(--muted)">/oz</span>';
+  $('spot-c').innerHTML=chg(d.spot.c,d.spot.o);
+  $('gld').textContent=usd(d.gld.c); $('gld-c').innerHTML=chg(d.gld.c,d.gld.o);
+  $('slvr').innerHTML=usd(d.silver.c)+'<span style="font-size:13px;color:var(--muted)">/oz</span>';
+  $('slvr-c').innerHTML=chg(d.silver.c,d.silver.o);
+  $('slv').textContent=usd(d.slv.c); $('slv-c').innerHTML=chg(d.slv.c,d.slv.o);
+  const mv=d.gld.c*SHARES, pnl=(d.gld.c-BASIS)*SHARES, mvpct=(d.gld.c-BASIS)/BASIS*100;
+  $('pnl').innerHTML=`<span class="${pnl>=0?'up':'down'}">${usd0(pnl)}</span>`;
+  $('pnl-c').textContent=`${mvpct>=0?'+':''}${mvpct.toFixed(1)}% vs $450 basis`;
+  $('t-gld').textContent=usd(d.gld.c);
+  $('t-mv').textContent=usd0(mv);
+  $('t-pnl').innerHTML=`<span class="${pnl>=0?'up':'down'}">${usd0(pnl)} (${mvpct>=0?'+':''}${mvpct.toFixed(1)}%)</span>`;
+  $('t-move').textContent=`+${((BASIS-d.gld.c)/d.gld.c*100).toFixed(1)}% (to $450)`;
+  const rho=d.gld.c/d.spot.c; $('t-goldbe').textContent='~'+usd(BASIS/rho,0)+'/oz';
+  $('live').className='live '+(live?'ok':'err');
+  $('live-text').textContent=live?('Live · '+new Date().toLocaleTimeString()):'Offline — snapshot';
+  buildAnalystBars(rho);
+}
+async function load(){
+  try{const [s,g,a,l]=await Promise.all([csv('xauusd'),csv('gld.us'),csv('xagusd'),csv('slv.us')]);
+    paint({spot:q(s),gld:q(g),silver:q(a),slv:q(l)},true);
+  }catch(e){paint(FALLBACK,false);}
+}
+
+// ---- analyst bars ----
+function buildAnalystBars(rho){
+  const max=6300, host=$('analyst-bars'); host.innerHTML='';
+  const beGold=BASIS/rho;
+  ANALYSTS.forEach(a=>{
+    const gld=a.v*rho, w=a.v/max*100, above=a.v>=beGold;
+    host.insertAdjacentHTML('beforeend',
+      `<div class="bar-row"><div class="nm">${a.n}</div>
+       <div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${above?'linear-gradient(90deg,#d4af37,#ffd75e)':'#ff6b6b'}">${usd(a.v,0)}</div></div>
+       <div class="vv">GLD ${usd(gld,0)}</div></div>`);
+  });
+  host.insertAdjacentHTML('beforeend',
+    `<div class="bar-row"><div class="nm" style="color:var(--silver)">◀ Your breakeven</div>
+     <div class="bar-track" style="background:transparent;border:none"><div style="border-left:2px dashed #fff;height:24px;margin-left:${beGold/max*100}%"></div></div>
+     <div class="vv">$450 = gold ${usd(beGold,0)}</div></div>`);
+}
+
+// ---- scenario bars ----
+function buildScenarioBars(){
+  const host=$('scenario-bars'); if(!host)return; host.innerHTML='<h3>Outcome distribution (P&L on 1,100 sh)</h3>';
+  const maxAbs=120000;
+  SCEN.forEach(([nm,gld,p,col])=>{
+    const pnl=(gld-BASIS)*SHARES, w=Math.abs(pnl)/maxAbs*50;
+    const left=pnl<0?(50-w):50;
+    host.insertAdjacentHTML('beforeend',
+      `<div class="bar-row"><div class="nm">${nm} <span class="mut">${(p*100)|0}%</span></div>
+       <div class="bar-track" style="background:linear-gradient(90deg,transparent 49.7%,#2a3140 49.7%,#2a3140 50.3%,transparent 50.3%)">
+         <div style="position:absolute;left:${left}%;width:${w}%;height:100%;background:${col};opacity:.85"></div></div>
+       <div class="vv ${pnl>=0?'up':'down'}">${usd0(pnl)}</div></div>`);
+  });
+}
+
+// ---- payoff chart ----
+function drawPayoff(){
+  const cv=$('payoff'), ctx=cv.getContext('2d'), W=cv.width, H=cv.height;
+  const padL=70,padR=20,padT=20,padB=40, x0=padL,x1=W-padR,y0=padT,y1=H-padB;
+  const pMin=320,pMax=620, vMin=-130000,vMax=130000;
+  const X=p=>x0+(p-pMin)/(pMax-pMin)*(x1-x0);
+  const Y=v=>y1-(v-vMin)/(vMax-vMin)*(y1-y0);
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='#2a3140'; ctx.fillStyle='#8b93a4'; ctx.lineWidth=1; ctx.font='12px sans-serif';
+  for(let p=320;p<=620;p+=40){ctx.beginPath();ctx.moveTo(X(p),y0);ctx.lineTo(X(p),y1);ctx.stroke();ctx.textAlign='center';ctx.fillText('$'+p,X(p),y1+16);}
+  for(let v=-120000;v<=120000;v+=40000){const yy=Y(v);ctx.strokeStyle=v===0?'#5a6478':'#1d222e';ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();ctx.textAlign='right';ctx.fillStyle='#8b93a4';ctx.fillText((v<0?'−$':'$')+Math.abs(v/1000)+'k',x0-8,yy+4);}
+  // strategies
+  const hold=S=>(S-BASIS)*SHARES;
+  const cc=S=>((S-BASIS)+7-Math.max(0,S-480))*SHARES;
+  const rep=S=>((S-BASIS)+Math.max(0,S-390)-2*Math.max(0,S-430)-6)*SHARES;
+  const col=S=>((S-BASIS)-Math.max(0,S-460)+Math.max(0,370-S))*SHARES;
+  const lines=[[hold,'#cfd6e4'],[cc,'#5b9dff'],[rep,'#ffd75e'],[col,'#b78cff']];
+  lines.forEach(([fn,c])=>{ctx.strokeStyle=c;ctx.lineWidth=2.4;ctx.beginPath();
+    for(let p=pMin;p<=pMax;p+=2){const yy=Math.max(y0,Math.min(y1,Y(fn(p))));p===pMin?ctx.moveTo(X(p),yy):ctx.lineTo(X(p),yy);}ctx.stroke();});
+  // current price marker
+  const cur=window.__gldCur||386.5;
+  ctx.strokeStyle='#fff';ctx.setLineDash([5,4]);ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(X(cur),y0);ctx.lineTo(X(cur),y1);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText('GLD now $'+cur.toFixed(0),X(cur),y0+12);
+  // breakeven marker
+  ctx.fillStyle='#8b93a4';ctx.fillText('basis $450',X(450),y0+12);
+}
+
+(async()=>{ await load(); buildScenarioBars(); drawPayoff();
+  // keep current marker fresh
+  setInterval(async()=>{try{const g=q(await csv('gld.us'));window.__gldCur=g.c;drawPayoff();}catch(e){}},60000);
+})();
+// capture current GLD for payoff marker on first load
+const _paint=paint; paint=function(d,live){window.__gldCur=d.gld.c;_paint(d,live);if(document.getElementById('payoff'))drawPayoff();};
+</script>
+</body>
+</html>
