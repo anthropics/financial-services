@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "aether": {
+      "type": "http",
+      "url": "https://api.aether.evidinvest.com/mcp"
+    }
+  }
+}
