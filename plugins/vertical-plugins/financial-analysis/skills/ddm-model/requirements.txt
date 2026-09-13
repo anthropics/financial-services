@@ -1,0 +1,4 @@
+# DDM Model Builder - Python Dependencies
+
+# Excel file handling (used by scripts/validate_ddm.py)
+openpyxl>=3.0.0
