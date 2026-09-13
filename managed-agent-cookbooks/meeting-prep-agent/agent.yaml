@@ -19,7 +19,7 @@ tools:
 
 mcp_servers:
   - { type: url, name: crm,   url: "${CRM_MCP_URL}" }
-  - { type: url, name: capiq, url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq, url: "${SPGLOBAL_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../plugins/agent-plugins/meeting-prep-agent }
