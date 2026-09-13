@@ -1,0 +1,22 @@
+name: kaelum-api-engineer
+display_name: K.A.T.E. API Engineer
+description: >
+  Manages the KAELUM Commerce API: key issuance, webhook configuration,
+  sandbox access, health dashboards, and developer documentation.
+model: claude-sonnet-4-6
+system_prompt_file: agents/api-engineer.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+approval_gates:
+  - api_key_issuance
+  - integration_change
+callable_agents:
+  - platform-engineer
+  - platform-health
+  - fraud-scam-detection
+paperclip:
+  heartbeat_interval: 1800
+  event_bridge:
+    triggers: [api_key_request, webhook_config_request, api_anomaly_detected, doc_update_needed]
+    fires: [api_health_report, anomaly_escalated, doc_updated]

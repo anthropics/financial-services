@@ -1,0 +1,5 @@
+name: kaelum-kate-chatbot
+model: claude-sonnet-4-6
+
+system:
+  file: kate-chatbot.md

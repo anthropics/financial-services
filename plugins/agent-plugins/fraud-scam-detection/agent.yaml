@@ -1,0 +1,27 @@
+name: kaelum-fraud-scam-detection
+display_name: K.A.T.E. Fraud and Scam Detection
+description: >
+  Real-time anomaly detection across all transactions. Flags suspicious
+  patterns, integrates with SENTINEL compliance layer, enforces velocity
+  rules, and triggers KYC re-verification when needed.
+model: claude-sonnet-4-6
+system_prompt_file: agents/fraud-scam-detection.md
+api_mode: standard_api
+skills:
+  - sentinel-aml-rules
+  - closed-loop-compliance
+  - commerce-intelligence
+  - kyc-onboarding-rules
+approval_gates:
+  - transaction_hold_release
+  - user_account_suspension
+  - sar_candidate_escalation
+callable_agents:
+  - compliance-regulatory
+  - onboarding-concierge
+  - cybersecurity
+paperclip:
+  heartbeat_interval: 60
+  event_bridge:
+    triggers: [transaction_event, anomaly_signal_received, velocity_check_trigger, sentinel_batch_trigger]
+    fires: [risk_score_dispatched, transaction_held, sar_candidate_flagged, kyc_reverification_triggered]

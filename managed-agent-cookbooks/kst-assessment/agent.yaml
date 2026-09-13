@@ -1,0 +1,5 @@
+name: kaelum-kst-assessment
+model: claude-sonnet-4-6
+
+system:
+  file: kst-assessment.md

@@ -1,0 +1,23 @@
+name: kaelum-creator-studio
+display_name: K.A.T.E. Creator Studio
+description: >
+  Ai advisor embedded in the Creator Studio. Surfaces listing optimisation
+  suggestions, pricing recommendations, royalty alerts, audience analysis,
+  and collaboration opportunities.
+model: claude-sonnet-4-6
+system_prompt_file: agents/creator-studio.md
+api_mode: standard_api
+skills:
+  - commerce-intelligence
+  - kpr-tpr-distribution
+  - klm-token-governance
+  - regulatory-language
+  - creator-economics
+callable_agents:
+  - research-scout
+  - transaction-insights
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [creator_session_active, intelligence_signal_received, royalty_milestone_reached]
+    fires: [optimisation_suggestion_ready, collaboration_opportunity_flagged]
