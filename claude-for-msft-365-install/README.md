@@ -7,7 +7,7 @@ Admin tooling for configuring the Claude Office add-in to call your own cloud
 
 ```bash
 claude plugin marketplace add anthropics/financial-services
-claude plugin install claude-for-msft-365-install@claude-for-financial-services
+claude plugin install claude-for-msft-365-install@anthropics/financial-services
 ```
 
 Then inside the session: `/claude-for-msft-365-install:setup`
@@ -17,7 +17,7 @@ Then inside the session: `/claude-for-msft-365-install:setup`
 Pull the latest version of the plugin:
 
 ```bash
-claude plugin update claude-for-msft-365-install@claude-for-financial-services
+claude plugin update claude-for-msft-365-install@anthropics/financial-services
 ```
 
 Restart the session to apply. Re-run `/claude-for-msft-365-install:setup` only
@@ -30,7 +30,7 @@ and point the add-in at it:
 
 ```bash
 claude plugin marketplace add anthropics/financial-services   # if not already added
-claude plugin install claude-for-msft-365-install@claude-for-financial-services
+claude plugin install claude-for-msft-365-install@anthropics/financial-services
 ```
 
 Then inside the session: `/claude-for-msft-365-install:bootstrap`
