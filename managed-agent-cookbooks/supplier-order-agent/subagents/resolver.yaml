@@ -1,0 +1,21 @@
+name: supplier-order-agent-resolver
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Receive the verified order diff
+    (already schema-validated by the reader and matched by delivery-tracker),
+    update the order log CSV, write the amendments-pending and unconfirmed-orders
+    CSVs to ./out/, and emit any handoff_request entries for human review.
+    Never read supplier messages directly; never run bash.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/supplier-order-agent/skills/delivery-tracker }
+  - { path: ../../../plugins/agent-plugins/supplier-order-agent/skills/whatsapp-order }
+callable_agents: []

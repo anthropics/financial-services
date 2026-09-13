@@ -1,0 +1,49 @@
+# Supplier Order Agent — orchestrator
+#
+# Deploy manifest for `POST /v1/agents`. Field names match the API; the deploy
+# script resolves {file:} / {path:} / {manifest:} references before posting.
+# See ../README.md for the manifest→API mapping.
+
+name: supplier-order-agent
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/supplier-order-agent/agents/supplier-order-agent.md
+  append: "You are running headless. Produce files in ./out/; do not assume an open Office document."
+
+# The orchestrator never reads supplier messages directly and never holds
+# bash or write — it dispatches, aggregates, and hands off. See ./README.md.
+tools:
+  - type: agent_toolset_20260401
+    default_config:
+      enabled: false
+    configs:
+      - name: read
+        enabled: true
+      - name: grep
+        enabled: true
+      - name: glob
+        enabled: true
+  - type: mcp_toolset
+    mcp_server_name: whatsapp-business
+    default_config:
+      enabled: true
+  - type: mcp_toolset
+    mcp_server_name: supplier-catalog
+    default_config:
+      enabled: true   # read-only catalog server
+
+mcp_servers:
+  - type: url
+    name: whatsapp-business
+    url: ${WHATSAPP_MCP_URL}
+  - type: url
+    name: supplier-catalog
+    url: ${SUPPLIER_CATALOG_MCP_URL}
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/supplier-order-agent }
+
+callable_agents:
+  - manifest: ./subagents/reader.yaml
+  - manifest: ./subagents/resolver.yaml
