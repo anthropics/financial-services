@@ -1,0 +1,8 @@
+{
+  "name": "riskmodels",
+  "version": "1.0.0",
+  "description": "Decompose US equity and portfolio risk into market, sector, subsector, and stock-specific components with tradeable ETF hedge ratios, pull point-in-time quarterly fundamentals with a CAPM cost-of-capital layer, and rank names on residual risk — via the hosted RiskModels MCP. Realized/historical analytics; not investment advice.",
+  "author": {
+    "name": "RiskModels (Blue Water Macro Corp.)"
+  }
+}
