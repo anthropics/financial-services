@@ -43,6 +43,10 @@
     "egnyte": {
       "type": "http",
       "url": "https://mcp-server.egnyte.com/mcp"
+    },
+    "tensorfeed": {
+      "type": "http",
+      "url": "https://tensorfeed.ai/api/mcp"
     }
     "box": {
       "type": "http",
