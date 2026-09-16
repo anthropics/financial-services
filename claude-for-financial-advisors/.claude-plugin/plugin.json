@@ -1,9 +1,0 @@
-{
-  "name": "claude-for-financial-advisors",
-  "displayName": "Claude for Financial Advisors",
-  "version": "1.0.0",
-  "description": "Ready-to-run workflows for financial advisors in Claude Cowork, drawing live data from the tools their firm already uses through third-party connectors. The plugin holds no client data, and the advisor approves any write back to an external system. Claude gathers, organizes, summarizes, compares and presents information, while the advisor exercises judgment, makes the recommendation and gives the advice. For financial professional use only; not investment, legal, or tax advice.",
-  "author": {
-    "name": "Anthropic — Asset & Wealth Management"
-  }
-}
