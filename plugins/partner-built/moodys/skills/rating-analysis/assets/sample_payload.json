@@ -1,0 +1,297 @@
+{
+  "report_date": "April 15, 2026",
+  "target_company": "Boeing Company (The)",
+  "sector": "Aerospace/Defense",
+  "currency": "USD",
+  "companies": ["Boeing", "RTX", "Northrop Grumman", "Lockheed Martin", "Airbus", "BAE Systems", "General Dynamics"],
+  "sources": [
+  {"title": "Boeing Co — Credit Opinion", "source": "Moody's", "date": "2025-12-01", "url": "", "tool": "getEntityCreditOpinion"},
+  {"title": "Aerospace Sector Outlook", "source": "Moody's", "date": "2025-11-15", "url": "", "tool": "getEntitySectorOutlook"},
+  {"title": "Boeing Co — Financial Statements (2021-2025)", "source": "Moody's Research Assistant Library", "date": "2025-12-01", "url": "", "tool": "getEntityFinancials"},
+  {"title": "Boeing Co — Rating History", "source": "Moody's Ratings", "date": "2025-12-01", "url": "", "tool": "getEntityRatings"},
+  {"title": "Aerospace & Defense Peer Financials", "source": "Moody's Research Assistant Library", "date": "2025-12-01", "url": "", "tool": "getEntityFinancials"}
+],
+  "sections": {
+    "sector_overview": {
+      "overview_bullets": [
+        "Aerospace sector revenue grew 8% in 2024 driven by commercial recovery and strong defense spending.",
+        "Moody's took 12 rating actions in the last 12 months with 60% positive bias.",
+        "Supply chain constraints easing but still a key headwind for OEM delivery rates."
+      ],
+      "watchlist_bullets": [
+        "Defense budget visibility through 2027 supports stable outlook for prime contractors.",
+        "Commercial aircraft demand robust but 737 MAX production ramp remains a watch item.",
+        "ESG considerations growing with net-zero commitments driving R&D spend."
+      ],
+      "takeaway_bullets": [
+        "Sector outlook is stable to positive; defense primes benefit from geopolitical tailwinds.",
+        "Margin expansion constrained by inflation and supply chain costs through mid-2026.",
+        "Capital allocation discipline remains critical given leveraged balance sheets post-COVID."
+      ]
+    },
+    "moodys_view": {
+      "outlook_summary": "<p>The global aerospace and defense sector carries a stable outlook with positive bias for defense primes, reflecting robust defense spending and steady commercial aircraft demand. Boeing's credit profile remains pressured by execution issues on the 737 MAX and 777X programs.</p>",
+      "company_positioning": "Boeing's Baa3 negative outlook reflects weaker positioning than A-rated peers; path to upgrade requires MAX production ramp and FCF normalization.",
+      "outlook_distribution": [
+        {"category": "Stable", "count": 11, "color": "#BDBFC3"},
+        {"category": "Positive", "count": 5, "color": "#5EB6BB"},
+        {"category": "Negative", "count": 3, "color": "#F09613"},
+        {"category": "Under Review", "count": 1, "color": "#ED1B2E"}
+      ]
+    },
+    "macro_outlook": {
+      "gdp_table": {
+        "year_columns": ["2023", "2024", "2025F", "2026F"],
+        "rows": [
+          {"country": "United States", "values": ["2.9", "2.8", "2.0", "1.8"]},
+          {"country": "Euro Area", "values": ["0.5", "0.8", "1.2", "1.5"]},
+          {"country": "China", "values": ["5.2", "5.0", "4.5", "4.2"]},
+          {"country": "United Kingdom", "values": ["0.3", "0.9", "1.1", "1.3"]},
+          {"country": "Japan", "values": ["1.9", "0.3", "0.8", "1.0"]},
+          {"country": "Germany", "values": ["-0.3", "-0.1", "0.5", "1.0"]},
+          {"country": "France", "values": ["0.9", "1.1", "1.0", "1.3"]},
+          {"country": "India", "values": ["8.2", "6.7", "6.8", "6.5"]}
+        ]
+      },
+      "gdp_commentary": [
+        "Advanced economies grow modestly in 2025-26 as monetary easing supports consumption.",
+        "China's deceleration offset by India's resilience; defense spend grows globally.",
+        "Trade tensions and tariffs remain a key downside risk across major markets."
+      ]
+    },
+    "rating_actions_ytd": [
+      {"date": "Nov 20, 2025", "company": "Rolls-Royce plc", "summary": "Upgraded to Baa1 with positive outlook citing strong performance."},
+      {"date": "Oct 03, 2025", "company": "Airbus SE", "summary": "Affirmed at A2 stable reflecting robust commercial backlog."},
+      {"date": "Sep 15, 2025", "company": "Boeing", "summary": "Baa3 affirmed, outlook negative on continued MAX execution risks."},
+      {"date": "Jul 22, 2025", "company": "RTX Corp", "summary": "Affirmed A3 stable on strong defense backlog and GTF progress."},
+      {"date": "May 10, 2025", "company": "Lockheed Martin", "summary": "Affirmed A1 stable, reflecting diversified defense programs."}
+    ],
+    "financial_analysis": {
+      "commentary": [
+        "Revenue grew 9% in LTM Sep 2025 to $80.8B driven by commercial recovery.",
+        "EBIT margin remains negative at -8.2% due to 737 MAX quality issues and 777X charges.",
+        "Total debt of $53.9B with Debt/EBITDA of -15.9x reflecting operating losses.",
+        "Free cash flow remained negative in 2024; improvement expected in 2H 2025.",
+        "Moody's Baa3 rating reflects franchise strength offset by weak credit metrics.",
+        "Liquidity adequate with $10.5B cash and $10B undrawn revolver."
+      ],
+      "rating_history": [
+        {"date": "Mar 2019", "rating": "Baa1", "outlook": "Stable", "direction": "Affirmation", "reason": "Strong commercial backlog and defense portfolio pre-737 MAX grounding."},
+        {"date": "Oct 2020", "rating": "Baa2", "outlook": "Negative", "direction": "Downgrade", "reason": "COVID-19 impact on commercial aviation."},
+        {"date": "Aug 2022", "rating": "Baa2", "outlook": "Stable", "direction": "Affirmation", "reason": "Operating environment normalization."},
+        {"date": "Mar 2024", "rating": "Baa3", "outlook": "Negative", "direction": "Downgrade", "reason": "MAX quality issues and weak cash flow."},
+        {"date": "Sep 2025", "rating": "Baa3", "outlook": "Negative", "direction": "Affirmation", "reason": "Weak credit metrics offset by franchise value."}
+      ],
+      "rating_chart_data": [14, 13, 13, 12, 12]
+    },
+    "revenue_distribution": {
+      "by_segment": [
+        {"name": "Commercial Airplanes", "percentage": 45.2},
+        {"name": "Defense, Space & Security", "percentage": 31.5},
+        {"name": "Global Services", "percentage": 22.8},
+        {"name": "Other", "percentage": 0.5}
+      ],
+      "by_geography": [
+        {"name": "United States", "percentage": 55.0},
+        {"name": "Europe", "percentage": 18.3},
+        {"name": "Asia-Pacific", "percentage": 14.5},
+        {"name": "Middle East", "percentage": 7.2},
+        {"name": "Other", "percentage": 5.0}
+      ],
+      "commentary": [
+        "US remains dominant at 55% of revenue reflecting large DoD contracts.",
+        "Commercial Airplanes represents largest segment but lowest margin in 2024.",
+        "Global Services delivers highest margin at ~18% and stable recurring revenue."
+      ]
+    },
+    "swot": {
+      "strengths": [
+        "Duopoly position in large commercial aircraft with Airbus.",
+        "$527B commercial backlog providing multi-year revenue visibility.",
+        "Strong defense franchise with irreplaceable platforms."
+      ],
+      "weaknesses": [
+        "Weak execution on 737 MAX and 777X programs pressuring cash flow.",
+        "High leverage with Debt/EBITDA materially above investment-grade peers.",
+        "Reputational damage from safety and quality concerns."
+      ],
+      "opportunities": [
+        "Commercial air travel recovery supports near-term delivery growth.",
+        "Defense spending tailwinds from geopolitical tensions globally.",
+        "Global Services segment growth potential with expanded aftermarket."
+      ],
+      "threats": [
+        "Airbus market share gains in narrow-body segment.",
+        "Regulatory oversight increasing quality costs and production limits.",
+        "Supply chain constraints limiting delivery ramp."
+      ]
+    },
+    "key_metrics": {
+      "periods": ["2021", "2022", "2023", "2024", "LTM Sep25"],
+      "revenue": [62286, 66608, 77794, 66517, 80757],
+      "ebit_margin": [-2.5, 4.1, -1.0, -16.1, -8.2],
+      "debt_ebitda": [-15.9, 8.5, 10.2, -6.8, -15.9],
+      "rcf_net_debt": [-5.0, 10.1, 5.5, -8.3, -1.3]
+    },
+    "strategic_updates": {
+      "recent": [
+        "Completed $21B equity raise in Oct 2024 to strengthen liquidity.",
+        "Appointed Kelly Ortberg as CEO in Aug 2024 to lead operational turnaround.",
+        "FAA lifted 737 MAX production cap to 38/month from 38/month limit.",
+        "Divested portions of Spirit AeroSystems as part of reintegration."
+      ],
+      "forward": [
+        "Target 737 MAX production ramp to 42/month by mid-2026.",
+        "Expect positive free cash flow resumption in 2H 2025.",
+        "Continued focus on quality improvements and SMS rollout.",
+        "Targeting $10B+ annual operating cash flow run-rate by 2027."
+      ]
+    },
+    "news_mna": "<strong>Mergers &amp; Acquisitions</strong><ul><li>07/2024 → Spirit AeroSystems reacquisition: Announced $4.7B all-stock deal to reintegrate fuselage supplier.</li></ul><strong>Leadership &amp; Governance</strong><ul><li>08/2024 → New CEO: Kelly Ortberg appointed to succeed Dave Calhoun after 737 MAX crisis.</li></ul><strong>Financial Performance</strong><ul><li>10/2024 → Equity raise: Completed $21B capital raise via common stock and mandatory convertibles.</li></ul><strong>Market Strategy</strong><ul><li>11/2024 → Korean Air order: Landed record $32B Korean Air order for 787s and 737 MAXs.</li></ul>",
+    "external_trends": "<strong>Macroeconomic &amp; Sector Trends</strong><ul><li>Commercial aviation demand remains robust with passenger traffic above 2019 levels.</li><li>Defense spending rising globally amid geopolitical tensions.</li></ul><strong>Regulatory Developments</strong><ul><li>FAA increased oversight including production caps and enhanced audits.</li></ul><strong>Reputational Risk</strong><ul><li>Ongoing scrutiny of safety culture following MAX door plug incident.</li></ul><strong>Crisis Events</strong><ul><li>Machinist strike resolved in Nov 2024 after ~7 weeks of production stoppage.</li></ul>",
+    "peer_summary": {
+      "table": [
+        {"company": "Boeing", "country": "United States", "market_cap": "USD 152,794M (Oct 2025)", "rating": "Baa3", "outlook": "Negative", "business_mix": "Commercial Airplanes, Defense, Global Services"},
+        {"company": "RTX Corp", "country": "United States", "market_cap": "USD 168,900M", "rating": "A3", "outlook": "Stable", "business_mix": "Collins, Pratt & Whitney, Raytheon"},
+        {"company": "Lockheed Martin", "country": "United States", "market_cap": "USD 110,200M", "rating": "A1", "outlook": "Stable", "business_mix": "Aeronautics, Missiles, Rotary"},
+        {"company": "Northrop Grumman", "country": "United States", "market_cap": "USD 72,500M", "rating": "Baa1", "outlook": "Stable", "business_mix": "Aeronautics, Defense, Space"},
+        {"company": "Airbus", "country": "Netherlands", "market_cap": "EUR 138,000M", "rating": "A2", "outlook": "Stable", "business_mix": "Commercial, Helicopters, Defense"},
+        {"company": "BAE Systems", "country": "United Kingdom", "market_cap": "GBP 53,400M", "rating": "Baa1", "outlook": "Stable", "business_mix": "Electronic, Platforms, Air"},
+        {"company": "General Dynamics", "country": "United States", "market_cap": "USD 78,000M", "rating": "A2", "outlook": "Stable", "business_mix": "Aerospace, Marine, Combat, Tech"}
+      ],
+      "commentary": [
+        "Boeing carries the weakest rating and outlook in the peer set reflecting execution challenges.",
+        "Defense-pure peers (LMT, NOC, GD) benefit from stable defense spending and strong margins.",
+        "European primes Airbus and BAE positioned solidly in A/Baa category with stable outlook."
+      ]
+    },
+    "peer_financials": {
+      "columns": ["Revenue", "EBITDA", "EBITDA Mg%", "CAPEX", "R&D/Rev", "Debt/EBITDA", "FFO/Debt%", "FCF/Debt%", "RCF/Debt%"],
+      "rows": [
+        {"company": "Boeing",       "period": "FY2024", "currency": "USD", "values": ["66,517", "(7,913)", "--",    "(2,230)", "0.06", "(6.81)", "(6.15)",  "(26.57)", "(6.15)"]},
+        {"company": "RTX",          "period": "FY2024", "currency": "USD", "values": ["80,738", "12,100", "15.0",  "(2,500)", "0.04", "2.65",   "22.3",    "8.1",    "19.0"]},
+        {"company": "Lockheed",     "period": "FY2024", "currency": "USD", "values": ["71,043", "9,850",  "13.9",  "(1,680)", "0.02", "2.14",   "28.5",    "14.2",   "25.1"]},
+        {"company": "Northrop",     "period": "FY2024", "currency": "USD", "values": ["40,000", "5,100",  "12.8",  "(1,500)", "0.03", "2.70",   "21.0",    "9.2",    "18.7"]},
+        {"company": "Airbus",       "period": "FY2024", "currency": "EUR", "values": ["69,200", "7,400",  "10.7",  "(2,850)", "0.04", "1.55",   "38.0",    "12.5",   "32.0"]},
+        {"company": "BAE Systems",  "period": "FY2024", "currency": "GBP", "values": ["26,300", "3,120",  "11.9",  "(800)",   "0.02", "1.80",   "26.0",    "11.0",   "22.5"]},
+        {"company": "Gen Dynamics", "period": "FY2024", "currency": "USD", "values": ["47,700", "5,800",  "12.2",  "(880)",   "0.02", "1.62",   "36.9",    "18.5",   "33.0"]}
+      ]
+    },
+    "peer_debt_charts": {
+      "rcf_net_debt": [
+        {"company": "Gen Dynamics", "value": 36.93, "period": "FY2024"},
+        {"company": "Airbus",       "value": 32.0,  "period": "FY2024"},
+        {"company": "Lockheed",     "value": 25.1,  "period": "FY2024"},
+        {"company": "BAE",          "value": 22.5,  "period": "FY2024"},
+        {"company": "RTX",          "value": 19.0,  "period": "FY2024"},
+        {"company": "Northrop",     "value": 18.7,  "period": "FY2024"},
+        {"company": "Boeing",       "value": -6.15, "period": "FY2024"}
+      ],
+      "debt_ebitda": [
+        {"company": "Airbus",       "value": 1.55,  "period": "FY2024"},
+        {"company": "Gen Dynamics", "value": 1.62,  "period": "FY2024"},
+        {"company": "BAE",          "value": 1.8,   "period": "FY2024"},
+        {"company": "Lockheed",     "value": 2.14,  "period": "FY2024"},
+        {"company": "RTX",          "value": 2.65,  "period": "FY2024"},
+        {"company": "Northrop",     "value": 2.7,   "period": "FY2024"},
+        {"company": "Boeing",       "value": -6.81, "period": "FY2024"}
+      ],
+      "commentary": ["Boeing stands out with negative credit metrics driven by operating losses, while peers cluster around 1.5-2.7x Debt/EBITDA. Defense primes show the strongest cash conversion."]
+    },
+    "peer_profitability_charts": {
+      "revenue": [
+        {"company": "RTX",          "value": 80738, "period": "FY2024"},
+        {"company": "Lockheed",     "value": 71043, "period": "FY2024"},
+        {"company": "Airbus",       "value": 69200, "period": "FY2024"},
+        {"company": "Boeing",       "value": 66517, "period": "FY2024"},
+        {"company": "Gen Dynamics", "value": 47700, "period": "FY2024"},
+        {"company": "Northrop",     "value": 40000, "period": "FY2024"},
+        {"company": "BAE",          "value": 26300, "period": "FY2024"}
+      ],
+      "ebit_margin": [
+        {"company": "RTX",          "value": 15.0,  "period": "FY2024"},
+        {"company": "Lockheed",     "value": 13.9,  "period": "FY2024"},
+        {"company": "Northrop",     "value": 12.8,  "period": "FY2024"},
+        {"company": "Gen Dynamics", "value": 12.2,  "period": "FY2024"},
+        {"company": "BAE",          "value": 11.9,  "period": "FY2024"},
+        {"company": "Airbus",       "value": 10.7,  "period": "FY2024"},
+        {"company": "Boeing",       "value": -16.1, "period": "FY2024"}
+      ],
+      "commentary": ["RTX leads in scale with Boeing close behind, but Boeing is the only peer with negative EBIT margin. Defense-pure names deliver consistent double-digit margins."]
+    },
+    "peer_scatter": {
+      "margin_vs_leverage": [
+        {"company": "Boeing", "x": -6.81, "y": -16.1},
+        {"company": "RTX", "x": 2.65, "y": 15.0},
+        {"company": "Lockheed", "x": 2.14, "y": 13.9},
+        {"company": "Northrop", "x": 2.70, "y": 12.8},
+        {"company": "Airbus", "x": 1.55, "y": 10.7},
+        {"company": "BAE", "x": 1.80, "y": 11.9},
+        {"company": "Gen Dynamics", "x": 1.62, "y": 12.2}
+      ],
+      "fcf_vs_rcf": [
+        {"company": "Boeing", "x": -6.15, "y": -26.57},
+        {"company": "RTX", "x": 19.0, "y": 8.1},
+        {"company": "Lockheed", "x": 25.1, "y": 14.2},
+        {"company": "Northrop", "x": 18.7, "y": 9.2},
+        {"company": "Airbus", "x": 32.0, "y": 12.5},
+        {"company": "BAE", "x": 22.5, "y": 11.0},
+        {"company": "Gen Dynamics", "x": 33.0, "y": 18.5}
+      ],
+      "commentary": ["Boeing is an outlier in both dimensions with negative margins and deeply negative cash conversion. Peers cluster in the healthy upper-left quadrant."]
+    },
+    "scorecard": {
+      "factors": [
+        "Factor 1: Scale (20%)",
+        "Revenue (USD Billion)",
+        "Factor 2: Business Profile (20%)",
+        "Market Position",
+        "Revenue and Earnings Stability",
+        "Factor 3: Profitability and Efficiency (10%)",
+        "EBIT Margin",
+        "Factor 4: Leverage and Coverage (30%)",
+        "Debt / EBITDA",
+        "EBITDA / Interest Expense",
+        "RCF / Net Debt",
+        "Factor 5: Financial Policy (20%)",
+        "Financial Policy",
+        "Scorecard-Indicated Outcome",
+        "Actual Rating Assigned"
+      ],
+      "is_header": [true, false, true, false, false, true, false, true, false, false, false, true, false, false, false],
+      "companies": ["Boeing", "Airbus", "Lockheed"],
+      "values": [
+        [[], [], []],
+        [[], ["73.3", "Aaa"], ["69.2", "Aaa"], ["71.0", "Aaa"]],
+        [[], [], []],
+        [[], ["A", "A"], ["Aa", "Aa"], ["Aa", "Aa"]],
+        [[], ["Baa", "Baa"], ["A", "A"], ["A", "A"]],
+        [[], [], []],
+        [[], ["(8.2%)", "Ca"], ["10.3%", "Baa"], ["13.9%", "A"]],
+        [[], [], []],
+        [[], ["(6.8x)", "Ca"], ["1.6x", "Aa"], ["2.1x", "A"]],
+        [[], ["(1.5x)", "Ca"], ["15x", "Aa"], ["12x", "A"]],
+        [[], ["(6.2%)", "Ca"], ["32%", "Aa"], ["25%", "A"]],
+        [[], [], []],
+        [[], ["Baa", "Baa"], ["A", "A"], ["A", "A"]],
+        [[], ["Ba", "Ba"], ["A", "A"], ["A", "A"]],
+        [[], ["Baa3", "Baa3"], ["A2", "A2"], ["A1", "A1"]]
+      ]
+    },
+    "esg_analysis": {
+      "table": [
+        {"company": "Boeing", "cis": "CIS-4", "environmental": "E-3", "social": "S-4", "governance": "G-4"},
+        {"company": "RTX", "cis": "CIS-3", "environmental": "E-3", "social": "S-3", "governance": "G-3"},
+        {"company": "Lockheed", "cis": "CIS-3", "environmental": "E-3", "social": "S-3", "governance": "G-3"},
+        {"company": "Northrop", "cis": "CIS-3", "environmental": "E-3", "social": "S-3", "governance": "G-3"},
+        {"company": "Airbus", "cis": "CIS-3", "environmental": "E-3", "social": "S-3", "governance": "G-2"}
+      ],
+      "commentary": [
+        "Boeing has the highest CIS in the peer set reflecting governance and social pressures.",
+        "Social risk elevated for Boeing from safety concerns and labor relations.",
+        "Governance score pressured by oversight issues in the 737 MAX program.",
+        "All defense primes face S exposure from end-use and human rights considerations."
+      ]
+    }
+  }
+}
