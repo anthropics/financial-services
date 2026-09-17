@@ -29,6 +29,12 @@
       "description": "Private equity deal sourcing and workflow tools: company discovery, CRM integration, and founder outreach"
     },
     {
+      "name": "venture-capital",
+      "displayName": "Venture Capital",
+      "source": "./plugins/vertical-plugins/venture-capital",
+      "description": "Venture Capital deal sourcing and portfolio management tools: Cap table analysis, term sheet review, and deal flow management"
+    },
+    {
       "name": "fund-admin",
       "displayName": "Fund Administration",
       "source": "./plugins/vertical-plugins/fund-admin",
