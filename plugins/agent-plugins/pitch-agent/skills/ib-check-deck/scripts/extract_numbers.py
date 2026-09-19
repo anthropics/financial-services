@@ -57,6 +57,11 @@ def normalize_number(value_str: str, unit: str) -> float:
         'thousand': 1e3,
     }
 
+    # "bps" is not a magnitude: the substring match below reads its "b" as
+    # billions and turns 500bps into 500,000,000,000.
+    if 'bps' in (unit or '').lower():
+        return base_value
+
     for unit_key in sorted(multipliers.keys(), key=len, reverse=True):
         if unit_key.lower() in unit.lower():
             return base_value * multipliers[unit_key]
@@ -64,9 +69,39 @@ def normalize_number(value_str: str, unit: str) -> float:
     return base_value
 
 
+def unit_dimension(unit: str) -> str:
+    """Collapse a parsed unit to the dimension it measures.
+
+    Grouping must not compare a percentage against a dollar figure, but it must
+    still compare "$500M" (unit USD_M) with the same figure written "485M"
+    (unit M) — keying on the raw unit splits those into separate groups and
+    hides exactly the mismatch this script exists to catch.
+    """
+    bare = (unit or '').split('_')[-1]
+    if bare in ('%', 'bps', 'percent'):
+        return 'ratio'
+    if bare == 'x':
+        return 'multiple'
+    return 'magnitude'
+
+
 def detect_category(context: str, unit: str) -> str:
     """Detect the category of a number based on context and unit."""
     context_lower = context.lower()
+
+    # Unit decides before context keywords: a percentage or a multiple sitting on
+    # a line that mentions revenue is a margin/growth/multiple, not a revenue figure.
+    # A currency symbol may be glued to a ratio unit ("$22%" parses as USD_%), so the
+    # currency prefix is stripped before the unit is read.
+    bare_unit = (unit or '').split('_')[-1]
+    if bare_unit in ('%', 'bps', 'percent'):
+        if 'margin' in context_lower:
+            return 'ebitda_margin' if 'ebitda' in context_lower else 'margin'
+        if any(t in context_lower for t in ['growth', 'cagr', 'yoy', 'y/y']):
+            return 'growth'
+        return 'percentage'
+    if bare_unit == 'x':
+        return 'multiple'
 
     # Revenue-related
     if any(term in context_lower for term in ['revenue', 'sales', 'top line', 'topline']):
@@ -117,7 +152,9 @@ def extract_numbers(content: str) -> list[NumberInstance]:
     # Matches: $500M, 500M, $500 million, 25%, 25.5%, 2.5x, 150bps, $1,234.56, etc.
     number_pattern = re.compile(
         r'(?P<currency>[$€£¥])?'  # Optional currency symbol
-        r'(?P<number>[\d,]+(?:\.\d+)?)'  # The number itself
+        r'(?P<number>\d[\d,]*(?:\.\d+)?)'  # The number itself (must start with a digit:
+        #                                    "[\d,]+" also matched a bare comma, so
+        #                                    ", trading at" parsed as the number ",t")
         r'\s*'
         r'(?P<unit>%|bps|x|'  # Common units
         r'[Tt]rillion|[Bb]illion|[Mm]illion|[Tt]housand|'  # Full words
@@ -191,10 +228,10 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
     by_category = defaultdict(list)
     for num in numbers:
         if num.category != 'other':
-            by_category[num.category].append(num)
+            by_category[(num.category, unit_dimension(num.unit))].append(num)
 
     # Check each category for mismatches
-    for category, instances in by_category.items():
+    for (category, _unit_family), instances in by_category.items():
         if len(instances) < 2:
             continue
 
@@ -206,7 +243,7 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
                 ref_value = group[0].normalized
                 if ref_value > 0:
                     diff_pct = abs(inst.normalized - ref_value) / ref_value
-                    if diff_pct < 0.05:  # 5% tolerance
+                    if diff_pct < 0.01:  # values meant to be the same figure
                         group.append(inst)
                         placed = True
                         break
