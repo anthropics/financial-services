@@ -16,10 +16,12 @@ tools:
       - { name: glob,  enabled: true }
   - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
   - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
+  - { type: mcp_toolset, mcp_server_name: quartr,  default_config: { enabled: true } }
 
 mcp_servers:
   - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
   - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
+  - { type: url, name: quartr,  url: "${QUARTR_MCP_URL}" }
 
 skills:
   - { from_plugin: ../../plugins/agent-plugins/earnings-reviewer }
