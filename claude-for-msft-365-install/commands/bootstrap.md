@@ -141,8 +141,9 @@ With `entra_sso=1`, validate the JWT before trusting it:
 If you set `entra_scope` in the [manifest](manifest.md#entra-sso), the Bearer
 is an **access token**, not an ID token. Validate `aud` = your API's
 Application ID URI (`api://<guid>`, not the client GUID) and check `scp`
-contains the scope you defined. `iss`, `exp`, `oid`, and signature verification
-are the same.
+contains the scope(s) you defined — `scp` is a space-delimited list when
+`entra_scope` names more than one. `iss`, `exp`, `oid`, and signature
+verification are the same.
 
 Signature verification needs Microsoft's JWKS
 (`https://login.microsoftonline.com/<TENANT_ID>/discovery/v2.0/keys`). Use a
@@ -205,7 +206,7 @@ Array of MCP servers the add-in connects to for this user.
 
 ```json
 "mcp_servers": [
-  { "url": "https://mcp.linear.app/sse", "label": "Linear" },
+  { "url": "https://mcp.linear.app/mcp", "label": "Linear" },
   {
     "url": "https://internal.yourcompany.com/mcp/risk",
     "label": "Risk Dashboard",
@@ -248,6 +249,41 @@ fetched from a URL — set one or the other.
 
 Inline `content` is simplest for small text-only skills. Use `url` once
 you're shipping zips with images or the base64 starts bloating the response.
+
+### `disabled_features`
+
+JSON array of feature slugs to lock for this user. Same vocabulary as the
+[manifest key](manifest.md#disabled-features) — bootstrap is the per-user
+layer.
+
+```json
+"disabled_features": ["skills.authoring"]
+```
+
+### `available_models`
+
+Model-picker override for this user — same semantics and entry forms as the
+[manifest key](manifest.md#available_models). A JSON array of ids and/or
+`{id, label}` objects; because it is an override, list every model the user
+should keep.
+
+```json
+"available_models": [{ "id": "claude-opus-4-8", "label": "Opus 4.8" }, "claude-sonnet-5"]
+```
+
+### `access_policies`
+
+Native JSON array of allow/deny statements — the per-user layer of the
+[manifest key](manifest.md#access_policies); build the array with
+[access-policies](access-policies.md). Pass it as a real array, not a string:
+
+```json
+"access_policies": [
+  { "effect": "deny", "action": "addin.access",
+    "resource": { "type": "open_file",
+      "identifiers": [{ "type": "mip_label_guid", "equals": "<guid>" }] } }
+]
+```
 
 ### `bootstrap_expires_at`
 
