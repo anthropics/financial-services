@@ -8,7 +8,7 @@ Comps, precedents, LBO → branded pitch deck, end to end. Same source as the [`
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export CAPIQ_MCP_URL=... DALOOPA_MCP_URL=...
+export SPGLOBAL_MCP_URL=... DALOOPA_MCP_URL=...
 ../../scripts/deploy-managed-agent.sh pitch-agent
 ```
 
@@ -18,12 +18,12 @@ See [`steering-examples.json`](./steering-examples.json).
 
 ## Security & handoffs
 
-Task-decomposition split — less about untrusted inputs (data comes from CapIQ/Daloopa MCPs), more about parallelism and artifact isolation. Exactly one worker holds `Write`:
+Task-decomposition split — less about untrusted inputs (data comes from S&P Global/Daloopa MCPs), more about parallelism and artifact isolation. Exactly one worker holds `Write`:
 
 | Leaf | Tools | Connectors |
 |---|---|---|
-| `researcher` | `Read`, `Grep` | CapIQ, Daloopa (read-only) |
-| `modeler` | `Read`, `Bash` (sandboxed) | CapIQ, Daloopa (read-only) |
+| `researcher` | `Read`, `Grep` | S&P Global, Daloopa (read-only) |
+| `modeler` | `Read`, `Bash` (sandboxed) | S&P Global, Daloopa (read-only) |
 | **`deck-writer`** (Write-holder) | `Read`, `Write`, `Edit` | None |
 
 Artifacts land in `./out/pitch-<target>.pptx` and `./out/model.xlsx` via `pptx-author` / `xlsx-author`.
