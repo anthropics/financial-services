@@ -143,6 +143,82 @@ for yml in sorted(MANAGED.rglob("*.yaml")):
 import filecmp  # noqa: E402
 import re  # noqa: E402
 
+
+def dirs_match(left: Path, right: Path) -> bool | None:
+    """Return whether two skill directories match.
+
+    Returns:
+        True if the directories match recursively.
+        False if their contents differ.
+        None if comparison could not complete because of an I/O/stat/compare error.
+        In the None case, this function also records a validation error via err().
+    """
+    ignore = set(filecmp.DEFAULT_IGNORES)
+    stack = [Path(".")]
+    while stack:
+        rel_dir = stack.pop()
+        left_dir = left / rel_dir
+        right_dir = right / rel_dir
+        try:
+            left_entries = {
+                p.name: p for p in left_dir.iterdir() if p.name not in ignore
+            }
+        except OSError as e:
+            err(f"bundled-skill: {rel(left_dir)}: unable to read directory ({e})")
+            return None
+        try:
+            right_entries = {
+                p.name: p for p in right_dir.iterdir() if p.name not in ignore
+            }
+        except OSError as e:
+            err(f"bundled-skill: {rel(right_dir)}: unable to read directory ({e})")
+            return None
+
+        if left_entries.keys() != right_entries.keys():
+            return False
+
+        for name, left_entry in left_entries.items():
+            right_entry = right_entries[name]
+            try:
+                left_is_dir = left_entry.is_dir()
+                right_is_dir = right_entry.is_dir()
+                left_is_file = left_entry.is_file()
+                right_is_file = right_entry.is_file()
+            except OSError as e:
+                err(
+                    f"bundled-skill: {rel(left_entry)} vs {rel(right_entry)}: "
+                    f"unable to stat ({e})"
+                )
+                return None
+
+            if left_is_dir != right_is_dir or left_is_file != right_is_file:
+                return False
+
+            if left_is_dir:
+                stack.append(rel_dir / name)
+                continue
+
+            if left_is_file:
+                try:
+                    same = filecmp.cmp(left_entry, right_entry, shallow=False)
+                except OSError as e:
+                    err(
+                        f"bundled-skill: {rel(left_entry)} vs {rel(right_entry)}: "
+                        f"compare failed ({e})"
+                    )
+                    return None
+                if not same:
+                    return False
+                continue
+
+            err(
+                f"bundled-skill: {rel(left_entry)} vs {rel(right_entry)}: "
+                "unsupported file type"
+            )
+            return None
+    return True
+
+
 src_by_name = {p.name: p for p in PLUGINS.glob("vertical-plugins/*/skills/*") if p.is_dir()}
 for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
     if not bundled.is_dir():
@@ -151,8 +227,10 @@ for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
     if not src:
         err(f"bundled-skill: {rel(bundled)}: no vertical-plugins source named '{bundled.name}'")
         continue
-    cmp = filecmp.dircmp(src, bundled)
-    if cmp.diff_files or cmp.left_only or cmp.right_only:
+    match = dirs_match(src, bundled)
+    if match is None:
+        continue
+    if not match:
         err(
             f"bundled-skill: {rel(bundled)}: drifted from {rel(src)} "
             f"(run scripts/sync-agent-skills.py)"
