@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assetData xmlns="http://www.sec.gov/edgar/document/absee/cmbs/assetdata">
+  <assets>
+    <assetTypeNumber>Prospectus Loan ID</assetTypeNumber>
+    <assetNumber>1</assetNumber>
+    <reportPeriodEndActualBalanceAmount>50000000</reportPeriodEndActualBalanceAmount>
+    <originalLoanAmount>52000000</originalLoanAmount>
+    <reportPeriodInterestRatePercentage>.045</reportPeriodInterestRatePercentage>
+    <maturityDate>01-06-2027</maturityDate><remainingTermNumber>30</remainingTermNumber>
+    <mostRecentNetOperatingIncomeAmount>4000000</mostRecentNetOperatingIncomeAmount>
+    <mostRecentNetCashFlowAmount>3800000</mostRecentNetCashFlowAmount>
+    <mostRecentDebtServiceCoverageNetCashFlowpercentage>1.50</mostRecentDebtServiceCoverageNetCashFlowpercentage>
+    <physicalOccupancySecuritizationPercentage>.95</physicalOccupancySecuritizationPercentage>
+    <mostRecentValuationAmount>100000000</mostRecentValuationAmount>
+    <servicerWatchlistCode>N</servicerWatchlistCode>
+    <property><propertyName>Tower A</propertyName><propertyTypeCode>OF</propertyTypeCode><propertyState>NY</propertyState></property>
+    <assetTypeNumber>Prospectus Loan ID</assetTypeNumber>
+    <assetNumber>2</assetNumber>
+    <reportPeriodEndActualBalanceAmount>30000000</reportPeriodEndActualBalanceAmount>
+    <originalLoanAmount>31000000</originalLoanAmount>
+    <reportPeriodInterestRatePercentage>.05</reportPeriodInterestRatePercentage>
+    <maturityDate>01-06-2027</maturityDate><remainingTermNumber>34</remainingTermNumber>
+    <mostRecentNetOperatingIncomeAmount>2100000</mostRecentNetOperatingIncomeAmount>
+    <mostRecentNetCashFlowAmount>2000000</mostRecentNetCashFlowAmount>
+    <mostRecentDebtServiceCoverageNetCashFlowpercentage>1.30</mostRecentDebtServiceCoverageNetCashFlowpercentage>
+    <physicalOccupancySecuritizationPercentage>.90</physicalOccupancySecuritizationPercentage>
+    <mostRecentValuationAmount>50000000</mostRecentValuationAmount>
+    <servicerWatchlistCode>Y</servicerWatchlistCode>
+    <property><propertyName>Mall B</propertyName><propertyTypeCode>RT</propertyTypeCode><propertyState>CA</propertyState></property>
+    <assetTypeNumber>Prospectus Loan ID</assetTypeNumber>
+    <assetNumber>3</assetNumber>
+    <reportPeriodEndActualBalanceAmount>20000000</reportPeriodEndActualBalanceAmount>
+    <originalLoanAmount>20500000</originalLoanAmount>
+    <reportPeriodInterestRatePercentage>.04</reportPeriodInterestRatePercentage>
+    <maturityDate>01-06-2028</maturityDate><remainingTermNumber>42</remainingTermNumber>
+    <mostRecentNetOperatingIncomeAmount>1800000</mostRecentNetOperatingIncomeAmount>
+    <mostRecentNetCashFlowAmount>1700000</mostRecentNetCashFlowAmount>
+    <mostRecentDebtServiceCoverageNetCashFlowpercentage>1.80</mostRecentDebtServiceCoverageNetCashFlowpercentage>
+    <physicalOccupancySecuritizationPercentage>.98</physicalOccupancySecuritizationPercentage>
+    <mostRecentValuationAmount>40000000</mostRecentValuationAmount>
+    <servicerWatchlistCode>N</servicerWatchlistCode>
+    <property><propertyName>Apt C</propertyName><propertyTypeCode>MF</propertyTypeCode><propertyState>TX</propertyState></property>
+    <assetTypeNumber>Prospectus Loan ID</assetTypeNumber>
+    <assetNumber>4</assetNumber>
+    <reportPeriodEndActualBalanceAmount>100000000</reportPeriodEndActualBalanceAmount>
+    <originalLoanAmount>101000000</originalLoanAmount>
+    <reportPeriodInterestRatePercentage>.038</reportPeriodInterestRatePercentage>
+    <maturityDate>01-06-2031</maturityDate><remainingTermNumber>90</remainingTermNumber>
+    <mostRecentNetOperatingIncomeAmount>7000000</mostRecentNetOperatingIncomeAmount>
+    <mostRecentNetCashFlowAmount>6800000</mostRecentNetCashFlowAmount>
+    <mostRecentDebtServiceCoverageNetCashFlowpercentage>2.00</mostRecentDebtServiceCoverageNetCashFlowpercentage>
+    <physicalOccupancySecuritizationPercentage>.92</physicalOccupancySecuritizationPercentage>
+    <mostRecentValuationAmount>125000000</mostRecentValuationAmount>
+    <servicerWatchlistCode>N</servicerWatchlistCode>
+    <property><propertyName>Tower D</propertyName><propertyTypeCode>OF</propertyTypeCode><propertyState>NY</propertyState></property>
+  </assets>
+</assetData>
