@@ -45,5 +45,6 @@ Everything you need to change lives in **`config.py`** — `app.py` should not n
 ## Security
 
 `DEV_JWKS_PATH` lets the server trust a self-issued signing key instead of
-Microsoft's. It refuses to start unless bound to `127.0.0.1`. **Never** set it
-in a deployed environment.
+Microsoft's. It is only supported through `python app.py`, which refuses to
+start unless bound to `127.0.0.1`; external ASGI runners refuse to load the app
+when this override is set. **Never** set it in a deployed environment.
