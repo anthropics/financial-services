@@ -26,6 +26,14 @@ from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from jwt import PyJWKClient
 
+# An external ASGI runner owns the socket and can ignore HOST, so config.py's
+# loopback bind guard is only enforceable when this file starts Uvicorn itself.
+if DEV_JWKS_PATH and __name__ != "__main__":
+    raise SystemExit(
+        "DEV_JWKS_PATH is local-dev only; run `python app.py` so the loopback "
+        "bind guard is enforced"
+    )
+
 _UA_RE = re.compile(r"^claude-(word|excel|powerpoint)/", re.I)
 
 def parse_app(user_agent: str | None) -> str:
