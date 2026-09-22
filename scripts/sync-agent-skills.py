@@ -10,7 +10,6 @@ into every agent that bundles it.
 Usage: python3 scripts/sync-agent-skills.py
 """
 import shutil
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,21 +23,20 @@ for sk in VERTICALS.glob("*/skills/*"):
         src_by_name[sk.name] = sk
 
 synced = 0
-missing: list[str] = []
+agent_owned = 0
 for bundled in sorted(AGENTS.glob("*/skills/*")):
     if not bundled.is_dir():
         continue
     src = src_by_name.get(bundled.name)
     if not src:
-        missing.append(str(bundled.relative_to(ROOT)))
+        # Agent-only skills are canonical in their bundle; there is nothing to
+        # sync when no vertical plugin exposes a skill with the same name.
+        agent_owned += 1
         continue
     shutil.rmtree(bundled)
     shutil.copytree(src, bundled)
     synced += 1
 
 print(f"synced {synced} bundled skill dir(s) from vertical-plugins/")
-if missing:
-    print("WARN: no vertical source found for:", file=sys.stderr)
-    for m in missing:
-        print(f"  - {m}", file=sys.stderr)
-    sys.exit(1)
+if agent_owned:
+    print(f"left {agent_owned} agent-only skill dir(s) unchanged")
