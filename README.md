@@ -1,3 +1,27 @@
+# KAELUM — K.A.T.E. Financial Services Architecture
+
+> **The world's first Ai-governed, non-crypto, closed-loop digital commerce currency.**
+> Built exclusively on Claude (Anthropic). 21 specialised K.A.T.E. agents governing
+> every transaction, compliance decision, and piece of merchant and creator intelligence.
+
+**Live:** [kaelum.app](https://kaelum.app) &nbsp;|&nbsp;
+**PR #143:** [anthropics/financial-services](https://github.com/anthropics/financial-services/pull/143) &nbsp;|&nbsp;
+**Validated:** 117 files, 0 issues (Anthropic check.py)
+
+**Kaelum Technologies Ltd** | England & Wales No. 16681154 | info@kaelumtechnologies.com
+
+### What This Branch Contains
+- `plugins/vertical-plugins/commerce-currency/` — 13 KAELUM domain skills
+- `plugins/agent-plugins/` — 21 K.A.T.E. agent definitions (21 Claude agents)
+- `managed-agent-cookbooks/` — 8 KAELUM functional prompts
+- `plugins/partner-built/kaelum/` — KAELUM partner plugin submission
+- `CLAUDE.md` — K.A.T.E. architecture configuration
+
+*Forked from [anthropics/financial-services](https://github.com/anthropics/financial-services).
+Anthropic's original README continues below.*
+
+---
+
 # Claude for Financial Services
 
 Reference agents, skills, and data connectors for the financial-services workflows we see most — investment banking, equity research, private equity, and wealth management.

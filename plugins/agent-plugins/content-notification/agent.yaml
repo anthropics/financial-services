@@ -1,0 +1,24 @@
+name: kaelum-content-notification
+display_name: K.A.T.E. Content and Notification
+description: >
+  Generates personalised, on-brand communications triggered by user
+  behaviour, milestones, and platform events. All outputs staged for
+  human approval before distribution.
+model: claude-sonnet-4-6
+system_prompt_file: agents/content-notification.md
+api_mode: managed_agent
+skills:
+  - regulatory-language
+  - klm-token-governance
+  - merchant-economics
+  - creator-economics
+  - customer-economics
+approval_gates:
+  - content_publication
+  - notification_dispatch
+  - social_post_dispatch
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [milestone_event, platform_announcement, scheduled_notification, social_content_request]
+    fires: [content_staged_for_approval]

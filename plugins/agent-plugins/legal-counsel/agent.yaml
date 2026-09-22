@@ -1,0 +1,22 @@
+name: kaelum-legal-counsel
+display_name: K.A.T.E. Legal Counsel
+description: >
+  Ai legal advisor generating contracts, NDAs, and policy documents,
+  monitoring regulatory obligations, maintaining the contract library,
+  and managing KAELUM's legal risk register.
+model: claude-sonnet-4-6
+system_prompt_file: agents/legal-counsel.md
+api_mode: managed_agent
+skills:
+  - closed-loop-compliance
+  - regulatory-language
+  - sentinel-aml-rules
+approval_gates:
+  - document_send
+  - regulatory_submission
+  - ip_filing
+paperclip:
+  heartbeat_interval: 7200
+  event_bridge:
+    triggers: [document_request, regulatory_alert, ip_watch_alert, dd_request]
+    fires: [document_draft_ready, legal_risk_flag, contract_library_updated]

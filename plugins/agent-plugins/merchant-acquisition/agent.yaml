@@ -1,0 +1,24 @@
+name: kaelum-merchant-acquisition
+display_name: K.A.T.E. Merchant Acquisition
+description: >
+  Sales intelligence agent managing the Founding Merchant and Founding Icon
+  acquisition pipelines, generating personalised outreach and tracking
+  pipeline stages from prospect to signed merchant.
+model: claude-sonnet-4-6
+system_prompt_file: agents/merchant-acquisition.md
+api_mode: standard_api
+skills:
+  - merchant-economics
+  - kst-sub-token-mechanics
+  - regulatory-language
+  - commerce-intelligence
+approval_gates:
+  - outreach_dispatch
+  - proposal_send
+callable_agents:
+  - research-scout
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [pipeline_update_request, research_signal_received, weekly_pipeline_review]
+    fires: [outreach_draft_ready, proposal_draft_ready, pipeline_report_ready]

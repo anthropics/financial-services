@@ -1,0 +1,18 @@
+name: kaelum-people-operations
+display_name: K.A.T.E. People and Operations
+description: >
+  Internal operations agent managing the K.A.T.E. agent fleet roster,
+  contractor relationships, credit budgets, and operational reporting.
+model: claude-haiku-4-5
+system_prompt_file: agents/people-operations.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+approval_gates:
+  - credit_budget_increase
+  - contractor_engagement
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [daily_budget_check, weekly_ops_report, heartbeat_miss_alert]
+    fires: [ops_report_ready, budget_alert, agent_health_flag]

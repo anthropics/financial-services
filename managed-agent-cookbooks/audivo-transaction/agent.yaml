@@ -1,0 +1,5 @@
+name: kaelum-audivo-transaction
+model: claude-haiku-4-5
+
+system:
+  file: audivo-transaction.md

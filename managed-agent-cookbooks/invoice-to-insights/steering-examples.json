@@ -1,0 +1,6 @@
+[
+  {
+    "input": "Parse this invoice: Supplier: ABC Print Co, Amount: \u00a3450, Due: 2026-06-01, Items: 500 printed cards",
+    "output": "Invoice parsed. Category: Marketing/Print. Cash flow impact: -\u00a3450 in 24 days. Reconciliation: no matching KAELUM transaction found. Recommendation: settle within 14 days to maintain supplier terms."
+  }
+]

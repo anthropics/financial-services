@@ -1,0 +1,32 @@
+name: kaelum-creator-acquisition
+display_name: K.A.T.E. Creator Acquisition
+description: >
+  Sales intelligence agent managing the high-value creator acquisition
+  pipeline. Identifies creators with significant audiences, generates
+  personalised outreach, tracks pipeline stages, and measures ecosystem
+  impact of creator onboarding.
+model: claude-sonnet-4-6
+system_prompt_file: agents/creator-acquisition.md
+api_mode: standard_api
+skills:
+  - creator-economics
+  - commerce-intelligence
+  - regulatory-language
+  - kyc-onboarding-rules
+approval_gates:
+  - outreach_dispatch
+  - proposal_send
+callable_agents:
+  - research-scout
+  - onboarding-concierge
+  - creator-studio
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [pipeline_update_request, research_signal_received,
+               weekly_pipeline_review, creator_onboarded]
+    fires: [outreach_draft_ready, pipeline_report_ready,
+            creator_handoff_to_onboarding]
+security_notes: >
+  All outreach drafts staged for admin approval before dispatch.
+  Never promise financial returns or guaranteed earnings to prospects.

@@ -1,0 +1,6 @@
+[
+  {
+    "input": "Score transaction: sender_id user_001, merchant_id merchant_042, amount 850 KLM, device_fingerprint abc, ip 82.1.2.3, timestamp 2026-05-07T14:23:00Z",
+    "output": "{ \"score\": 22, \"clearance\": \"cleared\", \"clearance_token\": \"tok_abc123\", \"flags\": [] }"
+  }
+]

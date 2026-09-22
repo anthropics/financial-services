@@ -1,0 +1,27 @@
+name: kaelum-merchant-support
+display_name: K.A.T.E. Merchant Support
+description: >
+  24/7 Ai-powered support for KAELUM merchants. Handles queries across
+  redemption, KST, trust scores, payments, and account management.
+  Maintains full conversation history and SLA tracking.
+model: claude-sonnet-4-6
+system_prompt_file: agents/merchant-support.md
+api_mode: standard_api
+skills:
+  - merchant-economics
+  - kst-sub-token-mechanics
+  - kyc-onboarding-rules
+  - kpr-tpr-distribution
+  - regulatory-language
+approval_gates:
+  - account_change
+  - redemption_hold_release
+  - escalation_ticket
+callable_agents:
+  - compliance-regulatory
+  - fraud-scam-detection
+paperclip:
+  heartbeat_interval: 1800
+  event_bridge:
+    triggers: [merchant_query_received, intelligence_signal_received, escalation_required]
+    fires: [escalation_ticket_raised, satisfaction_rating_logged, sla_breach_alert]
