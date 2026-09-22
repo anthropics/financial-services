@@ -1,0 +1,14 @@
+[
+  {
+    "event": "Reconcile POS vs cash for all locations, date 2026-05-23",
+    "description": "Full end-of-day reconciliation run across every active location"
+  },
+  {
+    "event": "Re-check location 3 (Shoreditch) variance of £47.20 from yesterday's run",
+    "description": "Targeted re-investigation of a flagged variance at a single location"
+  },
+  {
+    "event": "Pull week-to-date sales summary across all locations for month-end handoff",
+    "description": "Weekly aggregation run producing clean data for the Month-End Closer"
+  }
+]
