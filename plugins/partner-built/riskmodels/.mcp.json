@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "riskmodels": {
+      "type": "http",
+      "url": "https://riskmodels.app/api/mcp/sse",
+      "headers": {
+        "Authorization": "Bearer ${RISKMODELS_API_KEY}"
+      }
+    }
+  }
+}
