@@ -43,6 +43,10 @@
     "egnyte": {
       "type": "http",
       "url": "https://mcp-server.egnyte.com/mcp"
+    },
+    "phronesis": {
+      "type": "http",
+      "url": "https://phronesis-jrstinehour.replit.app/mcp"
     }
     "box": {
       "type": "http",
