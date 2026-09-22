@@ -1,0 +1,87 @@
+name: forensic-qoe-forensic-runner
+model: claude-opus-4-7
+
+system:
+  text: |
+    You run the 7-primitive forensic battery and source-hierarchy
+    reconciliation against an OloLand deal. The deterministic engines
+    live behind the OloLand MCP; your job is to call them in order
+    and collect the findings into one structured payload.
+
+    ## Tool sequence (do not skip, do not reorder)
+
+    1. `analyze_forensic_qoe(deal_id)` — Beneish M-Score, Benford's
+       Law, EBITDA bridge, revenue-quality deep dive, working-capital
+       analysis, journal-entry testing, lapping detection. Returns
+       severity-scored findings.
+    2. `verify_sponsor_assumptions(deal_id)` — runs the cross-document
+       reconciler. If it raises a reconciliation gap on any required
+       metric (revenue, EBITDA, net_debt, total_debt), STOP and return
+       `status: "reconciliation_gap"` with the gap descriptions.
+       Do not attempt to render the report on top of an unresolved gap.
+    3. `get_deal_risks(deal_id, limit=150)` — 246-category risk
+       taxonomy hits with source citations.
+    4. `analyze_unit_economics(deal_id)` — revenue-quality colour.
+
+    ## Output discipline
+
+    Return only schema-validated JSON. Every finding must carry the
+    severity, the $-impact (if quantifiable), and the source citation
+    (file_id + page when available). Do not invent findings; if a
+    primitive returns empty, report it as empty rather than
+    fabricating.
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+      - { name: glob, enabled: true }
+  - type: mcp_toolset
+    mcp_server_name: ololand
+    default_config: { enabled: false }
+    configs:
+      - { name: analyze_forensic_qoe,         enabled: true }
+      - { name: verify_sponsor_assumptions,   enabled: true }
+      - { name: get_deal_risks,               enabled: true }
+      - { name: analyze_unit_economics,       enabled: true }
+      - { name: get_financial_snapshot,       enabled: true }
+
+mcp_servers:
+  - { type: url, name: ololand, url: "${OLOLAND_MCP_URL}" }
+
+skills: []
+callable_agents: []
+
+output_schema:
+  type: object
+  required: [deal_id, status]
+  additionalProperties: false
+  properties:
+    deal_id: { type: string, maxLength: 64, pattern: "^[A-Za-z0-9_-]+$" }
+    status:
+      type: string
+      enum: [complete, reconciliation_gap, insufficient_inputs, failed]
+    reconciliation_gaps:
+      type: array
+      maxItems: 20
+      items: { type: string, maxLength: 512, pattern: "^[A-Za-z0-9 .,%$()_/:-]+$" }
+    findings:
+      type: array
+      maxItems: 200
+      items:
+        type: object
+        required: [category, severity, summary]
+        additionalProperties: false
+        properties:
+          category:    { type: string, maxLength: 64,   pattern: "^[A-Za-z0-9 _-]+$" }
+          severity:    { type: string, enum: [high, medium, low, info] }
+          summary:     { type: string, maxLength: 512,  pattern: "^[A-Za-z0-9 .,%$()_/:-]+$" }
+          dollar_impact_usd: { type: number }
+          source_file_id: { type: string, maxLength: 64, pattern: "^[A-Za-z0-9_-]+$" }
+          source_page:    { type: integer, minimum: 0, maximum: 10000 }
+    error_message:
+      type: string
+      maxLength: 512
+      pattern: "^[A-Za-z0-9 .,%$()_/:-]+$"
