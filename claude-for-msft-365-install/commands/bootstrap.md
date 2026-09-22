@@ -206,7 +206,7 @@ Array of MCP servers the add-in connects to for this user.
 
 ```json
 "mcp_servers": [
-  { "url": "https://mcp.linear.app/sse", "label": "Linear" },
+  { "url": "https://mcp.linear.app/mcp", "label": "Linear" },
   {
     "url": "https://internal.yourcompany.com/mcp/risk",
     "label": "Risk Dashboard",
