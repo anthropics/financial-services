@@ -1,0 +1,275 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/schemas/issue.schema.json",
+  "title": "Issue",
+  "description": "Structured issue write-up produced by the issue-writeup skill. Foundational primitive consumed by exception-analysis (compliance-testing), audit findings, regulator-response files, the issue log, risk-committee-pack, and control-matrix (open-issue links). Stable contract: additive changes only between minor versions; breaking changes ship as a versioned migration.",
+  "type": "object",
+  "required": [
+    "issue_id",
+    "condition",
+    "criteria",
+    "cause",
+    "impact",
+    "severity",
+    "severity_rationale",
+    "remediation",
+    "owner",
+    "source",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "issue_id": {
+      "type": "string",
+      "description": "Stable identifier for this issue. Reused across revisions of the same issue.",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "description": "One-line title; reads as the issue, not as the cause."
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Foreign key into scope.schema.json when the write-up was built under a formal scope."
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this revision of the write-up was authored."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "under-review",
+        "open",
+        "in-remediation",
+        "closed-pending-validation",
+        "closed",
+        "withdrawn"
+      ],
+      "description": "Lifecycle status. The skill emits draft or under-review; downstream remediation tracking moves the issue through the rest."
+    },
+    "source": {
+      "type": "object",
+      "required": ["source_type"],
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "internal-audit",
+            "compliance-testing",
+            "vendor-monitoring",
+            "model-validation",
+            "examiner-letter",
+            "self-identified",
+            "whistleblower",
+            "other"
+          ],
+          "description": "What confirmed the condition. The source type drives the severity calibration ladder, the reviewer machinery, and whether the MRA / MRIA classification field is required."
+        },
+        "source_id": {
+          "type": "string",
+          "description": "Audit engagement ID, exam letter ID, control-test workpaper ID, vendor monitoring record ID, validation report ID, or other source identifier."
+        },
+        "regulator": {
+          "type": "string",
+          "description": "When source_type is examiner-letter: the regulator that issued the matter (FRB, OCC, FDIC, SEC, FINRA, CFPB, NYDFS, state DOI, NAIC, FinCEN, OFAC, other)."
+        }
+      }
+    },
+    "date_identified": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the condition was first identified by the source."
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start of the period the condition covers."
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End of the period the condition covers."
+    },
+    "condition": {
+      "type": "string",
+      "description": "The dated, scoped, observable state. Not a conclusion ('the control failed'). Not commentary ('oversight is weak'). Specific. Quantified where possible."
+    },
+    "criteria": {
+      "type": "string",
+      "description": "Named source with section. Multiple criteria can be concatenated with explicit separation; the criteria_source_anchor field carries the path back to references/source-anchors.md or the loaded overlay."
+    },
+    "criteria_source_anchor": {
+      "type": "string",
+      "description": "Path to the source-anchors entry, sector overlay, cross-cutting overlay, or firm-overlay that holds the citation and excerpt for the criteria. Example: 'references/source-anchors.md#bcbs-239'."
+    },
+    "cause": {
+      "type": "string",
+      "description": "Root cause, tied to a specific control design or operation weakness. Names the control attribute that failed. 'Human error' / 'training gap' / 'system limitation' are surface labels and not acceptable as the cause field; the cause is what is underneath them. Where root cause analysis is genuinely pending, the field reads 'root cause analysis pending' and the issue carries an open action."
+    },
+    "impact": {
+      "type": "string",
+      "description": "The effect / impact, quantified where possible. Financial, customer, regulatory, operational, reputational. Carries the unit and the time window."
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "critical"
+      ],
+      "description": "Severity rating. Always paired with severity_rationale. Severity assignment carries human review; the skill does not assign severity unilaterally."
+    },
+    "severity_rationale": {
+      "type": "string",
+      "description": "Rationale for the severity rating. References materiality (against firm thresholds where they exist), frequency, customer impact, regulatory exposure, and any compensating controls in place."
+    },
+    "compensating_controls": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Compensating controls in place that affect the severity rating. Empty array when none."
+    },
+    "mra_mria_classification": {
+      "type": "string",
+      "enum": ["MRA", "MRIA", "MRBA", "n/a"],
+      "description": "Required when source_type is examiner-letter. n/a otherwise. MRA = Matter Requiring Attention (FRB, OCC). MRIA = Matter Requiring Immediate Attention (FRB). MRBA = Matter Requiring Board Attention (FDIC)."
+    },
+    "population_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Population size when the issue arose from a sample-based test."
+    },
+    "sample_size": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Sample size when the issue arose from a sample-based test."
+    },
+    "exceptions_observed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Exceptions observed in the sample."
+    },
+    "projected_exception_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Projected exception rate as a decimal (0.05 = 5%). Omit when the firm does not project from this sample."
+    },
+    "sampling_methodology": {
+      "type": "string",
+      "enum": [
+        "random",
+        "risk-based",
+        "judgmental",
+        "population-based",
+        "stratified",
+        "other"
+      ],
+      "description": "Sampling methodology used by the upstream test."
+    },
+    "linked_obligation_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Foreign keys into obligation-mapping output."
+    },
+    "linked_control_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Foreign keys into control-matrix output."
+    },
+    "linked_evidence_ids": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Foreign keys into evidence-binder output."
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "Declarative voice. What the owner must do. Specific enough that closure is testable."
+    },
+    "remediation": {
+      "type": "string",
+      "description": "Free-text remediation summary. Carries the high-level plan; the structured fields below carry the testable elements."
+    },
+    "owner": {
+      "type": "string",
+      "description": "Named role with accountability. Not a team. Not a person (the role outlives the incumbent). Where the role taxonomy is firm-specific, it comes from references/firm-overlay.md."
+    },
+    "target_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Target closure date. Where remediation runs longer than 90 days, milestones go in remediation_milestones."
+    },
+    "remediation_milestones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "milestone"],
+        "additionalProperties": false,
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "milestone": {"type": "string"},
+          "owner": {"type": "string"}
+        }
+      },
+      "description": "Interim milestones for remediation runs longer than 90 days."
+    },
+    "closure_evidence": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "The artifacts the firm will inspect to confirm closure. System name, report ID, sign-off log path, reconciliation evidence, etc. 'Remediated' is not closure evidence; closure evidence is the artifact, not the verb."
+    },
+    "interim_mitigation": {
+      "type": "string",
+      "description": "Manual workaround or compensating control in flight while the structural fix is built. Empty when none."
+    },
+    "evidence_gap": {
+      "type": "boolean",
+      "description": "Yes when the write-up has gaps in evidence (population partially inspected, criteria not fully cited, root cause pending). Routes to the engagement issue log."
+    },
+    "evidence_gap_note": {
+      "type": "string",
+      "description": "One-line description of the evidence gap when evidence_gap is true."
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "unknown"],
+      "description": "Author's confidence in the write-up as a whole. Reflects source posture, evidence depth, and how settled the cause analysis is."
+    },
+    "reviewer_questions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Questions for the human reviewer at sign-off. Specific to this issue; tied to elements of the CCCE; not generic ('is this fit for purpose')."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Always true. The skill stops at draft; severity assignment always carries human review."
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "additionalProperties": false,
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "reason": {"type": "string"},
+          "delta": {"type": "string"},
+          "approved_by": {"type": "string"}
+        }
+      },
+      "description": "Append-only revision log. Every material refresh of the write-up lands a row."
+    }
+  }
+}

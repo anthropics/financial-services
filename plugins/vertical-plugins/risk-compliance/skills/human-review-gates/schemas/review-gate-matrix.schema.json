@@ -1,0 +1,333 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/skills/human-review-gates/schemas/review-gate-matrix.schema.json",
+  "title": "review-gate-matrix",
+  "description": "Structured human-review-gate matrix produced by the human-review-gates skill. Maps a workflow's named gates to required reviewers, decision criteria, stop conditions, escalation, and documentation. Foundational primitive consumed by every output-builder skill in the repo (the sign-off block on a model card, issue write-up, vendor-diligence pack, SAR narrative, etc., references gate_id from this matrix). Stable contract: additive changes only between minor versions; breaking changes ship as a versioned migration.",
+  "type": "object",
+  "required": [
+    "gate_matrix_id",
+    "workflow_in_scope",
+    "decision_authority",
+    "source_posture",
+    "gates",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "gate_matrix_id": {
+      "type": "string",
+      "description": "Stable identifier for this gate matrix instance. Reused across revisions of the same matrix.",
+      "minLength": 1
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date this revision of the matrix was authored."
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Foreign key into scope.schema.json when the matrix was built under a formal scope."
+    },
+    "workflow_in_scope": {
+      "type": "string",
+      "description": "The workflow, artifact lifecycle, or decision the matrix covers (e.g., 'AI use-case lifecycle for tier-1 retail credit', 'critical-vendor onboarding lifecycle', 'issue lifecycle for second-line findings', 'SAR-filing decision'). Scope tight; program-level scopes produce matrices nobody can adopt."
+    },
+    "scope_notes": {
+      "type": "string",
+      "description": "Optional clarification of the scope boundary (sub-processes excluded, jurisdictions covered, line-of-business carve-outs)."
+    },
+    "decision_authority": {
+      "type": "object",
+      "required": ["primary_committee"],
+      "additionalProperties": false,
+      "properties": {
+        "primary_committee": {
+          "type": "string",
+          "description": "The body that pass/fails the gates in this matrix. Named role or named committee (e.g., 'AI Governance Committee', 'Vendor Risk Committee', 'Issue Review Committee')."
+        },
+        "escalation_committee": {
+          "type": "string",
+          "description": "Where a no-pass routes when escalation is invoked. Often the next governance tier (e.g., Operational Risk Committee escalating to Risk Committee of the Board)."
+        },
+        "dissent_path": {
+          "type": "string",
+          "description": "How an individual reviewer's challenge gets recorded and adjudicated. The dissent path is a governance artifact under SR 11-7 effective challenge and OCC Heightened Standards three-lines-of-defense expectations."
+        },
+        "board_oversight": {
+          "type": "string",
+          "description": "If this matrix is in scope of board-level oversight (Heightened Standards, Reg YY risk committee, NAIC corporate governance, ORSA), name the board body and reporting cadence."
+        }
+      }
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "firm-policy-overlay",
+        "mixed"
+      ],
+      "description": "public-only: only public regulatory sources informed the matrix. firm-policy-overlay: firm policies and committee charters augment the public source set. mixed: both, with named seams."
+    },
+    "source_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_type", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "regulator",
+              "rule",
+              "interagency-guidance",
+              "supervisory-letter",
+              "examination-manual",
+              "internal-policy",
+              "internal-standard",
+              "industry-standard",
+              "consent-order",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "description": "Named source (e.g., 'SR 11-7 §VI', 'OCC Bulletin 2026-13', 'NIST AI RMF Govern function', 'firm AI Governance Policy v2.1 §3.4')."
+          },
+          "section_reference": {
+            "type": "string",
+            "description": "Section, principle, or paragraph reference. Use [verify section] in references/source-anchors.md when the exact reference is not yet confirmed; do not invent section labels here."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/gate"
+      },
+      "description": "The matrix rows. Each gate is a named decision point in the workflow."
+    },
+    "gate_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gap_description"],
+        "additionalProperties": false,
+        "properties": {
+          "implied_gate_name": {
+            "type": "string",
+            "description": "The gate that source guidance implies but the current workflow does not have (e.g., 'annual review gate for tier-1 AI use cases')."
+          },
+          "gap_description": {
+            "type": "string",
+            "description": "What the gap is: gate not present, gate present but no independent reviewer, gate present but no stop conditions, gate present but no escalation path, gate present but documentation requirement is absent."
+          },
+          "source_anchor": {
+            "type": "string",
+            "description": "Path or label for the source that implies the gate (e.g., 'references/source-anchors.md#sr-11-7' or 'NIST AI RMF GV-4.1')."
+          },
+          "recommended_action": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Gates implied by source guidance but not present in the current workflow, or present but under-specified. A clean-looking matrix with no gaps usually means the gaps were buried."
+    },
+    "recommended_charter_language": {
+      "type": "string",
+      "description": "Suggested wording the committee charter or policy section can adopt directly. Reads as charter prose, not as matrix commentary. Optional; populated when the engagement is standing up or refreshing committee charter language."
+    },
+    "narrative_summary": {
+      "type": "string",
+      "description": "One-page narrative summarising the gate flow for committee adoption: decision authority, gate sequence, escalation, documentation. The narrative is the readable form for a board or committee that does not read matrices line by line."
+    },
+    "recommended_owner_actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["owner_role", "action"],
+        "additionalProperties": false,
+        "properties": {
+          "owner_role": {
+            "type": "string",
+            "description": "Named role (e.g., 'Head of Model Risk', 'Chief Compliance Officer'). Generic labels insufficient."
+          },
+          "action": {"type": "string"},
+          "milestone": {"type": "string"}
+        }
+      }
+    },
+    "reviewer_questions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Questions for the human reviewer at sign-off. Tied to specific gates, gaps, or independence concerns; not generic ('is this fit for purpose')."
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "unknown"],
+      "description": "Author's confidence in the matrix as a whole. Reflects source posture, completeness of the workflow inventory, and the quality of independence and stop-condition specification."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Always true. Gate architecture is committee-adopted; the skill stops at draft and the named reviewer attests."
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "additionalProperties": false,
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "reason": {"type": "string"},
+          "delta": {"type": "string"},
+          "approved_by": {"type": "string"}
+        }
+      },
+      "description": "Append-only revision log. Every material refresh of the matrix lands a row."
+    }
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "required": [
+        "gate_id",
+        "gate_name",
+        "stage",
+        "trigger",
+        "required_reviewers",
+        "decision_criteria",
+        "stop_conditions",
+        "frequency"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "gate_id": {
+          "type": "string",
+          "description": "Stable identifier for the gate. Foreign key for downstream artifact sign-off blocks (model-card, issue-writeup, vendor-diligence, SAR-narrative, etc.)."
+        },
+        "gate_name": {
+          "type": "string",
+          "description": "Operational-language name (e.g., 'Tier-1 AI use-case go-live gate', 'Critical vendor pre-contract gate'). Names that read as slogans fail the namespace test."
+        },
+        "stage": {
+          "type": "string",
+          "description": "Where in the lifecycle the gate fires (intake, tiering, pre-prod, go-live, ongoing-monitoring, retirement; planning, due-diligence, contract, ongoing-monitoring, termination; identification, severity-rating, remediation, closure; etc.)."
+        },
+        "trigger": {
+          "type": "string",
+          "description": "What brings a case to this gate. Event-based triggers name the event; periodic triggers name the cadence."
+        },
+        "required_reviewers": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["role"],
+            "additionalProperties": false,
+            "properties": {
+              "role": {
+                "type": "string",
+                "description": "Named role (e.g., 'Head of Model Risk', 'Independent Validator', 'Chief Compliance Officer', 'CISO', 'Business Sponsor')."
+              },
+              "is_primary": {
+                "type": "boolean",
+                "default": false,
+                "description": "True if this reviewer is the primary decision-holder for the gate."
+              },
+              "is_backup": {
+                "type": "boolean",
+                "default": false,
+                "description": "True if this reviewer is the named backup when the primary is unavailable."
+              },
+              "independence_required": {
+                "type": "boolean",
+                "default": false,
+                "description": "True when source guidance requires this reviewer to be independent of the artifact's producer or sponsor (SR 11-7 validation independence; interagency TPRM line-2; EU AI Act Article 14 competent oversight)."
+              },
+              "independence_basis": {
+                "type": "string",
+                "description": "Source anchor or policy section that grounds the independence requirement (e.g., 'SR 11-7 §V', 'Interagency TPRM §III.D', 'firm AI Governance Policy v2.1 §4.2')."
+              }
+            }
+          }
+        },
+        "required_inputs": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Artifact IDs that must be present at the gate (e.g., MODEL-CARD-XXX, VAL-REPORT-XXX, ISS-XXX, EV-XXX, EXIT-PLAN-XXX). A gate without named inputs is unauditable."
+        },
+        "decision_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["criterion"],
+            "additionalProperties": false,
+            "properties": {
+              "criterion": {
+                "type": "string",
+                "description": "Declarative criterion (e.g., 'validation independence is established', 'no open critical or high issues against the model', 'exit plan exists and has been tested in the last 12 months')."
+              },
+              "source_anchor": {
+                "type": "string",
+                "description": "Path into references/source-anchors.md, a loaded overlay file, or references/firm-overlay.md."
+              }
+            }
+          }
+        },
+        "stop_conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string"},
+          "description": "Declarative, binary blockers (e.g., 'no go-live if any open critical issue', 'no contract if no exit plan'). 'Should be reviewed' is not a stop condition."
+        },
+        "escalation_path": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "escalation_committee": {"type": "string"},
+            "time_to_escalate": {"type": "string", "description": "Cadence or window (e.g., 'within 5 business days', 'next scheduled committee')."},
+            "escalation_owner": {"type": "string", "description": "Named role that takes the case from the gate to the escalation forum."}
+          }
+        },
+        "documentation_requirement": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "What gets captured (decision, rationale, named attesters, date, artifact references, system of record). 'Minutes' acceptable when minute discipline names attesters and decisions; 'noted' is not."
+        },
+        "frequency": {
+          "type": "string",
+          "enum": ["event-based", "daily", "weekly", "monthly", "quarterly", "annual", "ad-hoc"]
+        },
+        "frequency_detail": {
+          "type": "string",
+          "description": "When frequency is event-based, name the event. When periodic, optionally name the calendar mechanism (e.g., 'Q3 risk committee meeting')."
+        },
+        "source_anchor": {
+          "type": "string",
+          "description": "The named source for the gate's existence (e.g., 'SR 11-7 §VI', 'Interagency TPRM §III.B', 'EU AI Act Article 14', 'NIST AI RMF GV-4.1', 'firm AI Governance Policy v2.1 §3.4')."
+        },
+        "open_issue_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Foreign keys into the issue log for any current issues against this gate's design or operation."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Control test plan",
+  "type": "object",
+  "required": [
+    "test_id",
+    "control_id",
+    "test_objective",
+    "population",
+    "sample_method",
+    "procedures",
+    "evidence_requests"
+  ],
+  "properties": {
+    "test_id": {
+      "type": "string"
+    },
+    "control_id": {
+      "type": "string"
+    },
+    "test_objective": {
+      "type": "string"
+    },
+    "population": {
+      "type": "string"
+    },
+    "sample_method": {
+      "type": "string"
+    },
+    "sample_size": {
+      "type": "string"
+    },
+    "procedures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_requests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expected_outcome": {
+      "type": "string"
+    }
+  }
+}
