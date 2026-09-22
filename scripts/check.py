@@ -149,7 +149,9 @@ for bundled in sorted(PLUGINS.glob("agent-plugins/*/skills/*")):
         continue
     src = src_by_name.get(bundled.name)
     if not src:
-        err(f"bundled-skill: {rel(bundled)}: no vertical-plugins source named '{bundled.name}'")
+        # Some named agents own skills that are not exposed by any vertical
+        # plugin. Those directories are canonical in-place rather than vendored
+        # copies, so there is no source tree to compare against.
         continue
     cmp = filecmp.dircmp(src, bundled)
     if cmp.diff_files or cmp.left_only or cmp.right_only:
