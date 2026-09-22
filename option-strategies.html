@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 Option Strategies — GLD & SLV</title>
+<style>
+  :root{--bg:#0d0f14;--panel:#161a23;--panel2:#1d222e;--line:#2a3140;--gold:#d4af37;--gold-bright:#ffd75e;--silver:#cfd6e4;--text:#e6e9ef;--muted:#8b93a4;--green:#3ecf8e;--red:#ff6b6b;--amber:#ffb454;--blue:#5b9dff;--purple:#b78cff;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.55;padding:24px;max-width:1180px;margin:0 auto}
+  header{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:20px}
+  h1{font-size:25px;font-weight:700;letter-spacing:-.3px}
+  h1 .dot{color:var(--gold)}
+  .sub-h{color:var(--muted);font-size:13px;margin-top:4px}
+  h2{font-size:16px;color:var(--gold);margin:0 0 4px;font-weight:700}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:16px}
+  .card{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .card .label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .card .big{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+  .card .sub{font-size:12px;margin-top:3px}
+  .up{color:var(--green)}.down{color:var(--red)}.gold{color:var(--gold-bright)}.silver{color:var(--silver)}.mut{color:var(--muted)}
+  canvas{width:100%;height:auto;display:block;margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.4px}
+  tr:last-child td{border-bottom:none}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;margin:8px 0}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:3px;border-radius:2px;display:inline-block}
+  .pill{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+  .live .led{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .live.ok .led{background:var(--green)}.live.err .led{background:var(--red)}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+  .t-good{background:rgba(62,207,142,.15);color:var(--green)}.t-bad{background:rgba(255,107,107,.15);color:var(--red)}.t-mid{background:rgba(255,180,84,.15);color:var(--amber)}
+  .disc{font-size:12px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:12px;margin-top:12px}
+  footer{color:var(--muted);font-size:12px;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+  footer a{color:var(--gold);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>3 Recommended Option Strategies<span class="dot">.</span> <span class="pill">GLD &amp; SLV</span></h1>
+  <div class="sub-h">Payoff per <strong>1 contract (100 shares)</strong> at expiry — multiply by your contract count · As of June 23, 2026 · <span id="live" class="live"><span class="led"></span><span id="lt">loading…</span></span></div>
+</header>
+
+<div class="grid cards">
+  <div class="card"><div class="label">Gold spot</div><div class="big gold" id="spot">—</div><div class="sub" id="spotc">—</div></div>
+  <div class="card"><div class="label">GLD</div><div class="big gold" id="gld">—</div><div class="sub" id="gldc">—</div></div>
+  <div class="card"><div class="label">Silver spot</div><div class="big silver" id="slvr">—</div><div class="sub" id="slvrc">—</div></div>
+  <div class="card"><div class="label">SLV</div><div class="big silver" id="slv">—</div><div class="sub" id="slvc">—</div></div>
+</div>
+
+<!-- intro -->
+<section>
+  <h2>The 3 strategies — and which view each fits</h2>
+  <table>
+    <tr><th>Strategy</th><th>Structure</th><th>Effect</th><th>Best when you…</th></tr>
+    <tr><td class="gold">① Stock repair (1×2 ratio)</td><td>Buy 1 ATM call, sell 2 OTM calls (~$0 cost)</td><td>Lowers breakeven; recovers loss in a "sweet spot"; caps upside</td><td>expect a <em>moderate</em> grind back up</td></tr>
+    <tr><td class="blue">② Covered call</td><td>Sell 1 call above your basis</td><td>Collects premium (income), lowers breakeven a bit; caps upside at strike</td><td>are patient &amp; want income while waiting</td></tr>
+    <tr><td class="purple">③ Collar (protective)</td><td>Buy a put, sell a call to fund it (~$0)</td><td>Floors downside, caps upside — <em>insurance, not recovery</em></td><td>fear the hawkish-Fed downside</td></tr>
+  </table>
+</section>
+
+<!-- GLD -->
+<section>
+  <h2 class="gold">GLD — basis $450 · 1,100 sh (11 contracts)</h2>
+  <canvas id="cvGLD" width="1120" height="420"></canvas>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--silver)"></span>Hold</span>
+    <span><span class="sw" style="background:var(--gold-bright)"></span>① Repair ($390 / 2×$430)</span>
+    <span><span class="sw" style="background:var(--blue)"></span>② Covered call ($480)</span>
+    <span><span class="sw" style="background:var(--purple)"></span>③ Collar ($370p / $460c)</span>
+  </div>
+  <table id="tbGLD"></table>
+</section>
+
+<!-- SLV -->
+<section>
+  <h2 class="silver">SLV — basis $75 · "large position"</h2>
+  <canvas id="cvSLV" width="1120" height="420"></canvas>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--silver)"></span>Hold</span>
+    <span><span class="sw" style="background:var(--gold-bright)"></span>① Repair ($60 / 2×$70)</span>
+    <span><span class="sw" style="background:var(--blue)"></span>② Covered call ($80)</span>
+    <span><span class="sw" style="background:var(--purple)"></span>③ Collar ($54p / $78c)</span>
+  </div>
+  <table id="tbSLV"></table>
+  <p style="font-size:13px;margin-top:8px"><span class="tag t-mid">note</span> Silver is <strong>higher-beta</strong>: strategy payoffs are wider and IV is richer, so the repair/covered-call premiums work harder — but a sharp silver drop hurts more. Forecasts are also more dispersed (HSBC ~$57 bear vs Commerzbank $90 bull).</p>
+</section>
+
+<div class="disc"><strong>Disclaimer.</strong> Educational illustration, not advice. Strikes &amp; premiums are approximate (≈20–30% IV), not live quotes — confirm on your chain. Options risk includes assignment and total premium loss; ratio spreads add risk on large moves. Payoffs shown per 100-share contract at expiry.</div>
+
+<footer>
+  <strong>Live data:</strong> <a href="https://stooq.com">Stooq</a> (XAUUSD, GLD.US, XAGUSD, SLV.US). <strong>Strategy ref:</strong> <a href="https://www.optionseducation.org/strategies/all-strategies/stock-repair">OIC — Stock Repair</a>.
+</footer>
+
+<script>
+const $=id=>document.getElementById(id);
+const usd=(n,d=2)=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const k=n=>(n<0?'−$':'$')+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const chg=(c,o)=>{const p=o?(c-o)/o*100:0;return `<span class="${p>=0?'up':'down'}">${p>=0?'▲ +':'▼ '}${p.toFixed(2)}%</span>`;};
+const STOOQ=s=>`https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`, PROXY=u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
+async function txt(u){const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.text();}
+async function csv(s){try{return await txt(STOOQ(s));}catch(e){return await txt(PROXY(STOOQ(s)));}}
+function qq(c){const l=c.trim().split('\n').pop().split(',');const o=+l[3],cl=+l[6];if(!isFinite(cl)||cl<=0)throw 0;return{o:isFinite(o)?o:cl,c:cl};}
+const FB={spot:{c:4197.41,o:4160.00},gld:{c:387.50,o:384.00},silver:{c:66.00,o:65.14},slv:{c:59.40,o:58.91}};
+
+// strategy definitions, payoff PER SHARE (×100 for one contract)
+const GLD={basis:450,pMin:320,pMax:620,vMin:-13000,vMax:13000,vStep:4000,gstep:40,
+  strats:[
+    {label:'Hold',color:'#cfd6e4',fn:S=>S-450},
+    {label:'Repair',color:'#ffd75e',fn:S=>(S-450)+Math.max(0,S-390)-2*Math.max(0,S-430)-6},
+    {label:'Covered call',color:'#5b9dff',fn:S=>(S-450)+7-Math.max(0,S-480)},
+    {label:'Collar',color:'#b78cff',fn:S=>(S-450)-Math.max(0,S-460)+Math.max(0,370-S)}
+  ]};
+const SLV={basis:75,pMin:40,pMax:100,vMin:-2500,vMax:2500,vStep:1000,gstep:10,
+  strats:[
+    {label:'Hold',color:'#cfd6e4',fn:S=>S-75},
+    {label:'Repair',color:'#ffd75e',fn:S=>(S-75)+Math.max(0,S-60)-2*Math.max(0,S-70)-0.9},
+    {label:'Covered call',color:'#5b9dff',fn:S=>(S-75)+1.2-Math.max(0,S-80)},
+    {label:'Collar',color:'#b78cff',fn:S=>(S-75)-Math.max(0,S-78)+Math.max(0,54-S)}
+  ]};
+let CUR={GLD:387.5,SLV:59.4};
+
+function draw(cid,C,cur){
+  const cv=$(cid),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  const x0=70,x1=W-20,y0=18,y1=H-34;
+  const X=p=>x0+(p-C.pMin)/(C.pMax-C.pMin)*(x1-x0), Y=v=>y1-(v-C.vMin)/(C.vMax-C.vMin)*(y1-y0);
+  ctx.clearRect(0,0,W,H); ctx.font='12px sans-serif';
+  for(let p=C.pMin;p<=C.pMax;p+=C.gstep){ctx.strokeStyle='#1d222e';ctx.beginPath();ctx.moveTo(X(p),y0);ctx.lineTo(X(p),y1);ctx.stroke();ctx.fillStyle='#8b93a4';ctx.textAlign='center';ctx.fillText('$'+p,X(p),y1+15);}
+  for(let v=C.vMin;v<=C.vMax;v+=C.vStep){const yy=Y(v);ctx.strokeStyle=v===0?'#5a6478':'#1d222e';ctx.beginPath();ctx.moveTo(x0,yy);ctx.lineTo(x1,yy);ctx.stroke();ctx.fillStyle='#8b93a4';ctx.textAlign='right';ctx.fillText(k(v),x0-8,yy+4);}
+  C.strats.forEach(s=>{ctx.strokeStyle=s.color;ctx.lineWidth=2.4;ctx.beginPath();
+    for(let p=C.pMin;p<=C.pMax;p+=(C.pMax-C.pMin)/300){const yy=Math.max(y0,Math.min(y1,Y(s.fn(p)*100)));p===C.pMin?ctx.moveTo(X(p),yy):ctx.lineTo(X(p),yy);}ctx.stroke();});
+  // basis + current markers
+  ctx.strokeStyle='#8b93a4';ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(X(C.basis),y0);ctx.lineTo(X(C.basis),y1);ctx.stroke();
+  ctx.fillStyle='#8b93a4';ctx.textAlign='center';ctx.fillText('basis $'+C.basis,X(C.basis),y0+11);
+  ctx.strokeStyle='#fff';ctx.beginPath();ctx.moveTo(X(cur),y0);ctx.lineTo(X(cur),y1);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#fff';ctx.fillText('now $'+cur.toFixed(cur<100?1:0),X(cur),y0+24);
+}
+
+// breakeven solver + table
+function breakeven(fn,lo,hi){let prev=fn(lo)>=0;for(let p=lo;p<=hi;p+=0.1){const cur=fn(p)>=0;if(cur&&!prev)return p;prev=cur;}return null;}
+function buildTable(tid,C){
+  const t=$(tid);t.innerHTML='<tr><th>Strategy</th><th>Breakeven</th><th>Max gain /contract</th><th>Max loss /contract</th><th>Trade-off</th></tr>';
+  const rows=[
+    ['Hold',C===GLD?'$450':'$75',C===GLD?'unlimited':'unlimited',C===GLD?'−$45,000 (to $0)':'−$7,500 (to $0)','full upside &amp; downside'],
+  ];
+  C.strats.slice(1).forEach(s=>{
+    const be=breakeven(s.fn,C.pMin,C.pMax);
+    // sample max gain near pMax, max loss near pMin
+    const g=s.fn(C.pMax)*100, l=s.fn(C.pMin)*100;
+    const cap = s.label==='Repair'?(s.fn(C.pMax)*100):(s.fn(C.pMax)*100);
+    rows.push([s.label, be?usd(be,2):'—', k(Math.round(cap)), k(Math.round(l)),
+      s.label==='Repair'?'<span class="tag t-good">lowest breakeven</span> caps upside':
+      s.label==='Covered call'?'<span class="tag t-good">income</span> caps at strike':
+      '<span class="tag t-mid">protection</span> caps both ends']);
+  });
+  rows.forEach(r=>t.insertAdjacentHTML('beforeend',`<tr><td>${r[0]}</td><td>${r[1]}</td><td class="up">${r[2]}</td><td class="down">${r[3]}</td><td style="text-align:left">${r[4]}</td></tr>`));
+}
+
+function paint(d,live){
+  $('spot').innerHTML=usd(d.spot.c)+'<span style="font-size:13px;color:var(--muted)">/oz</span>';$('spotc').innerHTML=chg(d.spot.c,d.spot.o);
+  $('gld').textContent=usd(d.gld.c);$('gldc').innerHTML=chg(d.gld.c,d.gld.o);
+  $('slvr').innerHTML=usd(d.silver.c)+'<span style="font-size:13px;color:var(--muted)">/oz</span>';$('slvrc').innerHTML=chg(d.silver.c,d.silver.o);
+  $('slv').textContent=usd(d.slv.c);$('slvc').innerHTML=chg(d.slv.c,d.slv.o);
+  CUR.GLD=d.gld.c;CUR.SLV=d.slv.c;
+  $('live').className='live '+(live?'ok':'err');$('lt').textContent=live?('Live · '+new Date().toLocaleTimeString()):'Offline — snapshot';
+  draw('cvGLD',GLD,CUR.GLD);draw('cvSLV',SLV,CUR.SLV);
+}
+async function load(){try{const[s,g,a,l]=await Promise.all([csv('xauusd'),csv('gld.us'),csv('xagusd'),csv('slv.us')]);paint({spot:qq(s),gld:qq(g),silver:qq(a),slv:qq(l)},true);}catch(e){paint(FB,false);}}
+buildTable('tbGLD',GLD);buildTable('tbSLV',SLV);
+draw('cvGLD',GLD,CUR.GLD);draw('cvSLV',SLV,CUR.SLV);
+load(); setInterval(load,60000);
+</script>
+</body>
+</html>
