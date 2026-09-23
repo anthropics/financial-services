@@ -74,7 +74,7 @@ def plugin_root(plugin_json: Path) -> Path:
 
 
 def rel(p: Path) -> str:
-    return str(p.relative_to(ROOT))
+    return p.relative_to(ROOT).as_posix()
 
 
 def parse_semver(v: str) -> tuple[int, int, int] | None:
