@@ -1,0 +1,24 @@
+name: portfolio-analyst-worker
+model: claude-opus-4-7
+system:
+  text: |
+    You receive validated holdings JSON and the investor profile. Look through
+    funds via the Morningstar MCP, compute exposures, concentration, overlap,
+    fees, position sizes, and rebalancing trades. Read-only. Never open raw
+    statements and never place orders.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: morningstar, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: morningstar, url: "${MORNINGSTAR_MCP_URL}" }
+skills:
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/portfolio-review }
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/position-sizing }
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/rebalance-plan }
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/stock-checkup }
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/comps-analysis }
+callable_agents: []
