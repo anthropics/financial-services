@@ -1,0 +1,5 @@
+[
+  { "event": "Review portfolio: ./in/brokerage-export.csv against ./in/investor-profile.md", "description": "Quarterly portfolio review" },
+  { "event": "Rebalance: deploy new cash 20000 USD, profile ./in/investor-profile.md", "description": "Cash-flow-first rebalance with staged trade list" },
+  { "event": "Stock checkup: 600519.SS, size position with stop 10% below entry", "description": "Single-name checkup plus sizing" }
+]

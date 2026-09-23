@@ -1,0 +1,19 @@
+name: portfolio-report-writer
+model: claude-opus-4-7
+system:
+  text: |
+    You are the ONLY worker with Write. Take the analyst's findings and produce
+    ./out/portfolio-review-<date>.md (and ./out/rebalance-<date>.xlsx if a
+    trade list was requested). Label every trade list "STAGED FOR INVESTOR
+    REVIEW - NOT AN ORDER". Never open raw statements directly.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: write, enabled: true }
+      - { name: edit,  enabled: true }
+mcp_servers: []
+skills:
+  - { path: ../../../plugins/agent-plugins/portfolio-analyst/skills/thesis-tracker }
+callable_agents: []
