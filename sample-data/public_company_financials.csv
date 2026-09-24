@@ -1,0 +1,10 @@
+company_id,company_name,ticker,sector,fiscal_year,revenue,ebitda,ebit,net_income,total_assets,total_debt,cash,capex,free_cash_flow,shares_outstanding,market_price
+DEMO-001,Northstar Payments,DEMO-NSTP,Financial Technology,2023,1820,438,301,184,2920,740,415,96,226,155,42.50
+DEMO-001,Northstar Payments,DEMO-NSTP,Financial Technology,2024,2145,536,382,247,3340,810,522,118,281,154,47.80
+DEMO-001,Northstar Payments,DEMO-NSTP,Financial Technology,2025,2460,640,471,315,3715,875,684,132,354,153,51.30
+DEMO-002,Helios Diagnostics,DEMO-HLDG,Healthcare Services,2023,1285,257,171,92,1980,520,260,84,111,88,36.40
+DEMO-002,Helios Diagnostics,DEMO-HLDG,Healthcare Services,2024,1410,303,205,119,2175,565,318,91,139,88,39.20
+DEMO-002,Helios Diagnostics,DEMO-HLDG,Healthcare Services,2025,1588,361,251,153,2435,610,392,104,176,87,44.70
+DEMO-003,Evergreen Grid,DEMO-EVGD,Electric Utilities,2023,3920,1140,742,418,12600,5200,690,730,260,240,28.10
+DEMO-003,Evergreen Grid,DEMO-EVGD,Electric Utilities,2024,4175,1235,806,466,13380,5480,735,760,318,241,30.60
+DEMO-003,Evergreen Grid,DEMO-EVGD,Electric Utilities,2025,4390,1310,870,514,14025,5625,820,790,360,242,32.40
