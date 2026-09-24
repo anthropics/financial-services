@@ -97,7 +97,7 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
         continue
     try:
         _, fm, _ = text.split("---", 2)
-        meta = yaml.safe_load(fm)
+        meta = yaml.safe_load(fm) or {}
         for k in ("name", "description"):
             if k not in meta:
                 err(f"frontmatter: {rel(md)}: missing '{k}'")
