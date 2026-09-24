@@ -38,7 +38,7 @@ Generates a structured earnings preview for an upcoming report, including consen
 ## How to Use
 The plugin and skills require access to S&P Global data to work with, either [Capital IQ Pro](https://www.spglobal.com/market-intelligence/en/solutions/products/sp-capital-iq-pro) or [S&P Global LLM-ready API](https://www.marketplace.spglobal.com/en/solutions/kensho-llm-ready-api-%28a156fe9f-5564-4f60-a624-95d8645dc98f%29) subscriptions. 
 
-The LLM-ready API is easy to integrate in Claude or other applications via its MCP server. Follow [these steps](docs.kensho.com/llmreadyapi/mcp/third-party/claude) to set it up. 
+The LLM-ready API is easy to integrate in Claude or other applications via its MCP server. Follow [these steps](https://docs.kensho.com/llmreadyapi/mcp/third-party/claude) to set it up. 
 
 ### In Cowork
 You'll need a paid Claude plan (Pro, Max, Team, or Enterprise) and the Claude Desktop app for macOS or Windows.
