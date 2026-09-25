@@ -13,6 +13,8 @@ target_agent against the deployed slugs and (b) schema-validating the payload
 before steering. In production, prefer emitting handoffs via a dedicated tool
 call or a typed SSE event the model cannot produce by quoting document text.
 """
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -37,28 +39,65 @@ HANDOFF_PAYLOAD_SCHEMA = {
     },
 }
 
-HANDOFF_RE = re.compile(
-    r'\{"type":\s*"handoff_request".*?\}', re.DOTALL
-)
+HANDOFF_TYPE_RE = re.compile(r'"type"\s*:\s*"handoff_request"')
+
+
+def _json_object_at(text: str, start: int) -> str | None:
+    if start < 0 or start >= len(text) or text[start] != "{":
+        return None
+
+    depth = 0
+    in_string = False
+    escaped = False
+    for i in range(start, len(text)):
+        ch = text[i]
+        if in_string:
+            if escaped:
+                escaped = False
+            elif ch == "\\":
+                escaped = True
+            elif ch == '"':
+                in_string = False
+            continue
+
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start:i + 1]
+    return None
+
+
+def _handoff_candidates(text: str):
+    for match in HANDOFF_TYPE_RE.finditer(text):
+        start = text.rfind("{", 0, match.start())
+        while start != -1:
+            candidate = _json_object_at(text, start)
+            if candidate and start <= match.start() < start + len(candidate):
+                yield candidate
+                break
+            start = text.rfind("{", 0, start)
 
 
 def extract_handoff(text: str) -> dict | None:
-    m = HANDOFF_RE.search(text)
-    if not m:
-        return None
-    try:
-        obj = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return None
-    target = obj.get("target_agent")
-    payload = obj.get("payload")
-    if target not in ALLOWED_TARGETS:
-        return None
-    try:
-        jsonschema.validate(instance=payload, schema=HANDOFF_PAYLOAD_SCHEMA)
-    except jsonschema.ValidationError:
-        return None
-    return {"target_agent": target, "payload": payload}
+    for candidate in _handoff_candidates(text):
+        try:
+            obj = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        target = obj.get("target_agent")
+        payload = obj.get("payload")
+        if target not in ALLOWED_TARGETS:
+            continue
+        try:
+            jsonschema.validate(instance=payload, schema=HANDOFF_PAYLOAD_SCHEMA)
+        except jsonschema.ValidationError:
+            continue
+        return {"target_agent": target, "payload": payload}
+    return None
 
 
 def run(source_session_id: str, agent_ids: dict[str, str]) -> None:
