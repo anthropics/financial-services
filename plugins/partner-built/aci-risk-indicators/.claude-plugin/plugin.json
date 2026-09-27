@@ -1,0 +1,22 @@
+{
+  "name": "aci-risk-indicators",
+  "displayName": "ACI Risk Indicators",
+  "description": "Counterparty risk analytics for digital asset yield providers. Methodology-governed risk bands across 9 modules covering BTC collateral lending, stablecoin yield, infrastructure and more. 90+ providers assessed, reviewed quarterly.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Aethon Credit Intelligence",
+    "email": "alexkouam@aethoncredit.com"
+  },
+  "homepage": "https://aethoncredit.com",
+  "repository": "https://github.com/aethon-credit/aci-claude-plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "aci",
+    "aethon-credit-intelligence",
+    "digital-assets",
+    "counterparty-risk",
+    "risk-analytics",
+    "stablecoin",
+    "allocators"
+  ]
+}

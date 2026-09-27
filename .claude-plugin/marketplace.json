@@ -113,6 +113,12 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "aci-risk-indicators",
+      "displayName": "ACI Risk Indicators",
+      "source": "./plugins/partner-built/aci-risk-indicators",
+      "description": "Aethon Credit Intelligence - counterparty risk analytics for digital asset yield providers: methodology-governed risk bands across 9 modules, provider lookups, comparisons, and portfolio assessment"
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
