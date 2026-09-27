@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "aci-risk-indicators": {
+      "type": "http",
+      "url": "https://mcp.aethoncredit.com/mcp"
+    }
+  }
+}
