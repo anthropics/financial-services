@@ -5,6 +5,7 @@ Lint all plugin + managed-agent manifests and verify cross-file references.
 Checks:
   1. Every *.yaml under managed-agents/ parses.
   2. Every plugin.json / marketplace.json / steering-examples.json parses.
+  2b. Every plugin .mcp.json parses and declares usable servers.
   3. Every <vertical>/agents/*.md has valid YAML frontmatter with name + description.
   4. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
      and subagent yamls resolves to an existing file/dir.
@@ -87,6 +88,41 @@ for pat in json_globs:
             json.loads(jf.read_text())
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
+
+# --- 2b. plugin .mcp.json parses and declares usable servers ---------------
+# A malformed .mcp.json is uniquely nasty: the plugin loader logs the parse
+# error at debug level and loads NO servers from the file, so every connector
+# the plugin declares goes dark with nothing shown to the user. #187 shipped
+# exactly that -- one missing comma plus one missing brace took out all 12
+# connectors in financial-analysis, and nothing caught it for four months.
+for mcp in sorted(PLUGINS.rglob(".mcp.json")):
+    checked += 1
+    try:
+        data = json.loads(mcp.read_text())
+    except json.JSONDecodeError as e:
+        err(
+            f"mcp: {rel(mcp)}: {e} -- the plugin loader logs this at debug "
+            f"level and loads no servers from the file"
+        )
+        continue
+    servers = data.get("mcpServers")
+    if not isinstance(servers, dict):
+        err(
+            f"mcp: {rel(mcp)}: 'mcpServers' must be an object, got "
+            f"{type(servers).__name__}"
+        )
+        continue
+    for name, spec in servers.items():
+        if not isinstance(spec, dict):
+            err(f"mcp: {rel(mcp)}: server '{name}' must be an object")
+        elif "url" in spec:
+            if spec.get("type") not in ("http", "sse"):
+                err(
+                    f"mcp: {rel(mcp)}: server '{name}' has a 'url' but "
+                    f"type={spec.get('type')!r} (expected 'http' or 'sse')"
+                )
+        elif "command" not in spec:
+            err(f"mcp: {rel(mcp)}: server '{name}' has neither 'url' nor 'command'")
 
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
