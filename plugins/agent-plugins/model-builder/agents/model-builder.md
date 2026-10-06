@@ -17,7 +17,7 @@ Given a ticker, model type, and assumption set, you deliver a fully linked Excel
 
 ## Workflow
 
-1. **Pull inputs.** CapIQ/Daloopa MCP for historicals, consensus, and filings.
+1. **Pull inputs.** S&P Global/Daloopa MCP for historicals, consensus, and filings.
 2. **Build the model.** Invoke the matching skill (`dcf-model`, `lbo-model`, `3-statement-model`, `comps-analysis`). Blue/black/green color coding; no hardcodes in calc cells.
 3. **Audit.** Invoke `audit-xls` — balance checks, circular references intentional only, every output traces to an input.
 4. **Sensitize.** Build the standard sensitivity tables for the model type.

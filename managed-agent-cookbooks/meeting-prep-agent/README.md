@@ -8,7 +8,7 @@ Briefing pack before every client meeting. Same source as the [`meeting-prep-age
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-export CRM_MCP_URL=... CAPIQ_MCP_URL=...
+export CRM_MCP_URL=... SPGLOBAL_MCP_URL=...
 ../../scripts/deploy-managed-agent.sh meeting-prep-agent
 ```
 
@@ -22,7 +22,7 @@ Client-provided documents and inbound emails are untrusted. Three-tier split:
 
 | Tier | Touches untrusted docs? | Tools | Connectors |
 |---|---|---|---|
-| `profiler` | No | `Read`, `Grep` | CRM, CapIQ (read-only) |
+| `profiler` | No | `Read`, `Grep` | CRM, S&P Global (read-only) |
 | **`news-reader`** | **Yes** | `Read`, `Grep` only | None |
 | **`pack-writer`** (Write-holder) | No | `Read`, `Write`, `Edit` | None |
 
