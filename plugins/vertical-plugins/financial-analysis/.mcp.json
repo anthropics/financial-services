@@ -43,10 +43,9 @@
     "egnyte": {
       "type": "http",
       "url": "https://mcp-server.egnyte.com/mcp"
-    },
+    }
     "box": {
       "type": "http",
       "url": "https://mcp.box.com"
-    }
   }
 }
