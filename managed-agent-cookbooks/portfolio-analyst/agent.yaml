@@ -1,0 +1,28 @@
+# Portfolio Analyst — managed-agent cookbook
+
+name: portfolio-analyst
+model: claude-opus-4-7
+
+system:
+  file: ../../plugins/agent-plugins/portfolio-analyst/agents/portfolio-analyst.md
+  append: "You are running headless. Read inputs from ./in/ and produce files in ./out/. Never place orders."
+
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read,  enabled: true }
+      - { name: grep,  enabled: true }
+      - { name: glob,  enabled: true }
+  - { type: mcp_toolset, mcp_server_name: morningstar, default_config: { enabled: true } }
+
+mcp_servers:
+  - { type: url, name: morningstar, url: "${MORNINGSTAR_MCP_URL}" }
+
+skills:
+  - { from_plugin: ../../plugins/agent-plugins/portfolio-analyst }
+
+callable_agents:
+  - { manifest: ./subagents/statement-reader.yaml }
+  - { manifest: ./subagents/analyst.yaml }
+  - { manifest: ./subagents/report-writer.yaml }   # only leaf with Write
