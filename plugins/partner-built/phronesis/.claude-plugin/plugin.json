@@ -1,0 +1,21 @@
+{
+  "name": "phronesis",
+  "version": "0.2.0",
+  "description": "Verified-correctness forecasting substrate for the energy transition and adjacent verticals — Pythia rings across energy, compute/AI, healthcare, climate, regulatory, supply chain, space economy, and robotics. Designed for AI-agent-native consumption (MCP-primary) with human capital allocator UI as secondary surface.",
+  "author": {
+    "name": "Sustainable Finance Partners",
+    "email": "jrstinehour@gmail.com"
+  },
+  "homepage": "https://phronesis-jrstinehour.replit.app",
+  "repository": "https://github.com/sustainable-finance-partners/phronesis",
+  "license": "Apache-2.0",
+  "keywords": [
+    "phronesis",
+    "forecasting",
+    "energy-transition",
+    "verified-correctness",
+    "calibration",
+    "mcp",
+    "agent-native"
+  ]
+}
