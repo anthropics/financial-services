@@ -160,18 +160,30 @@ class DCFModelValidator:
     def _check_wacc_range(self):
         """Check if WACC is in reasonable range"""
         try:
-            wacc_sheet = self.workbook_values.get('WACC') or self.workbook_values['DCF']
+            # Search candidate sheets in order until we find a WACC value
+            candidate_sheets = ['WACC', 'DCF']
             wacc = None
+            wacc_sheet = None
 
-            for row in wacc_sheet.iter_rows(max_row=100, max_col=20):
-                for cell in row:
-                    if cell.value and isinstance(cell.value, str):
-                        if 'wacc' in cell.value.lower():
-                            for offset in range(1, 5):
-                                adjacent = wacc_sheet.cell(cell.row, cell.column + offset).value
-                                if isinstance(adjacent, (int, float)) and 0 < adjacent < 1:
-                                    wacc = adjacent
-                                    break
+            for sheet_name in candidate_sheets:
+                if sheet_name in self.workbook_values.sheetnames:
+                    sheet = self.workbook_values[sheet_name]
+                    for row in sheet.iter_rows(max_row=100, max_col=20):
+                        for cell in row:
+                            if cell.value and isinstance(cell.value, str):
+                                if 'wacc' in cell.value.lower():
+                                    for offset in range(1, 5):
+                                        adjacent = sheet.cell(cell.row, cell.column + offset).value
+                                        if isinstance(adjacent, (int, float)) and 0 < adjacent < 1:
+                                            wacc = adjacent
+                                            wacc_sheet = sheet_name
+                                            break
+                            if wacc is not None:
+                                break
+                        if wacc is not None:
+                            break
+                if wacc is not None:
+                    break
 
             if wacc is not None:
                 if wacc < 0.05 or wacc > 0.20:
