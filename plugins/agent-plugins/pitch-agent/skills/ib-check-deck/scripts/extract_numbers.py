@@ -204,6 +204,12 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
             placed = False
             for group in value_groups:
                 ref_value = group[0].normalized
+                # Exact matches belong together, including zero where a
+                # relative difference cannot be calculated.
+                if inst.normalized == ref_value:
+                    group.append(inst)
+                    placed = True
+                    break
                 if ref_value > 0:
                     diff_pct = abs(inst.normalized - ref_value) / ref_value
                     if diff_pct < 0.05:  # 5% tolerance
