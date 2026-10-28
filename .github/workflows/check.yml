@@ -1,0 +1,26 @@
+name: check
+
+# Runs scripts/check.py -- manifest + .mcp.json parsing, cross-file reference
+# resolution, bundled-skill drift, and the .ps1 ASCII gate -- so a malformed
+# file can't merge just because a contributor skipped the local run.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Install pyyaml
+        run: python -m pip install pyyaml
+      - name: Run scripts/check.py
+        run: python scripts/check.py
