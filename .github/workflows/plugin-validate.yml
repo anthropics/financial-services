@@ -62,3 +62,23 @@ jobs:
             echo "::error::plugin validation failed — see grouped logs above"
             exit 1
           fi
+
+      # `claude plugin validate` does not parse .mcp.json, so a malformed one
+      # ships silently: the plugin installs, its skills load, and every
+      # connector is quietly absent (users see "unauthorized", not "unloaded").
+      # Gate the exact file class here, on PRs and on main alike, because the
+      # published marketplace artifact is built from main.
+      - name: Validate every .mcp.json parses
+        run: |
+          set -euo pipefail
+          fail=0
+          while IFS= read -r mcp; do
+            echo "::group::$mcp"
+            python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$mcp" || fail=1
+            echo "::endgroup::"
+          done < <(find plugins -name .mcp.json | sort)
+
+          if [ "$fail" -ne 0 ]; then
+            echo "::error::malformed .mcp.json — the plugin's connectors will silently fail to register"
+            exit 1
+          fi
