@@ -1,0 +1,31 @@
+name: extract-numbers-sign-tests
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/tests/test_extract_numbers_sign.py'
+      - 'plugins/**/ib-check-deck/scripts/extract_numbers.py'
+      - '.github/workflows/extract-numbers-sign-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/tests/test_extract_numbers_sign.py'
+      - 'plugins/**/ib-check-deck/scripts/extract_numbers.py'
+      - '.github/workflows/extract-numbers-sign-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify synced pitch-agent script
+        run: >-
+          cmp plugins/vertical-plugins/financial-analysis/skills/ib-check-deck/scripts/extract_numbers.py
+          plugins/agent-plugins/pitch-agent/skills/ib-check-deck/scripts/extract_numbers.py
+      - run: python -m unittest discover -s scripts/tests -p 'test_extract_numbers_sign.py' -v
