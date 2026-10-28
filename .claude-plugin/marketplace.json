@@ -113,6 +113,21 @@
       "description": "S&P Global - Financial data and analytics skills including company tearsheets, earnings previews, and transaction summaries"
     },
     {
+      "name": "riskmodels",
+      "displayName": "RiskModels",
+      "description": "US equity factor risk: market, sector, subsector and stock-specific decomposition with tradeable ETF hedge ratios, long/short portfolio exposure, and point-in-time SEC fundamentals via the RiskModels MCP server.",
+      "author": {
+        "name": "Blue Water Macro Corp."
+      },
+      "source": {
+        "source": "git-subdir",
+        "url": "BlueWaterCorp/riskmodels-plugin",
+        "path": "plugins/riskmodels",
+        "sha": "0bd7b934095754ffc04c479b653654cfb985ab88"
+      },
+      "homepage": "https://riskmodels.app"
+    },
+    {
       "name": "claude-for-msft-365-install",
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
