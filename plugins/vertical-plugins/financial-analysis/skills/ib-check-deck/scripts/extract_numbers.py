@@ -30,6 +30,38 @@ class NumberInstance:
     context: str        # Surrounding text for context
     line_number: int    # Line number in source file
     category: str       # Detected category (revenue, margin, multiple, etc.)
+    period: Optional[str] = None  # FY2024, FY2025E ... the period this figure describes
+
+
+# FY2024, FY24, 2025E, 2023A — the period a figure describes.
+PERIOD_RE = re.compile(r'\b(?:FY\s?)?((?:19|20)\d{2})\s?([EAP])?\b|\bFY\s?(\d{2})\b',
+                       re.IGNORECASE)
+
+
+def find_period(line: str, lo: int, hi: int, at: int) -> Optional[str]:
+    """The period marker that OWNS the figure at `at`, searched FORWARD first.
+
+    Nearest-by-distance is wrong on the commonest sentence in a deck:
+    "EBITDA was $20.0 million in FY2023 and $25.0 million in FY2024" puts
+    FY2023 on BOTH figures, because 25.0 sits 13 characters after FY2023 and
+    18 before FY2024 — and a correct line becomes a contradiction. In English
+    the period marker FOLLOWS its figure, so the window between this number
+    and the next is searched first and only then the window behind it.
+    """
+    def scan(a, b, forward):
+        best, best_d = None, 10 ** 9
+        for m in PERIOD_RE.finditer(line):
+            if m.start() < a or m.end() > b:
+                continue
+            year = m.group(1) or (('20' + m.group(3)) if m.group(3) else None)
+            if not year:
+                continue
+            d = (m.start() - at) if forward else (at - m.end())
+            if 0 <= d < best_d:
+                best, best_d = 'FY' + year + (m.group(2).upper() if m.group(2) else ''), d
+        return best
+
+    return scan(at, hi, True) or scan(lo, at, False)
 
 
 def normalize_number(value_str: str, unit: str) -> float:
@@ -134,7 +166,14 @@ def extract_numbers(content: str) -> list[NumberInstance]:
             current_slide = int(slide_match.group(1) or slide_match.group(2))
             continue
 
-        # Find all numbers in the line
+        # PASS 1 — keep the matches that are real figures.
+        #
+        # Period attribution (pass 2) needs the span of the neighbouring KEPT
+        # figure, not of the neighbouring raw match. A skipped year token is
+        # itself a match: in "$100.0 million in FY2023 to", using raw spans
+        # would end the forward window at "2023" and hide the very marker
+        # being looked for.
+        kept = []
         for match in number_pattern.finditer(line):
             value_str = match.group('number')
             currency = match.group('currency') or ''
@@ -152,13 +191,15 @@ def extract_numbers(content: str) -> list[NumberInstance]:
             except ValueError:
                 pass
 
-            # Build full value string
+            kept.append((match, value_str, currency, unit))
+
+        # PASS 2 — build each instance, attributing the period it describes.
+        for idx, (match, value_str, currency, unit) in enumerate(kept):
             full_value = f"{currency}{value_str}{unit}"
 
-            # Get context (surrounding words)
-            start = max(0, match.start() - 50)
-            end = min(len(line), match.end() + 50)
-            context = line[start:end].strip()
+            start_ctx = max(0, match.start() - 50)
+            end_ctx = min(len(line), match.end() + 50)
+            context = line[start_ctx:end_ctx].strip()
 
             # Normalize unit
             if currency:
@@ -167,34 +208,45 @@ def extract_numbers(content: str) -> list[NumberInstance]:
                 else:
                     unit = f"USD_{unit}"
 
-            normalized = normalize_number(value_str, unit)
-            category = detect_category(context, unit)
+            lo = kept[idx - 1][0].end() if idx else 0
+            hi = kept[idx + 1][0].start() if idx + 1 < len(kept) else len(line)
 
             numbers.append(NumberInstance(
                 value=full_value,
-                normalized=normalized,
+                normalized=normalize_number(value_str, unit),
                 unit=unit or 'none',
                 slide=current_slide,
                 context=context,
                 line_number=line_num,
-                category=category
+                category=detect_category(context, unit),
+                period=find_period(line, lo, hi, match.start()),
             ))
 
     return numbers
 
 
 def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
-    """Find potential inconsistencies in extracted numbers."""
+    """Find figures that contradict each other.
+
+    Grouped by (category, PERIOD), not by category alone. Grouping on category
+    alone made every deck with a financial history self-contradictory: FY2023,
+    FY2024 and FY2025E revenue are three different numbers in one category by
+    design. Measured on a four-line deck, that reported 5 "high severity"
+    inconsistencies for a CORRECT deck against 1 for a deck with a real
+    contradiction — the true finding was indistinguishable from the noise.
+
+    Figures with no period attributed are compared only with each other, so an
+    undated figure repeated inconsistently is still caught.
+    """
     inconsistencies = []
 
-    # Group numbers by category
-    by_category = defaultdict(list)
+    by_key = defaultdict(list)
     for num in numbers:
         if num.category != 'other':
-            by_category[num.category].append(num)
+            by_key[(num.category, num.period)].append(num)
 
-    # Check each category for mismatches
-    for category, instances in by_category.items():
+    for (category, period), instances in sorted(
+            by_key.items(), key=lambda kv: (kv[0][0], kv[0][1] or '')):
         if len(instances) < 2:
             continue
 
@@ -213,7 +265,6 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
             if not placed:
                 value_groups.append([inst])
 
-        # If we have multiple groups, there might be inconsistencies
         if len(value_groups) > 1:
             # Sort groups by size (largest first)
             value_groups.sort(key=len, reverse=True)
@@ -223,6 +274,7 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
             for other_group in value_groups[1:]:
                 inconsistencies.append({
                     'category': category,
+                    'period': period or 'unattributed',
                     'expected': {
                         'value': main_group[0].value,
                         'slides': sorted(set(n.slide for n in main_group)),
