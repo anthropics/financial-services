@@ -1,0 +1,9 @@
+as_of_date,client_id,client_segment,account_type,asset_class,ticker,security_name,sector,currency,market_value,cost_basis,unrealized_gain_loss,portfolio_weight,target_weight,risk_rating
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Equity,DEMO-ALPHA,Alpha Retail Holdings,Consumer Discretionary,USD,245000,218500,26500,0.1225,0.1000,Medium
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Equity,DEMO-NOVA,Nova Grid Systems,Utilities,USD,182000,176000,6000,0.0910,0.0900,Low
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Fixed Income,DEMO-UST-31,Demo Treasury Note 4.125% 2031,Government,USD,310500,300000,10500,0.1553,0.1800,Low
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Fixed Income,DEMO-CORP-28,Demo Industrial 5.25% 2028,Industrial,USD,141250,150000,-8750,0.0706,0.0600,Medium
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,ETF,DEMO-IG,Demo Investment Grade Bond ETF,Fixed Income,USD,286000,275000,11000,0.1430,0.1500,Low
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,ETF,DEMO-WLD,Demo Global Equity ETF,Multi-Sector,USD,358000,335000,23000,0.1790,0.1700,Medium
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Cash,USD-CASH,US Dollar Cash,Cash,USD,98000,98000,0,0.0490,0.0500,Low
+2026-03-31,DEMO-WM-001,Retired Income,Taxable,Alternative,DEMO-REIT,Demo Core Property Trust,Real Estate,USD,193250,205000,-11750,0.0966,0.0800,Medium
