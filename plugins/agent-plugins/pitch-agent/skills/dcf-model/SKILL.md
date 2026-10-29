@@ -224,20 +224,35 @@ Determine Pre-Tax Cost of Debt from:
 **Capital Structure Weights:**
 
 ```
-Market Value Equity = Current Stock Price × Shares Outstanding
-Net Debt = Total Debt - Cash & Equivalents
-Enterprise Value = Market Cap + Net Debt
+Market Value Equity = Current Stock Price × Diluted Shares Outstanding
+Market Value Debt   = Total (GROSS) Debt        [book value is an accepted proxy]
+Total Capital       = Market Value Equity + Market Value Debt
 
-Equity Weight = Market Cap / Enterprise Value
-Debt Weight = Net Debt / Enterprise Value
+Equity Weight = Market Value Equity / Total Capital
+Debt Weight   = Market Value Debt   / Total Capital
 
 WACC = (Cost of Equity × Equity Weight) + (After-Tax Cost of Debt × Debt Weight)
 ```
 
+**Weight on GROSS debt, never net debt.** WACC weights the capital that
+actually demands a return. Netting cash off the debt weight makes the weights
+misstate the capital structure, and for a company holding more cash than debt
+it drives the debt weight NEGATIVE and the equity weight above 100% — which
+produces a WACC *higher than the cost of equity*, i.e. cash priced as making a
+company riskier. Weighted on gross debt, both weights are in [0, 1] and sum to
+1 by construction, so the case cannot arise.
+
+Cash still belongs in the valuation — it comes back in the equity bridge
+(`Equity Value = Enterprise Value − Net Debt`), which is the right place for
+it. `Enterprise Value = Market Cap + Net Debt` is correct as a bridge identity;
+it is not a capital-structure weighting.
+
+**Guard:** if a computed weight falls outside [0, 1], stop and report it rather
+than returning a number. A negative or >100% weight is not a discount rate.
+
 **Special Cases:**
-- **Net Cash Position**: If Cash > Debt, Net Debt is NEGATIVE
-  - Debt Weight may be negative
-  - WACC calculation adjusts accordingly
+- **Net Cash Position**: affects the equity bridge, not the weights. Debt
+  weight stays `Gross Debt / (Equity + Gross Debt)`, which is never negative.
 - **No Debt**: WACC = Cost of Equity
 
 **Typical WACC Ranges:**
@@ -1052,12 +1067,15 @@ WEIGHTED AVERAGE COST OF CAPITAL,X.XX%,[Green output]
 
 **Key WACC Formulas:**
 ```
-Market Cap = Price × Shares
-Net Debt = Total Debt - Cash
-Enterprise Value = Market Cap + Net Debt
-Equity Weight = Market Cap / EV
-Debt Weight = Net Debt / EV
+Market Cap    = Price × Diluted Shares
+Gross Debt    = Total Debt                 (NOT net of cash — see above)
+Total Capital = Market Cap + Gross Debt
+Equity Weight = Market Cap / Total Capital
+Debt Weight   = Gross Debt / Total Capital
 WACC = (Cost of Equity × Equity Weight) + (After-tax Cost of Debt × Debt Weight)
+
+Net Debt = Total Debt - Cash               (used in the EQUITY BRIDGE only:
+Enterprise Value = Market Cap + Net Debt    Equity Value = EV - Net Debt)
 ```
 
 ### Sensitivity Analysis (Bottom of DCF Sheet)
