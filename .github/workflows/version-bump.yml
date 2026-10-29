@@ -17,6 +17,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Test plugin version bumps
+        run: python3 -m unittest discover -s scripts -p test_version_bump.py -v
       - name: Check plugin version bumps
         env:
           BASE_REF: ${{ github.base_ref }}
