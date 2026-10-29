@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peer Analysis</title>
+  <style>
+    .page { max-width: 1050px; }
+
+    /* BEGIN shared-template-css (inlined at emit time from skills/shared/template/assets/template.html) */
+    /* END shared-template-css */
+
+    .sub-heading {
+      font-size: 13.5px; font-weight: 700; color: var(--navy); margin-top: 24px; margin-bottom: 10px;
+    }
+
+    .pa-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
+    .pa-table thead tr { background: var(--navy); color: #fff; }
+    .pa-table thead th {
+      padding: 9px 10px; text-align: left; font-size: 10.5px; font-weight: 700;
+      letter-spacing: .4px; text-transform: uppercase; vertical-align: bottom;
+    }
+    .pa-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+    .pa-table tbody tr:nth-child(even) { background: var(--gray-100); }
+    .pa-table tbody td { padding: 9px 10px; vertical-align: top; color: var(--gray-700); line-height: 1.55; }
+    .pa-table .company-name { font-weight: 600; color: var(--navy); white-space: nowrap; }
+    .pa-table .row-label { font-weight: 700; color: var(--navy); white-space: nowrap; min-width: 120px; vertical-align: top; background: var(--gray-100); }
+
+    .credit-drivers-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11.5px; }
+    .credit-drivers-table thead tr { background: var(--navy); color: #fff; }
+    .credit-drivers-table thead th {
+      padding: 9px 10px; text-align: left; font-size: 10.5px; font-weight: 700;
+      letter-spacing: .4px; text-transform: uppercase; vertical-align: bottom;
+    }
+    .credit-drivers-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+    .credit-drivers-table tbody td { padding: 10px; vertical-align: top; color: var(--gray-700); line-height: 1.55; }
+    .credit-drivers-table .row-label { font-weight: 700; color: var(--navy); background: var(--gray-100); min-width: 110px; font-size: 11px; }
+
+    .ki-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
+    .ki-table thead tr { background: var(--navy); color: #fff; }
+    .ki-table thead th {
+      padding: 8px 6px; text-align: center; font-size: 9.5px; font-weight: 700;
+      letter-spacing: .3px; text-transform: uppercase; vertical-align: bottom;
+    }
+    .ki-table thead th:first-child { text-align: left; }
+    .ki-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+    .ki-table tbody tr:nth-child(even) { background: var(--gray-100); }
+    .ki-table tbody td { padding: 7px 6px; text-align: center; vertical-align: top; color: var(--gray-700); }
+    .ki-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--navy); white-space: nowrap; }
+
+    .sc-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 11px; }
+    .sc-table thead tr { background: var(--navy); color: #fff; }
+    .sc-table thead th {
+      padding: 8px 6px; text-align: center; font-size: 9.5px; font-weight: 700;
+      letter-spacing: .3px; text-transform: uppercase; vertical-align: bottom;
+    }
+    .sc-table thead th:first-child { text-align: left; }
+    .sc-table thead tr.sub-header { background: #1a3a7a; }
+    .sc-table thead tr.sub-header th { font-size: 8.5px; font-weight: 600; letter-spacing: .2px; padding: 5px 6px; }
+    .sc-table tbody tr { border-bottom: 1px solid var(--gray-200); }
+    .sc-table tbody tr:nth-child(even) { background: var(--gray-100); }
+    .sc-table tbody td { padding: 7px 6px; text-align: center; vertical-align: top; color: var(--gray-700); }
+    .sc-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--navy); font-size: 11px; }
+
+    .chart-container { margin: 20px 0; padding: 20px; background: var(--gray-100); border-radius: 4px; }
+    .chart-container svg { display: block; margin: 0 auto; }
+    .chart-title {
+      font-size: 13px; font-weight: 700; color: var(--navy); text-align: center; margin-bottom: 16px;
+    }
+    .chart-legend {
+      display: flex; justify-content: center; gap: 20px; margin-top: 14px; flex-wrap: wrap;
+    }
+    .chart-legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gray-700); }
+    .chart-legend-swatch { width: 14px; height: 3px; border-radius: 1px; }
+
+    /* BEGIN shared-citations-css (inlined at emit time from skills/shared/citations/assets/template.html) */
+    /* END shared-citations-css */
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="cover cover-multi">
+    <div class="cover-top">
+      <div class="cover-left">
+        <div>
+          <div class="cover-logo">Moody's<div class="cover-agentic">AGENTIC SOLUTIONS</div></div>
+          <div class="cover-title"><strong>Peer</strong><br>Analysis</div>
+          <div class="cover-companies-label">Companies covered</div>
+          <div class="cover-companies" id="pa-company-chips"></div>
+        </div>
+        <div class="cover-meta">
+          <span><strong>Date:</strong> <span id="pa-report-date"></span></span>
+          <span><strong>Target:</strong> <span id="pa-target-company"></span></span>
+          <span><strong>Peers:</strong> <span id="pa-peer-count"></span></span>
+          <span><strong>Type:</strong> Peer Analysis</span>
+        </div>
+      </div>
+      <div class="cover-strip"><img id="pa-cover-img-right" src="" alt=""></div>
+      <div class="cover-bar-top"></div>
+    </div>
+    <div class="cover-bottom">
+      <div class="cover-landscape"><img id="pa-cover-img-bottom" src="" alt=""></div>
+      <div class="cover-bar-bottom"></div>
+    </div>
+  </div>
+
+  <div class="toc-page">
+    <div class="toc-heading">Contents</div>
+    <ul class="toc-list">
+      <li><span class="toc-num">Section 1.</span><a href="#sec1"><span class="toc-label">Peers Comparison Table &amp; Analysis</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 2.</span><a href="#sec2"><span class="toc-label">Ratings Chart</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 3.</span><a href="#sec3"><span class="toc-label">ESG Table &amp; Analysis</span></a><span class="toc-dots"></span></li>
+      <li><span class="toc-num">Section 4.</span><a href="#pa-sources-anchor"><span class="toc-label">Citations</span></a><span class="toc-dots"></span></li>
+    </ul>
+  </div>
+
+  <div class="report-body">
+    <div id="sec1" class="section">
+      <div class="section-heading">Section 1. Peers Comparison Table &amp; Analysis</div>
+
+      <div class="sub-heading">1) Peers Table</div>
+      <table class="pa-table">
+        <thead><tr><th>Company</th><th>Description (from Credit Opinion "Profile")</th></tr></thead>
+        <tbody id="pa-peers-table"></tbody>
+      </table>
+
+      <div class="sub-heading">2) Peers Rating</div>
+      <table class="pa-table">
+        <thead><tr><th>Company</th><th>Rating (rating class / date)</th><th>Outlook</th></tr></thead>
+        <tbody id="pa-peers-rating"></tbody>
+      </table>
+
+      <div class="sub-heading">3) Credit Drivers</div>
+      <table class="credit-drivers-table" id="pa-credit-drivers">
+        <thead>
+          <tr>
+            <th>Credit Driver</th>
+            <th id="pa-cd-col-1"></th>
+            <th id="pa-cd-col-2"></th>
+            <th id="pa-cd-col-3"></th>
+            <th id="pa-cd-col-4"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row-label">Upgrade factors</td>
+            <td id="pa-cd-r1-c1"></td>
+            <td id="pa-cd-r1-c2"></td>
+            <td id="pa-cd-r1-c3"></td>
+            <td id="pa-cd-r1-c4"></td>
+          </tr>
+          <tr>
+            <td class="row-label">Downgrade factors</td>
+            <td id="pa-cd-r2-c1"></td>
+            <td id="pa-cd-r2-c2"></td>
+            <td id="pa-cd-r2-c3"></td>
+            <td id="pa-cd-r2-c4"></td>
+          </tr>
+          <tr>
+            <td class="row-label">Credit strengths (qualitative)</td>
+            <td id="pa-cd-r3-c1"></td>
+            <td id="pa-cd-r3-c2"></td>
+            <td id="pa-cd-r3-c3"></td>
+            <td id="pa-cd-r3-c4"></td>
+          </tr>
+          <tr>
+            <td class="row-label">Credit challenges (qualitative)</td>
+            <td id="pa-cd-r4-c1"></td>
+            <td id="pa-cd-r4-c2"></td>
+            <td id="pa-cd-r4-c3"></td>
+            <td id="pa-cd-r4-c4"></td>
+          </tr>
+          <tr>
+            <td class="row-label">Quantitative support (most recent financials in context)</td>
+            <td id="pa-cd-r5-c1"></td>
+            <td id="pa-cd-r5-c2"></td>
+            <td id="pa-cd-r5-c3"></td>
+            <td id="pa-cd-r5-c4"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-heading">4) Key Indicators</div>
+      <table class="ki-table" id="pa-key-indicators">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Period</th>
+            <th>Revenue (USD)</th>
+            <th>Total Debt (USD)</th>
+            <th>EBITA (USD)</th>
+            <th>EBITA Margin</th>
+            <th>EBITDA (USD)</th>
+            <th>Debt/EBITDA</th>
+            <th>EBITA/Interest</th>
+            <th>Net LT Debt (USD)</th>
+            <th>RCF/Net Debt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="pa-ki-r1-company"></td>
+            <td id="pa-ki-r1-v1"></td>
+            <td id="pa-ki-r1-v2"></td>
+            <td id="pa-ki-r1-v3"></td>
+            <td id="pa-ki-r1-v4"></td>
+            <td id="pa-ki-r1-v5"></td>
+            <td id="pa-ki-r1-v6"></td>
+            <td id="pa-ki-r1-v7"></td>
+            <td id="pa-ki-r1-v8"></td>
+            <td id="pa-ki-r1-v9"></td>
+            <td id="pa-ki-r1-v10"></td>
+          </tr>
+          <tr>
+            <td id="pa-ki-r2-company"></td>
+            <td id="pa-ki-r2-v1"></td>
+            <td id="pa-ki-r2-v2"></td>
+            <td id="pa-ki-r2-v3"></td>
+            <td id="pa-ki-r2-v4"></td>
+            <td id="pa-ki-r2-v5"></td>
+            <td id="pa-ki-r2-v6"></td>
+            <td id="pa-ki-r2-v7"></td>
+            <td id="pa-ki-r2-v8"></td>
+            <td id="pa-ki-r2-v9"></td>
+            <td id="pa-ki-r2-v10"></td>
+          </tr>
+          <tr>
+            <td id="pa-ki-r3-company"></td>
+            <td id="pa-ki-r3-v1"></td>
+            <td id="pa-ki-r3-v2"></td>
+            <td id="pa-ki-r3-v3"></td>
+            <td id="pa-ki-r3-v4"></td>
+            <td id="pa-ki-r3-v5"></td>
+            <td id="pa-ki-r3-v6"></td>
+            <td id="pa-ki-r3-v7"></td>
+            <td id="pa-ki-r3-v8"></td>
+            <td id="pa-ki-r3-v9"></td>
+            <td id="pa-ki-r3-v10"></td>
+          </tr>
+          <tr>
+            <td id="pa-ki-r4-company"></td>
+            <td id="pa-ki-r4-v1"></td>
+            <td id="pa-ki-r4-v2"></td>
+            <td id="pa-ki-r4-v3"></td>
+            <td id="pa-ki-r4-v4"></td>
+            <td id="pa-ki-r4-v5"></td>
+            <td id="pa-ki-r4-v6"></td>
+            <td id="pa-ki-r4-v7"></td>
+            <td id="pa-ki-r4-v8"></td>
+            <td id="pa-ki-r4-v9"></td>
+            <td id="pa-ki-r4-v10"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-heading">5) Scorecards</div>
+      <table class="sc-table" id="pa-scorecards">
+        <thead>
+          <tr>
+            <th rowspan="2">Scorecard Item</th>
+            <th colspan="2" id="pa-sc-col-1"></th>
+            <th colspan="2" id="pa-sc-col-2"></th>
+            <th colspan="2" id="pa-sc-col-3"></th>
+            <th colspan="2" id="pa-sc-col-4"></th>
+          </tr>
+          <tr class="sub-header">
+            <th id="pa-sc-col-1-curr"></th>
+            <th id="pa-sc-col-1-fwd"></th>
+            <th id="pa-sc-col-2-curr"></th>
+            <th id="pa-sc-col-2-fwd"></th>
+            <th id="pa-sc-col-3-curr"></th>
+            <th id="pa-sc-col-3-fwd"></th>
+            <th id="pa-sc-col-4-curr"></th>
+            <th id="pa-sc-col-4-fwd"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Scale: Revenue/Sales (USD bn)</td>
+            <td id="pa-sc-r1-c1-curr"></td><td id="pa-sc-r1-c1-fwd"></td>
+            <td id="pa-sc-r1-c2-curr"></td><td id="pa-sc-r1-c2-fwd"></td>
+            <td id="pa-sc-r1-c3-curr"></td><td id="pa-sc-r1-c3-fwd"></td>
+            <td id="pa-sc-r1-c4-curr"></td><td id="pa-sc-r1-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Profitability: EBIT(A) margin</td>
+            <td id="pa-sc-r2-c1-curr"></td><td id="pa-sc-r2-c1-fwd"></td>
+            <td id="pa-sc-r2-c2-curr"></td><td id="pa-sc-r2-c2-fwd"></td>
+            <td id="pa-sc-r2-c3-curr"></td><td id="pa-sc-r2-c3-fwd"></td>
+            <td id="pa-sc-r2-c4-curr"></td><td id="pa-sc-r2-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Leverage: Debt/EBITDA</td>
+            <td id="pa-sc-r3-c1-curr"></td><td id="pa-sc-r3-c1-fwd"></td>
+            <td id="pa-sc-r3-c2-curr"></td><td id="pa-sc-r3-c2-fwd"></td>
+            <td id="pa-sc-r3-c3-curr"></td><td id="pa-sc-r3-c3-fwd"></td>
+            <td id="pa-sc-r3-c4-curr"></td><td id="pa-sc-r3-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Cash flow: RCF/Net debt</td>
+            <td id="pa-sc-r4-c1-curr"></td><td id="pa-sc-r4-c1-fwd"></td>
+            <td id="pa-sc-r4-c2-curr"></td><td id="pa-sc-r4-c2-fwd"></td>
+            <td id="pa-sc-r4-c3-curr"></td><td id="pa-sc-r4-c3-fwd"></td>
+            <td id="pa-sc-r4-c4-curr"></td><td id="pa-sc-r4-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Coverage: EBIT(A)/Interest</td>
+            <td id="pa-sc-r5-c1-curr"></td><td id="pa-sc-r5-c1-fwd"></td>
+            <td id="pa-sc-r5-c2-curr"></td><td id="pa-sc-r5-c2-fwd"></td>
+            <td id="pa-sc-r5-c3-curr"></td><td id="pa-sc-r5-c3-fwd"></td>
+            <td id="pa-sc-r5-c4-curr"></td><td id="pa-sc-r5-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Scorecard-indicated outcome</td>
+            <td id="pa-sc-r6-c1-curr"></td><td id="pa-sc-r6-c1-fwd"></td>
+            <td id="pa-sc-r6-c2-curr"></td><td id="pa-sc-r6-c2-fwd"></td>
+            <td id="pa-sc-r6-c3-curr"></td><td id="pa-sc-r6-c3-fwd"></td>
+            <td id="pa-sc-r6-c4-curr"></td><td id="pa-sc-r6-c4-fwd"></td>
+          </tr>
+          <tr>
+            <td>Actual rating</td>
+            <td id="pa-sc-r7-c1-curr"></td><td id="pa-sc-r7-c1-fwd"></td>
+            <td id="pa-sc-r7-c2-curr"></td><td id="pa-sc-r7-c2-fwd"></td>
+            <td id="pa-sc-r7-c3-curr"></td><td id="pa-sc-r7-c3-fwd"></td>
+            <td id="pa-sc-r7-c4-curr"></td><td id="pa-sc-r7-c4-fwd"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="sub-heading">6) Conclusion</div>
+      <div class="section-content" id="pa-conclusion"></div>
+
+      <div id="pa-cite-peers"></div>
+    </div>
+
+    <div id="sec2" class="section">
+      <div class="section-heading">Section 2. Ratings Chart</div>
+      <div id="pa-ratings-chart"></div>
+      <div class="section-content" id="pa-ratings-analysis"></div>
+      <div id="pa-cite-ratings"></div>
+    </div>
+
+    <div id="sec3" class="section">
+      <div class="section-heading">Section 3. ESG Table &amp; Analysis</div>
+      <table class="pa-table">
+        <thead><tr><th>Company</th><th>Overall ESG Classification</th><th>Environmental (E)</th><th>Social (S)</th><th>Governance (G)</th></tr></thead>
+        <tbody id="pa-esg-table"></tbody>
+      </table>
+      <div class="section-content" id="pa-esg-analysis"></div>
+      <div id="pa-cite-esg"></div>
+    </div>
+
+    <div class="sources-section" id="pa-sources-anchor">
+      <div class="sources-heading">Citations</div>
+      <div id="pa-sources"></div>
+    </div>
+  </div>
+
+  <div class="report-footer">
+    <span class="footer-logo">Moody's <span style="font-weight:400;color:#8fa8d0;">AGENTIC SOLUTIONS</span></span>
+    <span>Report generated <span id="pa-footer-date"></span> • Confidential</span>
+  </div>
+</div>
+</body>
+</html>
