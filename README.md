@@ -61,16 +61,16 @@ In Cowork, open **Settings → Plugins → Add plugin** and either:
 claude plugin marketplace add anthropics/financial-services
 
 # Core skills + connectors (install first)
-claude plugin install financial-analysis@claude-for-financial-services
+claude plugin install financial-analysis@anthropics/financial-services
 
 # Named agents — pick the ones you want
-claude plugin install pitch-agent@claude-for-financial-services
-claude plugin install gl-reconciler@claude-for-financial-services
-claude plugin install market-researcher@claude-for-financial-services
+claude plugin install pitch-agent@anthropics/financial-services
+claude plugin install gl-reconciler@anthropics/financial-services
+claude plugin install market-researcher@anthropics/financial-services
 
 # Vertical skill bundles
-claude plugin install investment-banking@claude-for-financial-services
-claude plugin install equity-research@claude-for-financial-services
+claude plugin install investment-banking@anthropics/financial-services
+claude plugin install equity-research@anthropics/financial-services
 ```
 
 Once installed, agents appear in Cowork dispatch, skills fire automatically when relevant, and slash commands are available in your session (`/comps`, `/dcf`, `/earnings`, `/ic-memo`, …).
@@ -142,7 +142,7 @@ If your firm runs Claude inside Excel, PowerPoint, Word, and Outlook via the Mic
 It's a Claude Code plugin (not a Cowork plugin) that walks an IT admin through generating the customized add-in manifest, granting Azure admin consent, and writing per-user routing config via Microsoft Graph. Install with:
 
 ```bash
-claude plugin install claude-for-msft-365-install@claude-for-financial-services
+claude plugin install claude-for-msft-365-install@anthropics/financial-services
 /claude-for-msft-365-install:setup
 ```
 
