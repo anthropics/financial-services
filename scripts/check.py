@@ -78,6 +78,8 @@ for yml in sorted(MANAGED.rglob("*.yaml")):
 json_globs = [
     ".claude-plugin/marketplace.json",
     "plugins/**/.claude-plugin/plugin.json",
+    "plugins/**/.mcp.json",
+    "plugins/**/hooks/*.json",
     "managed-agent-cookbooks/*/steering-examples.json",
 ]
 for pat in json_globs:
