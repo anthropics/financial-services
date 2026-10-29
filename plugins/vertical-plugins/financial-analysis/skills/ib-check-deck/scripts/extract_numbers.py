@@ -42,26 +42,29 @@ def normalize_number(value_str: str, unit: str) -> float:
     except ValueError:
         return 0.0
 
-    # Apply unit multipliers
+    # Unit multipliers, matched EXACTLY.
+    #
+    # This used to test `unit_key.lower() in unit.lower()`, i.e. substring
+    # containment, so any single-letter key matched anything containing that
+    # letter: 'B' (1e9) is a substring of 'bps', and every basis-point figure
+    # came back multiplied by a billion (150bps -> 150,000,000,000).
+    # Containment was presumably there so 'USD_million' would find 'million';
+    # the currency prefix is stripped explicitly instead.
+    #
+    # The dimensionless units are listed at 1 rather than left to fall through,
+    # so an unrecognised unit and a deliberate 1x are no longer the same path.
     multipliers = {
-        'T': 1e12,
-        'B': 1e9,
-        'bn': 1e9,
-        'billion': 1e9,
-        'M': 1e6,
-        'mm': 1e6,
-        'mn': 1e6,
-        'million': 1e6,
-        'K': 1e3,
-        'k': 1e3,
-        'thousand': 1e3,
+        'trillion': 1e12, 't': 1e12, 'tn': 1e12,
+        'billion': 1e9, 'b': 1e9, 'bn': 1e9,
+        'million': 1e6, 'm': 1e6, 'mm': 1e6, 'mn': 1e6,
+        'thousand': 1e3, 'k': 1e3,
+        '%': 1, 'bps': 1, 'x': 1,
     }
 
-    for unit_key in sorted(multipliers.keys(), key=len, reverse=True):
-        if unit_key.lower() in unit.lower():
-            return base_value * multipliers[unit_key]
-
-    return base_value
+    key = unit.lower()
+    if key.startswith('usd_'):
+        key = key[4:]
+    return base_value * multipliers.get(key, 1)
 
 
 def detect_category(context: str, unit: str) -> str:
@@ -122,7 +125,13 @@ def extract_numbers(content: str) -> list[NumberInstance]:
         r'(?P<unit>%|bps|x|'  # Common units
         r'[Tt]rillion|[Bb]illion|[Mm]illion|[Tt]housand|'  # Full words
         r'[TBMKtbmk]n?|mm|MM)?'  # Abbreviations
-        r'(?!\d)'  # Negative lookahead to avoid partial matches
+        # A unit must not be followed by a LETTER. `(?!\d)` only stopped a
+        # following digit, so the alternation above could take a lone letter
+        # from the next word: "in FY2023 to $120.0m" matched number=2023,
+        # unit=t (the 't' of "to") -> 2,023,000,000,000,000. That also
+        # defeated the year guard below, which correctly skips 1900-2099 but
+        # only when no unit was captured.
+        r'(?![A-Za-z0-9])'  # no partial match, and no letter stolen from the next word
     )
 
     lines = content.split('\n')
