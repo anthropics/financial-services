@@ -4,14 +4,6 @@
 REFERENCE ONLY — replace with your firm's workflow engine (Temporal, Airflow,
 Guidewire event bus). This script shows the shape of the loop, not a
 production implementation.
-
-Security note: handoff requests are surfaced in the orchestrator's text output,
-which is downstream of untrusted-document readers. An attacker who controls a
-processed document could embed a literal handoff_request blob that, if echoed,
-would be parsed here. This script mitigates by (a) hard-allowlisting
-target_agent against the deployed slugs and (b) schema-validating the payload
-before steering. In production, prefer emitting handoffs via a dedicated tool
-call or a typed SSE event the model cannot produce by quoting document text.
 """
 import json
 import os
@@ -37,50 +29,90 @@ HANDOFF_PAYLOAD_SCHEMA = {
     },
 }
 
-HANDOFF_RE = re.compile(
-    r'\{"type":\s*"handoff_request".*?\}', re.DOTALL
-)
+# Find the starting point of the handoff request
+MARKER_RE = re.compile(r'"type"\s*:\s*"handoff_request"')
 
+def _extract_json_object(text: str, start_index: int) -> str | None:
+    """Extracts a complete JSON object handling nested braces and strings."""
+    depth = 0
+    in_string = False
+    escaped = False
+    
+    for i in range(start_index, len(text)):
+        char = text[i]
+        
+        if in_string:
+            if escaped:
+                escaped = False
+            elif char == '\\':
+                escaped = True
+            elif char == '"':
+                in_string = False
+            continue
+        
+        if char == '"':
+            in_string = True
+        elif char == '{':
+            depth += 1
+        elif char == '}':
+            depth -= 1
+            if depth == 0:
+                return text[start_index : i + 1]
+    return None
 
 def extract_handoff(text: str) -> dict | None:
-    m = HANDOFF_RE.search(text)
-    if not m:
-        return None
-    try:
-        obj = json.loads(m.group(0))
-    except json.JSONDecodeError:
-        return None
-    target = obj.get("target_agent")
-    payload = obj.get("payload")
-    if target not in ALLOWED_TARGETS:
-        return None
-    try:
-        jsonschema.validate(instance=payload, schema=HANDOFF_PAYLOAD_SCHEMA)
-    except jsonschema.ValidationError:
-        return None
-    return {"target_agent": target, "payload": payload}
+    """Scans text for handoff requests and validates them."""
+    for match in MARKER_RE.finditer(text):
+        # Look back for the opening brace
+        start_pos = text.rfind('{', 0, match.start())
+        if start_pos == -1:
+            continue
+            
+        json_str = _extract_json_object(text, start_pos)
+        if not json_str:
+            continue
+            
+        try:
+            obj = json.loads(json_str)
+        except json.JSONDecodeError:
+            continue
 
+        target = obj.get("target_agent")
+        payload = obj.get("payload")
+
+        if target not in ALLOWED_TARGETS:
+            continue
+
+        try:
+            jsonschema.validate(instance=payload, schema=HANDOFF_PAYLOAD_SCHEMA)
+        except (jsonschema.ValidationError, jsonschema.SchemaError):
+            continue
+
+        return {"target_agent": target, "payload": payload}
+    
+    return None
 
 def run(source_session_id: str, agent_ids: dict[str, str]) -> None:
-    """agent_ids maps slug -> deployed CMA agent_id."""
+    """Main loop: listens to the stream and steers to target agents."""
     client = anthropic.Anthropic()
-    # /v1/agents is a preview endpoint; SDK type stubs don't cover it yet.
-    with client.beta.agents.sessions.stream(session_id=source_session_id) as stream:  # type: ignore[attr-defined]
+    with client.beta.agents.sessions.stream(session_id=source_session_id) as stream:
         for event in stream:
             if event.type != "message_delta" or not getattr(event, "text", None):
                 continue
+            
             handoff = extract_handoff(event.text)
             if not handoff:
                 continue
+                
             target_slug = handoff["target_agent"]
             target_id = agent_ids.get(target_slug)
             if not target_id:
                 continue
-            client.beta.agents.sessions.steer(  # type: ignore[attr-defined]
+                
+            client.beta.agents.sessions.steer(
                 agent_id=target_id,
                 input=handoff["payload"]["event"],
             )
-
 
 if __name__ == "__main__":
     run(
