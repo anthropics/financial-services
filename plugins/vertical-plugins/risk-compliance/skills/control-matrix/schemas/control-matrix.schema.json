@@ -1,0 +1,203 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/skills/control-matrix/schemas/control-matrix.schema.json",
+  "title": "control-matrix",
+  "description": "Structured control matrix produced by the control-matrix skill. The matrix maps obligations to controls to evidence to owners. Foundational primitive consumed by compliance-testing, vendor-diligence, exit-plan, exam-brief, model-card-builder (controls section), and other downstream skills. Stable contract: additive changes only between minor versions; breaking changes ship as a versioned migration.",
+  "type": "object",
+  "required": [
+    "matrix_id",
+    "scope",
+    "source_posture",
+    "obligations_in_scope",
+    "controls",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "matrix_id": {
+      "type": "string",
+      "description": "Stable identifier for this matrix instance. Reused across revisions of the same matrix.",
+      "minLength": 1
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the matrix was last revised."
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Foreign key into scope.schema.json when the matrix was built under a formal scope."
+    },
+    "scope": {
+      "type": "object",
+      "required": ["process_or_product"],
+      "additionalProperties": false,
+      "properties": {
+        "process_or_product": {
+          "type": "string",
+          "description": "The process, product, or function the matrix covers (e.g., commercial real estate underwriting, vendor lifecycle for critical fraud-screening service, monthly board credit-risk pack, model lifecycle for tier-1 retail credit models)."
+        },
+        "business_unit": {
+          "type": "string",
+          "description": "Business unit that owns the process. Generic labels are insufficient; name the unit."
+        },
+        "jurisdiction": {
+          "type": "string",
+          "description": "Primary regulatory jurisdiction (US, US-state-by-state, EU, UK, multi)."
+        },
+        "lines_of_defense": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["1L", "1.5L", "2L", "3L"]
+          },
+          "uniqueItems": true,
+          "description": "Lines of defense the matrix serves. Risk and compliance both consume the matrix; first-line controls testing reads it; internal audit references it."
+        }
+      }
+    },
+    "source_list": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_type", "label"],
+        "additionalProperties": false,
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "regulator",
+              "rule",
+              "interagency-guidance",
+              "supervisory-letter",
+              "examination-manual",
+              "internal-policy",
+              "internal-standard",
+              "industry-standard",
+              "consent-order",
+              "audit-finding",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "description": "Named source (e.g., 'OCC Bulletin 2026-13', 'BCBS 239 Principle 3', 'firm Credit Risk Policy v4.2')."
+          },
+          "section_reference": {
+            "type": "string",
+            "description": "Section, principle, or paragraph reference. Use [verify section] in references/source-anchors.md when the exact reference is not yet confirmed; do not invent section labels here."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "firm-policy-overlay",
+        "mixed"
+      ],
+      "description": "public-only: only public regulatory sources informed the matrix. firm-policy-overlay: firm policies and standards augment the public source set. mixed: both, with named seams."
+    },
+    "obligations_in_scope": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Obligation IDs (foreign keys into obligation.schema.json) the matrix covers. Empty array is acceptable only when source_posture is firm-policy-overlay and the firm policy is the obligation source; flag in coverage_gaps when public obligations exist but have not yet been extracted."
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "$ref": "../../../schemas/control.schema.json"
+      },
+      "description": "The matrix rows. Each row conforms to control.schema.json."
+    },
+    "coverage_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["obligation_id", "gap_description"],
+        "additionalProperties": false,
+        "properties": {
+          "obligation_id": {
+            "type": "string",
+            "description": "Foreign key into obligation.schema.json for the unmapped obligation."
+          },
+          "gap_description": {
+            "type": "string",
+            "description": "What is missing: no control designed, control designed but no owner, control owned but no evidence pathway, control evidenced but never tested."
+          },
+          "recommended_action": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Obligations in scope with no mapped control or with a partial mapping. A clean-looking matrix with no gaps usually means the gaps were buried."
+    },
+    "redundancies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["control_ids", "redundancy_description"],
+        "additionalProperties": false,
+        "properties": {
+          "control_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1,
+            "description": "The two or more control IDs that overlap, or the single control ID that covers no obligation."
+          },
+          "redundancy_description": {
+            "type": "string"
+          },
+          "recommended_action": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Controls mapped to no obligation, or duplicate coverage of the same obligation by multiple controls without a designed-for purpose (defense-in-depth is not redundancy)."
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "unknown"],
+      "description": "Author's confidence in the matrix as a whole. Per-control effectiveness ratings stay on the control row; this label reflects the source posture, evidence depth, and obligation-extraction completeness behind the matrix."
+    },
+    "reviewer_questions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Questions for the human reviewer at sign-off. Specific to this matrix; not generic ('is this fit for purpose')."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Always true. The skill stops at draft; a named reviewer attests before the matrix is filed."
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "additionalProperties": false,
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "reason": {"type": "string"},
+          "delta": {"type": "string"},
+          "approved_by": {"type": "string"}
+        }
+      },
+      "description": "Append-only revision log. Every material refresh of the matrix lands a row."
+    }
+  }
+}

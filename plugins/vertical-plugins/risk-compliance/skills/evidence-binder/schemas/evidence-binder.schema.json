@@ -1,0 +1,387 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/skills/evidence-binder/schemas/evidence-binder.schema.json",
+  "title": "evidence-binder",
+  "description": "Structured evidence binder. Indexes one row per artifact assembled for a regulator exam, internal audit, model validation, vendor diligence, or committee review. Reconciles a request list against the evidence on hand and surfaces gaps. Downstream consumers: control-test workpapers, exam-brief, audit-support packs, regulator response files, model-validation evidence packs.",
+  "type": "object",
+  "required": [
+    "binder_id",
+    "binder_purpose",
+    "scope",
+    "evidence_items",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "binder_id": {
+      "type": "string",
+      "description": "Stable identifier for the binder. Reused by downstream workpapers, audit support packs, and regulator response files that consume this binder.",
+      "minLength": 1
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Optional pointer to the scope record under which this binder was assembled."
+    },
+    "binder_purpose": {
+      "type": "string",
+      "enum": [
+        "regulator-exam",
+        "internal-audit",
+        "model-validation",
+        "vendor-review",
+        "committee-pack",
+        "issue-remediation",
+        "other"
+      ],
+      "description": "What the binder is being assembled for. Drives evidence-ask depth, reviewer expectations, and retention posture."
+    },
+    "scope": {
+      "type": "object",
+      "description": "What the binder covers and who it is being prepared for.",
+      "additionalProperties": false,
+      "required": ["entity", "process"],
+      "properties": {
+        "entity": {
+          "type": "string",
+          "description": "Legal entity or business unit in scope."
+        },
+        "process": {
+          "type": "string",
+          "description": "Process, control area, model, vendor arrangement, or obligation under review."
+        },
+        "period_start": {
+          "type": "string",
+          "format": "date",
+          "description": "First date of the period evidence must cover."
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date",
+          "description": "Last date of the period evidence must cover."
+        },
+        "reviewer": {
+          "type": "string",
+          "description": "Role of the examiner, auditor, validator, or committee receiving the binder. Use a role, not a person."
+        },
+        "as_of_date": {
+          "type": "string",
+          "format": "date",
+          "description": "Date the binder was last revised."
+        }
+      }
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "public-plus-firm-policy",
+        "public-plus-firm-policy-plus-evidence",
+        "connector-aware"
+      ],
+      "description": "Evidence-access posture set at scope time. Drives what the binder can claim at high confidence vs. what carries [evidence needed]."
+    },
+    "request_list": {
+      "type": "array",
+      "description": "Examiner request list, audit fieldwork ask, or validator evidence list this binder is reconciled against. Empty when the binder is being assembled outside an external request.",
+      "items": {
+        "type": "object",
+        "required": ["request_id", "request_text", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "description": "Stable identifier as issued by the requester (e.g., RFI-12, AUDIT-FW-04)."
+          },
+          "request_text": {
+            "type": "string",
+            "description": "Verbatim request as issued. Do not paraphrase."
+          },
+          "status": {
+            "type": "string",
+            "enum": ["met", "partial", "gap", "not-applicable", "deferred"],
+            "description": "Reconciliation status against the evidence_items index."
+          },
+          "linked_evidence_ids": {
+            "type": "array",
+            "description": "evidence_id values that satisfy or partially satisfy this request.",
+            "items": { "type": "string" }
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "owner_role": {
+            "type": "string",
+            "description": "Role accountable for closing the request."
+          }
+        }
+      }
+    },
+    "evidence_items": {
+      "type": "array",
+      "description": "The binder index. One entry per artifact.",
+      "items": { "$ref": "#/$defs/evidence_item" }
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "description": "Request items or expected evidence with no artifact, or where the artifact is insufficient.",
+      "items": {
+        "type": "object",
+        "required": ["gap_description"],
+        "additionalProperties": false,
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "description": "Optional pointer to the request_list entry the gap addresses."
+          },
+          "linked_obligation_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "linked_control_ids": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "gap_description": {
+            "type": "string",
+            "description": "What is missing and why it matters."
+          },
+          "owner_role": {
+            "type": "string"
+          },
+          "target_close_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      }
+    },
+    "provenance_concerns": {
+      "type": "array",
+      "description": "Items where the system of record is unclear, the extract method is non-reproducible, or the chain of custody is broken.",
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "concern"],
+        "additionalProperties": false,
+        "properties": {
+          "evidence_id": { "type": "string" },
+          "concern": { "type": "string" }
+        }
+      }
+    },
+    "custodian_register": {
+      "type": "array",
+      "description": "Roles accountable for evidence integrity by domain. Used to set chain-of-custody when an item is handed from preparer to reviewer to filer.",
+      "items": {
+        "type": "object",
+        "required": ["custodian_role", "domain"],
+        "additionalProperties": false,
+        "properties": {
+          "custodian_role": { "type": "string" },
+          "domain": { "type": "string" }
+        }
+      }
+    },
+    "reviewer_questions": {
+      "type": "array",
+      "description": "Questions the binder surfaces for the reviewer or sponsor. Each ties to a specific gap, provenance concern, or sufficiency call.",
+      "items": { "type": "string" }
+    },
+    "sign_off": {
+      "type": "object",
+      "description": "Sponsor / reviewer sign-off. Filled by the human reviewer, not the skill.",
+      "additionalProperties": false,
+      "properties": {
+        "reviewer_role": { "type": "string" },
+        "signed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "comments": { "type": "string" }
+      }
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "unknown"],
+      "description": "Sufficiency of the evidence set as a whole, given source posture and the gap-and-provenance picture."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "const": true,
+      "description": "Always true. The binder is a draft until a named reviewer signs off."
+    },
+    "revision_log": {
+      "type": "array",
+      "description": "Append-only revision history. Each entry records what changed and why.",
+      "items": {
+        "type": "object",
+        "required": ["revised_at", "revised_by_role", "change_summary"],
+        "additionalProperties": false,
+        "properties": {
+          "revised_at": { "type": "string", "format": "date-time" },
+          "revised_by_role": { "type": "string" },
+          "change_summary": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "evidence_item": {
+      "type": "object",
+      "required": [
+        "evidence_id",
+        "evidence_type",
+        "description",
+        "system_of_record",
+        "completeness_flag"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "description": "Stable identifier for the artifact within this binder. Persist across revisions."
+        },
+        "evidence_type": {
+          "type": "string",
+          "enum": [
+            "system-extract",
+            "system-screenshot",
+            "signed-attestation",
+            "external-confirmation",
+            "system-of-record-link",
+            "policy-version",
+            "procedure-version",
+            "contract",
+            "test-workpaper",
+            "sample-workpaper",
+            "training-record",
+            "meeting-minutes",
+            "sign-off-log",
+            "incident-record",
+            "regulatory-correspondence",
+            "third-party-report",
+            "management-memo",
+            "other"
+          ],
+          "description": "Form of the artifact. management-memo is an assertion not evidence; use only with a paired source-of-record item."
+        },
+        "description": {
+          "type": "string",
+          "description": "What the artifact is and what it evidences. Plain language, not a file name."
+        },
+        "system_of_record": {
+          "type": "string",
+          "description": "Named system the artifact was pulled from (e.g., 'GRC platform Workiva', 'core banking Fiserv DNA', 'ticketing Jira', 'identity Okta'). Avoid generic labels like 'internal database'."
+        },
+        "date_generated": {
+          "type": "string",
+          "format": "date",
+          "description": "When the artifact was produced (run date for a system extract, signature date for an attestation)."
+        },
+        "period_start": {
+          "type": "string",
+          "format": "date",
+          "description": "First date of the period the artifact covers."
+        },
+        "period_end": {
+          "type": "string",
+          "format": "date",
+          "description": "Last date of the period the artifact covers."
+        },
+        "linked_obligation_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Pointer into obligation-mapping output."
+        },
+        "linked_control_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Pointer into control-matrix output."
+        },
+        "linked_issue_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Pointer into issue-writeup output (when the item is remediation evidence)."
+        },
+        "linked_request_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Pointer into the binder's request_list."
+        },
+        "custodian_role": {
+          "type": "string",
+          "description": "Named role accountable for the artifact's integrity. Not a team name; not 'Compliance'."
+        },
+        "sensitivity": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted"],
+          "description": "Sensitivity classification. restricted typically covers privileged or regulator-confidential content."
+        },
+        "provenance": {
+          "type": "object",
+          "description": "How the artifact was extracted and by whom. The chain-of-custody record.",
+          "required": ["extract_method"],
+          "additionalProperties": false,
+          "properties": {
+            "extract_method": {
+              "type": "string",
+              "description": "How the artifact was produced (e.g., 'scheduled SQL extract from data warehouse', 'manual export from GRC UI', 'signed PDF emailed by vendor')."
+            },
+            "extracted_by_role": {
+              "type": "string",
+              "description": "Role of the person who pulled the artifact."
+            },
+            "extracted_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "system_of_record_link": {
+              "type": "string",
+              "description": "Direct pointer back to the source-of-record record (URL, record ID, file path). Required when evidence_type is system-screenshot."
+            },
+            "reproducible": {
+              "type": "boolean",
+              "description": "Can a reviewer re-run the extract from the same source and get the same artifact?"
+            }
+          }
+        },
+        "completeness_flag": {
+          "type": "string",
+          "enum": ["complete", "partial", "gap"],
+          "description": "Sufficiency for the request or control it supports."
+        },
+        "completeness_notes": {
+          "type": "string",
+          "description": "What is missing or partial about this artifact."
+        },
+        "evidence_class": {
+          "type": "string",
+          "enum": [
+            "source-evidence",
+            "management-assertion",
+            "public-source-obligation",
+            "generated-inference"
+          ],
+          "description": "Separates evidence from assertion from inference. The binder shows the seams; do not collapse classes."
+        },
+        "reviewer_signoff": {
+          "type": "object",
+          "description": "Review attestation for this specific artifact (where the reviewer signs at the row, not just the binder).",
+          "additionalProperties": false,
+          "properties": {
+            "reviewer_role": { "type": "string" },
+            "signed_at": { "type": "string", "format": "date-time" },
+            "comments": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Regulatory obligation",
+  "type": "object",
+  "required": [
+    "obligation_id",
+    "source",
+    "requirement_summary",
+    "applicability",
+    "owner",
+    "evidence_required",
+    "human_review_required"
+  ],
+  "properties": {
+    "obligation_id": {
+      "type": "string"
+    },
+    "jurisdiction": {
+      "type": "string"
+    },
+    "regulator": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "requirement_summary": {
+      "type": "string"
+    },
+    "effective_date": {
+      "type": "string"
+    },
+    "applicability": {
+      "type": "string"
+    },
+    "control_objective": {
+      "type": "string"
+    },
+    "mapped_controls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "in-review",
+        "approved",
+        "not-applicable",
+        "open-question"
+      ]
+    },
+    "human_review_required": {
+      "type": "boolean"
+    }
+  }
+}
