@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Dashboard — Live</title>
+<style>
+  :root{
+    --bg:#0d0f14; --panel:#161a23; --panel2:#1d222e; --line:#2a3140;
+    --gold:#d4af37; --gold-bright:#ffd75e; --text:#e6e9ef; --muted:#8b93a4;
+    --green:#3ecf8e; --red:#ff6b6b; --amber:#ffb454;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.5;padding:24px;max-width:1180px;margin:0 auto}
+  header{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:24px}
+  h1{font-size:26px;font-weight:700;letter-spacing:-.3px}
+  h1 .dot{color:var(--gold)}
+  .asof{color:var(--muted);font-size:13px;text-align:right}
+  .grid{display:grid;gap:16px}
+  .cards{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-bottom:24px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .card .label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+  .card .big{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
+  .card .sub{font-size:13px;margin-top:4px}
+  .up{color:var(--green)} .down{color:var(--red)} .gold{color:var(--gold-bright)} .mut{color:var(--muted)}
+  .two{grid-template-columns:1.3fr 1fr;align-items:start}
+  @media(max-width:820px){.two{grid-template-columns:1fr}}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;margin-bottom:16px}
+  section h2{font-size:15px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:14px;font-weight:600}
+  .driver{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .driver:last-child{border-bottom:none}
+  .driver .ico{font-size:18px;width:26px;text-align:center;flex:0 0 26px}
+  .driver .body strong{display:block;font-size:14px;margin-bottom:2px}
+  .driver .body span{font-size:13px;color:var(--muted)}
+  .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle}
+  .tag.bull{background:rgba(62,207,142,.15);color:var(--green)}
+  .tag.bear{background:rgba(255,107,107,.15);color:var(--red)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  td{padding:8px 0;border-bottom:1px solid var(--line)}
+  td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  .floors{display:flex;flex-direction:column;gap:2px;margin-top:6px}
+  .floorbar{position:relative;height:38px;border-radius:7px;display:flex;align-items:center;padding:0 14px;font-size:13px;font-weight:600}
+  .f-spot{background:linear-gradient(90deg,rgba(212,175,55,.35),rgba(212,175,55,.1));border:1px solid var(--gold)}
+  .f-demand{background:rgba(62,207,142,.12);border:1px solid rgba(62,207,142,.4)}
+  .f-prod{background:rgba(139,147,164,.12);border:1px solid var(--line)}
+  .floorbar .r{margin-left:auto;color:var(--muted);font-weight:400;font-size:12px}
+  footer{color:var(--muted);font-size:12px;margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+  footer a{color:var(--gold);text-decoration:none}
+  .pill{font-size:11px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  /* live status */
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+  .live .led{width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .live.ok .led{background:var(--green);box-shadow:0 0 0 0 rgba(62,207,142,.6);animation:pulse 2s infinite}
+  .live.stale .led{background:var(--amber)}
+  .live.err .led{background:var(--red)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(62,207,142,.5)}70%{box-shadow:0 0 0 7px rgba(62,207,142,0)}100%{box-shadow:0 0 0 0 rgba(62,207,142,0)}}
+  .refresh{cursor:pointer;background:var(--panel2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:5px 12px;font-size:12px}
+  .refresh:hover{border-color:var(--gold)}
+  .skel{color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Gold Dashboard<span class="dot">.</span></h1>
+    <span class="pill">Gold &amp; Silver · spot + GLD/SLV · live</span>
+  </div>
+  <div class="asof">
+    <span id="live" class="live"><span class="led"></span><span id="live-text">Loading…</span></span>
+    <button class="refresh" onclick="loadData()">↻ Refresh</button><br>
+    <span id="asof">Fetching latest data…</span>
+  </div>
+</header>
+
+<div class="grid cards">
+  <div class="card">
+    <div class="label">Gold spot (XAU/USD)</div>
+    <div class="big gold" id="spot-price">—</div>
+    <div class="sub" id="spot-change">—</div>
+  </div>
+  <div class="card">
+    <div class="label">GLD (SPDR Gold Shares)</div>
+    <div class="big gold" id="gld-price">—</div>
+    <div class="sub" id="gld-change">—</div>
+  </div>
+  <div class="card">
+    <div class="label">Silver spot (XAG/USD)</div>
+    <div class="big" style="color:#cfd6e4" id="silver-price">—</div>
+    <div class="sub" id="silver-change">—</div>
+  </div>
+  <div class="card">
+    <div class="label">SLV (iShares Silver Trust)</div>
+    <div class="big" style="color:#cfd6e4" id="slv-price">—</div>
+    <div class="sub" id="slv-change">—</div>
+  </div>
+  <div class="card">
+    <div class="label">Gold : Silver ratio</div>
+    <div class="big" id="gsr">—</div>
+    <div class="sub mut">oz of silver per oz of gold (live)</div>
+  </div>
+  <div class="card">
+    <div class="label">Regime</div>
+    <div class="big gold">Structural bull</div>
+    <div class="sub mut">Hawkish-Fed headwind vs. sovereign bid</div>
+  </div>
+</div>
+
+<div class="grid two">
+  <section>
+    <h2>Why gold is moving — drivers <span style="font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">(editorial · updated Jun 22, 2026)</span></h2>
+    <div class="driver">
+      <div class="ico">🦅</div>
+      <div class="body"><strong>Hawkish Fed surprise under Warsh <span class="tag bear">now dominant</span></strong>
+      <span>Warsh's first FOMC stripped forward guidance and he declined to submit a dot (first in 14 yrs); 2026 dots now imply ~+25bps with 9 of 18 officials seeing a hike. A stronger dollar followed — this reversed the peace-deal rally and sank gold below $4,200.</span></div>
+    </div>
+    <div class="driver">
+      <div class="ico">🕊️</div>
+      <div class="body"><strong>US–Iran <em>interim</em> deal <span class="tag bear">faded</span></strong>
+      <span>Turned out to be an MOU — a 60-day negotiating window that <em>sets up</em> (not yet completes) the Hormuz reopening. The initial ~3% oil-driven rally above $4,345 has unwound as the conditional nature sank in.</span></div>
+    </div>
+    <div class="driver">
+      <div class="ico">🏦</div>
+      <div class="body"><strong>Central-bank demand — record survey <span class="tag bull">structural floor</span></strong>
+      <span>WGC 2026 Reserves Survey: a record <em>45% of central banks</em> plan to add gold over the next 12 months. PBoC buying 8t in April. This is the anchor holding the structural floor as rates pressure mounts.</span></div>
+    </div>
+    <div class="driver">
+      <div class="ico">📈</div>
+      <div class="body"><strong>Sticky inflation backdrop <span class="tag bull">bullish</span></strong>
+      <span>May CPI 4.2% / PPI +6.5% YoY still elevated; gold remains the finite-supply inflation hedge even as the energy spike unwinds.</span></div>
+    </div>
+    <div class="driver">
+      <div class="ico">⚖️</div>
+      <div class="body"><strong>Tug-of-war: hawkish Fed vs. sovereign bid <span class="tag bear">watch</span></strong>
+      <span>Near-term direction hinges on whether higher real-rate pressure (bearish) or price-insensitive central-bank buying (bullish) wins. Analysts (Heraeus) flag medium-term pressure from the hawkish Fed + Iran de-escalation.</span></div>
+    </div>
+  </section>
+
+  <div>
+    <section>
+      <h2>Key macro prints</h2>
+      <table>
+        <tr><td>Fed (Warsh) outcome</td><td class="down">Hawkish hold</td></tr>
+        <tr><td>2026 dot-plot signal</td><td class="down">~+25bps</td></tr>
+        <tr><td>Officials seeing '26 hike</td><td class="down">9 of 18</td></tr>
+        <tr><td>US–Iran status</td><td class="mut">Interim MOU</td></tr>
+        <tr><td>WGC survey: plan to add gold</td><td class="up">45% (record)</td></tr>
+        <tr><td>US CPI (May, YoY)</td><td class="down">4.2%</td></tr>
+        <tr><td>Avg gold miner AISC</td><td>~$1,700/oz</td></tr>
+      </table>
+    </section>
+    <section>
+      <h2>Where's the floor? <span style="font-size:11px;color:var(--muted);text-transform:none;letter-spacing:0">(GLD equiv. computed live)</span></h2>
+      <div class="floors">
+        <div class="floorbar f-spot">Spot now <span class="r" id="fl-spot">—</span></div>
+        <div class="floorbar f-demand">Structural demand floor <span class="r" id="fl-demand">$4,300–4,600</span></div>
+        <div class="floorbar f-prod">Production cost floor (AISC) <span class="r" id="fl-prod">~$1,700–2,000</span></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Demand floor = level where price-insensitive central-bank buying absorbs supply. Production floor = long-run marginal cost; relevant only in a severe bear case. GLD equivalents use the live backing ratio.</p>
+    </section>
+  </div>
+</div>
+
+<footer>
+  <strong>Live price data:</strong> <a href="https://stooq.com">Stooq</a> (XAUUSD, GLD.US, XAGUSD, SLV.US) · auto-refreshes every 60s while open.<br>
+  <strong>Editorial sources (wk of Jun 22):</strong>
+  <a href="https://www.bloomberg.com/news/articles/2026-06-18/gold-set-for-weekly-loss-as-hawkish-fed-outweighs-peace-deal">Bloomberg</a> ·
+  <a href="http://www.kitco.com/news/article/2026-06-22/gold-and-silver-face-medium-term-pressure-hawkish-fed-iran-us-deal-heraeus">Kitco / Heraeus</a> ·
+  <a href="https://findbullionprices.com/blog/precious-metals-weekly-an-iran-deal-a-hawkish-new-fed-chair-and-a-record-central-bank-vote-for-gold/">FindBullionPrices (WGC survey)</a> ·
+  <a href="https://tradingeconomics.com/commodity/gold">Trading Economics</a> ·
+  <a href="https://www.gold.org/goldhub/data/aisc-gold">World Gold Council (AISC)</a>
+  <br><br>
+  <em>Informational only — not investment advice. Prices update from a public feed and may lag or differ slightly from your broker. Qualitative "drivers/macro" sections are hand-curated and dated above.</em>
+</footer>
+
+<script>
+// ---- config ----
+const DEMAND=[4300,4600], PROD=[1700,2000];           // editorial floor bands ($/oz)
+const STOOQ=s=>`https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`;
+const PROXY=u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`;
+// last-known fallback if the network/CORS fails (snapshot: Jun 22, 2026)
+const FALLBACK={
+  spot:{close:4188.42,open:4160.26}, gld:{close:386.50,open:384.00},
+  silver:{close:65.00,open:66.35},   slv:{close:58.91,open:60.00}
+};
+
+function fmtUSD(n,d=2){return '$'+n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});}
+function pct(now,open){return open?((now-open)/open*100):0;}
+function chgHtml(now,open){const p=pct(now,open);const c=p>=0?'up':'down';const a=p>=0?'▲':'▼';return `<span class="${c}">${a} ${p>=0?'+':''}${p.toFixed(2)}% on day</span>`;}
+
+async function fetchText(url){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}
+async function fetchCsv(symbol){
+  const direct=STOOQ(symbol);
+  try{return await fetchText(direct);}              // try direct (Stooq sends CORS *)
+  catch(e){return await fetchText(PROXY(direct));}  // fall back through CORS proxy
+}
+function parseQuote(csv){
+  // header: Symbol,Date,Time,Open,High,Low,Close,Volume  — data is the last line
+  const line=csv.trim().split('\n').pop().split(',');
+  const o=+line[3],h=+line[4],l=+line[5],c=+line[6];
+  if(!isFinite(c)||c<=0)throw new Error('no quote');
+  return {date:line[1],time:line[2],open:isFinite(o)?o:c,high:h,low:l,close:c};
+}
+
+function setStatus(state,text){
+  const el=document.getElementById('live');
+  el.className='live '+state;
+  document.getElementById('live-text').textContent=text;
+}
+
+function render(spot,gld,silver,slv,live){
+  const ratio=gld.close/spot.close;  // oz of gold per GLD share
+  document.getElementById('spot-price').innerHTML=fmtUSD(spot.close)+'<span style="font-size:16px;color:var(--muted)">/oz</span>';
+  document.getElementById('spot-change').innerHTML=chgHtml(spot.close,spot.open);
+  document.getElementById('gld-price').textContent=fmtUSD(gld.close);
+  document.getElementById('gld-change').innerHTML=chgHtml(gld.close,gld.open);
+  document.getElementById('silver-price').innerHTML=fmtUSD(silver.close)+'<span style="font-size:16px;color:var(--muted)">/oz</span>';
+  document.getElementById('silver-change').innerHTML=chgHtml(silver.close,silver.open);
+  document.getElementById('slv-price').textContent=fmtUSD(slv.close);
+  document.getElementById('slv-change').innerHTML=chgHtml(slv.close,slv.open);
+  document.getElementById('gsr').textContent=(spot.close/silver.close).toFixed(1)+' : 1';
+  // floor bars in GLD-equivalent using live ratio
+  document.getElementById('fl-spot').textContent=`${fmtUSD(spot.close,0)} · GLD ${fmtUSD(gld.close,0)}`;
+  document.getElementById('fl-demand').textContent=`${fmtUSD(DEMAND[0],0)}–${DEMAND[1].toLocaleString()} · GLD ${fmtUSD(DEMAND[0]*ratio,0)}–${(DEMAND[1]*ratio).toFixed(0)}`;
+  document.getElementById('fl-prod').textContent=`~${fmtUSD(PROD[0],0)}–${PROD[1].toLocaleString()} · GLD ${fmtUSD(PROD[0]*ratio,0)}–${(PROD[1]*ratio).toFixed(0)}`;
+  const now=new Date().toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+  if(live){
+    setStatus('ok','Live');
+    document.getElementById('asof').innerHTML=`Spot dated ${spot.date} ${spot.time||''} · fetched ${now}`;
+  }else{
+    setStatus('err','Offline — showing last snapshot');
+    document.getElementById('asof').innerHTML=`Live feed unreachable (CORS/network). Snapshot values · ${now}`;
+  }
+}
+
+async function loadData(){
+  setStatus('stale','Fetching…');
+  try{
+    const [sx,gx,ax,lx]=await Promise.all([
+      fetchCsv('xauusd'),fetchCsv('gld.us'),fetchCsv('xagusd'),fetchCsv('slv.us')
+    ]);
+    render(parseQuote(sx),parseQuote(gx),parseQuote(ax),parseQuote(lx),true);
+  }catch(e){
+    console.warn('live fetch failed:',e);
+    render(FALLBACK.spot,FALLBACK.gld,FALLBACK.silver,FALLBACK.slv,false);
+  }
+}
+
+loadData();
+setInterval(loadData,60000);  // auto-refresh every 60s
+</script>
+</body>
+</html>
