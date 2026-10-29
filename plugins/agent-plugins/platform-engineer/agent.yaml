@@ -1,0 +1,22 @@
+name: kaelum-platform-engineer
+display_name: K.A.T.E. Platform Engineer
+description: >
+  Internal development agent managing the feature build queue, bug tracker,
+  developer logs, and platform health monitoring for kaelum.app.
+model: claude-sonnet-4-6
+system_prompt_file: agents/platform-engineer.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+approval_gates:
+  - production_deployment
+  - infrastructure_change
+callable_agents:
+  - api-engineer
+  - quality-assurance
+  - platform-health
+paperclip:
+  heartbeat_interval: 1800
+  event_bridge:
+    triggers: [bug_report_received, feature_request_received, qa_regression_flagged, health_incident]
+    fires: [sprint_report_ready, bug_resolved, deploy_gate_request]

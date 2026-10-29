@@ -1,0 +1,29 @@
+name: kaelum-onboarding-concierge
+display_name: K.A.T.E. Onboarding Concierge
+description: >
+  Stateful conversational agent guiding new users through onboarding from
+  KYC to first transaction. Serves Customer, Creator, and Merchant types.
+  Re-engages stalled users and tracks conversion analytics.
+model: claude-sonnet-4-6
+system_prompt_file: agents/onboarding-concierge.md
+api_mode: managed_agent
+skills:
+  - kyc-onboarding-rules
+  - closed-loop-compliance
+  - sentinel-aml-rules
+  - regulatory-language
+  - klm-token-governance
+  - creator-economics
+  - customer-economics
+approval_gates:
+  - kyc_rejection
+  - account_rejection
+callable_agents:
+  - fraud-scam-detection
+  - compliance-regulatory
+  - kyc-screener
+paperclip:
+  heartbeat_interval: 1800
+  event_bridge:
+    triggers: [new_user_registered, onboarding_stall_detected, kyc_result_received, reengagement_scheduled]
+    fires: [onboarding_complete, kyc_flag_raised, conversion_metric_logged]

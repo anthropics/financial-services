@@ -45,3 +45,4 @@ coverage/
 TASKS.md
 MEMORY.md
 .claude/worktrees/
+.agent-registry.json

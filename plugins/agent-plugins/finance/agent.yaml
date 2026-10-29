@@ -1,0 +1,28 @@
+name: kaelum-finance
+display_name: K.A.T.E. Finance
+description: >
+  Financial intelligence agent providing budget tracking, revenue dashboards,
+  cash flow forecasting, financial modelling, investor report generation,
+  and accountant handoff exports.
+model: claude-sonnet-4-6
+system_prompt_file: agents/finance.md
+api_mode: managed_agent
+skills:
+  - klm-token-governance
+  - kpr-tpr-distribution
+  - kst-sub-token-mechanics
+  - merchant-economics
+  - creator-economics
+  - kvi-governance-framework
+approval_gates:
+  - financial_commitment
+  - investor_report_send
+  - distribution_execution
+callable_agents:
+  - kvi-governance
+  - transaction-insights
+paperclip:
+  heartbeat_interval: 3600
+  event_bridge:
+    triggers: [daily_budget_pull, weekly_cash_forecast, quarterly_distribution_prep, investor_report_request]
+    fires: [budget_alert, cash_alert, investor_report_ready, distribution_audit_ready]

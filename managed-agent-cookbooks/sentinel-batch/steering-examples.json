@@ -1,0 +1,6 @@
+[
+  {
+    "input": "Run SENTINEL compliance batch for 2026-05-07. Total transactions: 1,247. Date range: 00:00-23:59 UTC.",
+    "output": "Batch complete. 1,247 transactions scanned. Flags: 3 medium (velocity), 1 high (structuring pattern). SAR candidates: 1 (transaction ref txn_891). New patterns: none. Recommended actions: review txn_891 for SAR filing."
+  }
+]

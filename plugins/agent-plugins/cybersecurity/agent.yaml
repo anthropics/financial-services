@@ -1,0 +1,25 @@
+name: kaelum-cybersecurity
+display_name: K.A.T.E. Cybersecurity
+description: >
+  Cross-system security operations monitoring infrastructure, application,
+  API, and user account layers. ISO 27001 readiness tracking.
+  Coordinates incident response across the agent fleet.
+model: claude-sonnet-4-6
+system_prompt_file: agents/cybersecurity.md
+api_mode: standard_api
+skills:
+  - kate-agent-orchestration
+  - sentinel-aml-rules
+approval_gates:
+  - account_suspension
+  - user_facing_incident_comms
+  - containment_execution
+callable_agents:
+  - platform-engineer
+  - api-engineer
+  - fraud-scam-detection
+paperclip:
+  heartbeat_interval: 300
+  event_bridge:
+    triggers: [continuous_security_tick, api_anomaly_received, vulnerability_scan_scheduled, iso_27001_review]
+    fires: [security_health_score_updated, incident_detected, containment_proposal_staged, iso_gap_identified]

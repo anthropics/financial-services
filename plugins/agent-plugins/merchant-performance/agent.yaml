@@ -1,0 +1,23 @@
+name: kaelum-merchant-performance
+display_name: K.A.T.E. Merchant Performance
+description: >
+  Analyses daily merchant activity, transaction volumes, customer retention,
+  and redemption patterns. Generates strategic recommendations for pricing,
+  payment processing, and merchant tier promotions.
+model: claude-sonnet-4-6
+system_prompt_file: agents/merchant-performance.md
+api_mode: standard_api
+skills:
+  - merchant-economics
+  - creator-economics 
+  - commerce-intelligence
+  - kst-sub-token-mechanics
+  - kpr-tpr-distribution
+callable_agents:
+  - transaction-insights
+  - merchant-support
+paperclip:
+  heartbeat_interval: 7200
+  event_bridge:
+    triggers: [daily_merchant_data_ready, weekly_performance_cycle, monthly_strategic_review]
+    fires: [performance_report_ready, churn_risk_flagged, tier_promotion_candidate, kst_performance_update]

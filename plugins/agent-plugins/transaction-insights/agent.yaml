@@ -1,0 +1,25 @@
+name: kaelum-transaction-insights
+display_name: K.A.T.E. Transaction Insights
+description: >
+  Aggregates and enriches transaction data with Ai analysis. Surfaces spending
+  trends, merchant patterns, fraud indicators, and personalised financial
+  insights. Feeds data to KVI Governance, User Personal, and admin dashboards.
+model: claude-haiku-4-5
+system_prompt_file: agents/transaction-insights.md
+api_mode: standard_api
+skills:
+  - commerce-intelligence
+  - klm-token-governance
+  - merchant-economics
+  - kpr-tpr-distribution
+  - customer-economics
+  - creator-economics
+callable_agents:
+  - fraud-scam-detection
+  - kvi-governance
+  - user-personal
+paperclip:
+  heartbeat_interval: 300
+  event_bridge:
+    triggers: [transaction_event, batch_analysis_trigger, kvi_data_request]
+    fires: [insight_ready, anomaly_flagged, kvi_data_dispatched, personal_insight_triggered]
