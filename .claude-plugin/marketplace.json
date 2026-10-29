@@ -41,6 +41,12 @@
       "description": "Operational workflows: KYC document parsing and rules-grid evaluation"
     },
     {
+      "name": "personal-investing",
+      "displayName": "Personal Investing",
+      "source": "./plugins/vertical-plugins/personal-investing",
+      "description": "Personal investing tools: investor profile, portfolio review, single-stock checkup, position sizing, and tax-aware rebalancing"
+    },
+    {
       "name": "pitch-agent",
       "displayName": "Pitch Agent",
       "source": "./plugins/agent-plugins/pitch-agent",
@@ -117,6 +123,12 @@
       "displayName": "Claude for Microsoft 365 Install",
       "source": "./claude-for-msft-365-install",
       "description": "Provision direct cloud access (Vertex AI, Bedrock, or LLM gateway) for the Claude Microsoft 365 add-in. Generates the customized manifest, walks through Azure admin consent, and writes per-user config via Graph extension attributes."
+    },
+    {
+      "name": "portfolio-analyst",
+      "displayName": "Portfolio Analyst",
+      "source": "./plugins/agent-plugins/portfolio-analyst",
+      "description": "Personal portfolio analyst: investor profile, holdings review, stock checkups, position sizing, and staged rebalancing plans"
     }
   ]
 }
