@@ -1,0 +1,18 @@
+[
+  {
+    "event": "Run forensic screen on target Atlas Industrial, audited FY24 financials + tax 1120 + management 5yr projection + CIM at gs://dr/atlas/",
+    "description": "Single target, full document set — produces both PDF + JSON receipt and writes back to deal record"
+  },
+  {
+    "event": "Run forensic screen on target Brightside Health, source docs at gs://dr/brightside/, skip Beneish (small-private exemption)",
+    "description": "Single target with primitive override — orchestrator drops Beneish for sub-scale targets where the M-Score is non-diagnostic"
+  },
+  {
+    "event": "Run forensic screen on pipeline-list semis-pre-LOI, document URIs from CRM (one session per row)",
+    "description": "Fan-out across a coverage list — orchestration layer iterates and creates one cookbook session per target"
+  },
+  {
+    "event": "Run forensic screen on target Coastal Logistics, source docs at gs://dr/coastal/, reconciliation tolerance 5%",
+    "description": "Loosened reconciler tolerance — for sub-$50M revenue targets where 2% spread between sources is noise rather than signal"
+  }
+]
