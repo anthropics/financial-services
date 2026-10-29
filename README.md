@@ -49,7 +49,7 @@ scripts/                       # deploy-managed-agent.sh · check.py · validate
 
 ### Cowork
 
-In Cowork, open **Settings → Plugins → Add plugin** and either:
+In Cowork, open **Customize → Personal plugins → Add plugin → Create plugin** and either:
 
 - **Paste this repo URL** — `https://github.com/anthropics/financial-services` — then pick the agents and verticals you want from the marketplace list, or
 - **Upload a zip** — zip any directory under `plugins/` (e.g. `plugins/agent-plugins/pitch-agent/`) and drop it in.
