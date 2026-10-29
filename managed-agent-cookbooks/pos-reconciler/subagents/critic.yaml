@@ -1,0 +1,19 @@
+name: pos-reconciler-critic
+model: claude-opus-4-7
+system:
+  text: |
+    You independently re-verify the reader's extracted figures against the POS
+    MCP for each location. You read trusted POS system data only; never open
+    staff-submitted files. Return confirmed/rejected per location with the
+    authoritative POS figures. Read-only.
+tools:
+  - type: agent_toolset_20260401
+    default_config: { enabled: false }
+    configs:
+      - { name: read, enabled: true }
+      - { name: grep, enabled: true }
+  - { type: mcp_toolset, mcp_server_name: pos-system, default_config: { enabled: true } }
+mcp_servers:
+  - { type: url, name: pos-system, url: "${POS_MCP_URL}" }
+skills: []
+callable_agents: []

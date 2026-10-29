@@ -1,0 +1,8 @@
+{
+  "name": "fnb-ops",
+  "version": "0.1.0",
+  "description": "Food & beverage operations skills: supplier ordering via WhatsApp, delivery tracking, POS reconciliation, and inventory monitoring for coffee-shop chains",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}
