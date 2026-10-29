@@ -5,6 +5,12 @@
   },
   "plugins": [
     {
+      "name": "securitisation",
+      "displayName": "Securitisation (Structured Finance)",
+      "source": "./plugins/vertical-plugins/securitisation",
+      "description": "Free SEC EDGAR structured-finance (securitisation / securitization) connector and skills: search ABS/CMBS/CLO deals, parse prospectuses, review CLO indentures, extract waterfalls, analyse ABS-EE loan tapes (auto + CMBS), compare deals, and measure prepayment/loss over time"
+    },
+    {
       "name": "financial-analysis",
       "displayName": "Financial Analysis",
       "source": "./plugins/vertical-plugins/financial-analysis",
