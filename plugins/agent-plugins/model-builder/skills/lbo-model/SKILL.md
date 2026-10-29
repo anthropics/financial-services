@@ -163,7 +163,7 @@ The following calculation patterns frequently cause issues across LBO models. Pa
 
 ### Run Formula Validation
 ```bash
-python /mnt/skills/public/xlsx/recalc.py model.xlsx
+python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" model.xlsx 30
 ```
 Must return success with zero errors.
 

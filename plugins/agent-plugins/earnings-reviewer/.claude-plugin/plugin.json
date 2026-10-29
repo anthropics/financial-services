@@ -1,6 +1,6 @@
 {
   "name": "earnings-reviewer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Earnings call and filings to model update to note draft",
   "author": {
     "name": "Anthropic FSI"
