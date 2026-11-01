@@ -18,7 +18,7 @@ tools:
   - { type: mcp_toolset, mcp_server_name: factset, default_config: { enabled: true } }
 
 mcp_servers:
-  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq,   url: "${SPGLOBAL_MCP_URL}" }
   - { type: url, name: factset, url: "${FACTSET_MCP_URL}" }
 
 skills:

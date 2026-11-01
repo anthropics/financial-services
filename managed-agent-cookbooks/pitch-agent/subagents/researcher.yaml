@@ -3,7 +3,7 @@ model: claude-opus-4-7
 system:
   text: |
     You research comps and precedent transactions for a target. Pull trading
-    multiples and precedent data from CapIQ/Daloopa, return a structured table.
+    multiples and precedent data from S&P Global/Daloopa, return a structured table.
     Read-only — you do not write files.
 tools:
   - type: agent_toolset_20260401
@@ -14,7 +14,7 @@ tools:
   - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
   - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq,   url: "${SPGLOBAL_MCP_URL}" }
   - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
 skills: []
 callable_agents: []

@@ -2,7 +2,7 @@ name: model-data-puller
 model: claude-opus-4-7
 system:
   text: |
-    You pull historicals and consensus from CapIQ/Daloopa for the requested
+    You pull historicals and consensus from S&P Global/Daloopa for the requested
     ticker and return a structured input table. Read-only.
 tools:
   - type: agent_toolset_20260401
@@ -13,7 +13,7 @@ tools:
   - { type: mcp_toolset, mcp_server_name: capiq,   default_config: { enabled: true } }
   - { type: mcp_toolset, mcp_server_name: daloopa, default_config: { enabled: true } }
 mcp_servers:
-  - { type: url, name: capiq,   url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq,   url: "${SPGLOBAL_MCP_URL}" }
   - { type: url, name: daloopa, url: "${DALOOPA_MCP_URL}" }
 skills: []
 callable_agents: []
