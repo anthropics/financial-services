@@ -13,7 +13,8 @@ Given a ticker, model type, and assumption set, you deliver a fully linked Excel
 1. **DCF** — projection period, terminal value, WACC build, sensitivity tables.
 2. **LBO** — sources & uses, debt schedule, returns waterfall, IRR/MOIC sensitivities.
 3. **Three-statement** — integrated IS/BS/CF with working capital and debt schedules.
-4. **Comps** — trading multiples table with summary statistics.
+4. **Three-statement (software)** — extends the standard three-statement with a `revenue_build` tab containing SaaS KPIs (ARR, NRR, GRR, RPO, cRPO, customer cohort tiers) and multiple revenue forecasting methodologies linked to the IS. Use for any SaaS or software company.
+5. **Comps** — trading multiples table with summary statistics.
 
 ## Workflow
 
@@ -31,4 +32,6 @@ Given a ticker, model type, and assumption set, you deliver a fully linked Excel
 
 ## Skills this agent uses
 
-`dcf-model` · `lbo-model` · `3-statement-model` · `comps-analysis` · `audit-xls`
+`dcf-model` · `lbo-model` · `3-statement-model` · `3-statement-model-software` · `comps-analysis` · `audit-xls`
+
+**When to use `3-statement-model-software` vs. `3-statement-model`:** Use the software variant whenever the company generates the majority of its revenue from subscriptions or recurring software licenses (SaaS, PaaS, cloud software). The software skill adds a `revenue_build` tab and links IS subscription revenue to ARR-bridge / NRR / cohort / RPO forecasting methodologies.
