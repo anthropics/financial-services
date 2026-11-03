@@ -20,7 +20,7 @@ one file per host.
 
 ## Keys by cloud
 
-Prompt only for the keys their cloud path needs. Don't ask for all eight.
+Prompt only for the keys their cloud path needs. Don't ask for all of them.
 
 | Cloud | Keys |
 |---|---|
@@ -216,9 +216,8 @@ deployments are covered in the
 
 `bootstrap_url` points to an HTTPS endpoint you host. At startup the add-in
 fetches per-user JSON from it — provider keys, `mcp_servers`, `skills` — and
-the response overrides manifest values for that user. The URL itself is
-[interpolated](bootstrap.md#template-interpolation) against manifest + attrs
-before the fetch, so one endpoint can branch on a query param.
+the response overrides manifest values for that user. The add-in fetches the URL
+exactly as written.
 
 See [bootstrap](bootstrap.md) for the request/response contract, JWT
 validation, and handler scaffolding.
@@ -227,8 +226,9 @@ validation, and handler scaffolding.
 
 `mcp_servers` is a JSON array of customer-hosted MCP servers the add-in
 connects to directly. Each entry is `{url, label, headers?, discover?}` —
-`headers` present means static auth; absent triggers OAuth discovery. Values
-interpolate other config keys via `{{gateway_url}}`-style templates.
+`headers` present means static auth; absent triggers OAuth discovery. `url` and
+`headers` values interpolate other config keys via `{{gateway_url}}`-style
+templates.
 
 Setting it here applies one list org-wide; per-user lists belong in
 [bootstrap](bootstrap.md#mcp_servers), which also has the full schema. The
@@ -258,7 +258,8 @@ specific resource attributes for routing or attribution (e.g.
 merged on top.
 
 Setting these here applies one collector org-wide; per-user routing belongs in
-[bootstrap](bootstrap.md#telemetry) or extension attrs.
+[bootstrap](bootstrap.md#telemetry) — Anthropic's Entra app doesn't carry the
+`otlp_*` keys as extension attrs (see [update-user-attrs](update-user-attrs.md)).
 
 ## Inference headers
 
@@ -303,7 +304,9 @@ locked for users. Slugs use `<domain>.<action>` form. Currently enforced:
 | `thumbs` | Blocks response feedback (thumbs up / down and the follow-up prompt). |
 | `addin.access` | Kill switch — the add-in refuses to run. Almost always wants a document `resource`; use [access-policies](access-policies.md). |
 | `file.upload` | Blocks attaching files to the conversation. Same — usually scoped by `resource`. |
-| `web_search` | Removes the native web_search and web_fetch server tools (queries otherwise egress to Anthropic's third-party search provider) and the user-facing web-search toggle. Code execution is unaffected. Pair with [`mcp_servers`](#mcp_servers) to substitute your own in-network search tool — with native search disabled, the model uses the tool you attach. |
+| `web_search` | Removes the native web_search and web_fetch server tools (queries otherwise egress to Anthropic's third-party search provider) and the user-facing web-search toggle. Code execution is unaffected. Pair with [`mcp_servers`](#mcp-servers) to substitute your own in-network search tool — with native search disabled, the model uses the tool you attach. |
+| `permission_mode.accept_all_edits` | Keeps users in the "Ask before edits" permission mode: "Accept all edits" and "Skip all permissions" can't be turned on, and users already in either are moved back. "Always allow" choices for connectors (MCP servers) are unaffected. |
+| `permission_mode.dangerously_always_allow` | Removes the "Dangerously always allow" button from approval cards, so users can't switch to "Skip all permissions". Users already in that mode are moved to "Accept all edits", or to "Ask before edits" if `permission_mode.accept_all_edits` is also listed. |
 
 ```bash
 disabled_features='skills.authoring'
@@ -311,7 +314,8 @@ disabled_features='skills.authoring'
 
 Unknown slugs are ignored (forward-compatible). Setting it here applies one
 policy org-wide; per-user policy belongs in [bootstrap](bootstrap.md#disabled_features)
-(JSON array) or extension attrs (comma-separated).
+(JSON array) — Anthropic's Entra app doesn't carry `disabled_features` as an
+extension attr (see [update-user-attrs](update-user-attrs.md)).
 
 ## available_models
 
@@ -355,7 +359,10 @@ from Purview, so use the guided command:
 access_policies='[{"effect":"deny","action":"addin.access","resource":{"type":"open_file","identifiers":[{"type":"mip_label_guid","equals":"<guid>"}]}}]'
 ```
 
-Manifest / bootstrap only — the array does not fit in Entra extension attributes.
+This belongs in the manifest or bootstrap — it is not one of the eight keys
+Anthropic's Entra app carries as extension attrs, and more than one statement
+soon outgrows an attr's 256-char cap anyway (see
+[update-user-attrs](update-user-attrs.md)).
 
 ## Version
 

@@ -28,7 +28,7 @@ Both deliver per-user config. Pick by what you're carrying.
 | | [Extension attrs](update-user-attrs.md) | Bootstrap endpoint |
 |---|---|---|
 | You write | `az rest PATCH` per user | An HTTPS service |
-| Carries | Flat strings, ≤256 chars | Any JSON — arrays, nested, base64 |
+| Carries | On Anthropic's app, only the eight keys listed there; flat strings, ≤256 chars | Any JSON — arrays, nested, base64 |
 | Good for | Token rotation, region override | `mcp_servers`, `skills`, anything structured |
 | Refresh | Token cache, ~1hr lag | `bootstrap_expires_at`, you control it |
 | Auth | Entra token claims (passive) | You validate the JWT (active) |
@@ -39,26 +39,20 @@ you're here.
 
 ## Template interpolation
 
-Any string value can contain `{{key}}`. The add-in substitutes against the
-**merged config chain** — manifest params, then extension attrs, then this
-response, each layer overriding the last. You don't echo a value back just so
-a template can see it; if `gateway_token` is already in the manifest or an
-attr, `{{gateway_token}}` resolves.
+`{{key}}` templates expand in one place only: the `url` and `headers` values
+of an `mcp_servers` entry. The add-in substitutes against the **merged config
+chain** — manifest params, then extension attrs, then this response, each layer
+overriding the last. You don't echo a value back just so a template can see it;
+if `gateway_token` is already in the manifest or an attr, or elsewhere in this
+response, `{{gateway_token}}` resolves.
 
-Two phases, because the request has to happen before the response exists:
+Every other value, `bootstrap_url` included, is used exactly as written, so a
+`{{...}}` there stays literal. Tell users apart by the Entra token your endpoint
+validates, not by a templated URL.
 
-1. **`bootstrap_url` itself** resolves against manifest + attrs only. So the
-   manifest can carry
-   `bootstrap_url=https://config.internal/bootstrap?project={{gcp_project_id}}`
-   and you run one endpoint that branches on a query param instead of
-   stamping per-team URLs into attrs.
-2. **Response fields** resolve against the full merge — manifest + attrs +
-   whatever this response just returned. An `mcp_servers` entry can reference
-   a `gateway_token` that lives three lines up in the same JSON.
-
-Unresolved `{{key}}` (typo, key never set anywhere) is left as-is in the
-string — no error, no empty-substitution. If an MCP server isn't connecting,
-check the URL the add-in actually constructed.
+A `{{key}}` with no value (a typo, or a key never set anywhere) makes the add-in
+skip that connector without showing an error, so if a connector is missing,
+check its templates first.
 
 ## CORS — every URL needs it
 
@@ -115,7 +109,7 @@ a failed request with no response body and a console error naming the origin.
 ## Request
 
 ```
-GET <bootstrap_url>                            # after interpolation
+GET <bootstrap_url>                            # exactly as configured
 Authorization: Bearer <entra_token>            # only if entra_sso=1 in manifest
 X-Claude-User-Agent: claude-<app>/<version>    # always sent
 ```
@@ -173,14 +167,14 @@ Vertex `:rawPredict` URL the add-in constructs. `"bedrock"` needs no extras.
 
 ```json
 "otlp_endpoint": "https://otel-collector.your-domain.com",
-"otlp_headers": "Authorization=Bearer {{gateway_token}}",
-"otlp_resource_attributes": "team.name={{team}},deployment.environment=prod"
+"otlp_headers": "Authorization=Bearer <collector-token>",
+"otlp_resource_attributes": "team.name=platform,deployment.environment=prod"
 ```
 
 `otlp_endpoint` is the base HTTPS URL of an OpenTelemetry collector you
 operate; the add-in appends `/v1/traces` and posts OTLP/HTTP. `otlp_headers`
-uses the standard `key1=value1,key2=value2` format and interpolates like any
-other value. `otlp_resource_attributes` uses the same format (matching the
+uses the standard `key1=value1,key2=value2` format.
+`otlp_resource_attributes` uses the same format (matching the
 standard `OTEL_RESOURCE_ATTRIBUTES` variable) and is merged into the
 OpenTelemetry Resource on every span — use it when your collector requires
 specific resource attributes for routing or attribution. The collector must
@@ -242,10 +236,10 @@ fetched from a URL — set one or the other.
 
 | Field | |
 |---|---|
-| `name` | Skill identifier. Interpolated. |
+| `name` | Skill identifier. |
 | `description` | Optional. Shown in the skill picker. |
 | `content` | Base64 bytes. Either a zip (full skill bundle with `SKILL.md` + assets) or the raw `SKILL.md` text — the add-in sniffs which on decode. |
-| `url` | Presigned URL (S3, GCS, Azure SAS). Bare GET, no auth headers added — bake auth into the signature. Response body sniffed the same way as `content`. Interpolated. |
+| `url` | Presigned URL (S3, GCS, Azure SAS). Bare GET, no auth headers added — bake auth into the signature. Response body sniffed the same way as `content`. |
 
 Inline `content` is simplest for small text-only skills. Use `url` once
 you're shipping zips with images or the base64 starts bloating the response.
@@ -254,7 +248,8 @@ you're shipping zips with images or the base64 starts bloating the response.
 
 JSON array of feature slugs to lock for this user. Same vocabulary as the
 [manifest key](manifest.md#disabled-features) — bootstrap is the per-user
-layer.
+layer. It replaces the manifest's list for that user rather than adding to it,
+so repeat any org-wide slugs.
 
 ```json
 "disabled_features": ["skills.authoring"]
@@ -275,7 +270,9 @@ should keep.
 
 Native JSON array of allow/deny statements — the per-user layer of the
 [manifest key](manifest.md#access_policies); build the array with
-[access-policies](access-policies.md). Pass it as a real array, not a string:
+[access-policies](access-policies.md). It replaces the manifest's array for
+that user rather than adding to it, so repeat any org-wide statements. Pass it
+as a real array, not a string:
 
 ```json
 "access_policies": [

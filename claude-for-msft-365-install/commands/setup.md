@@ -271,8 +271,12 @@ Read `${CLAUDE_PLUGIN_ROOT}/commands/consent.md` and follow it.
 ## Step 3 — Decide what's org-wide vs. per-user
 
 The add-in reads per-user extension attributes first, falls back to manifest
-params. Any key can live at either layer. So the question is: **of the values
-captured in Step 1, do any vary per user?**
+params. On Anthropic's Entra app (the default, when `graph_client_id` is unset),
+extension attrs carry only the eight connection keys (gateway URL and token,
+Bedrock role and region, GCP project and region, Google OAuth client ID and
+secret — see `update-user-attrs.md`); anything else that varies per user needs
+a bootstrap endpoint. So the question is: **of the values captured in Step 1, do
+any vary per user?**
 
 Ask concretely — don't make them map it themselves:
 - Gateway: is it one URL for everyone? One token, or a token per user?
@@ -311,11 +315,12 @@ you're carrying:
 
 | Carrying | Use | Read |
 |---|---|---|
-| A string or two — token, region | Extension attrs | `${CLAUDE_PLUGIN_ROOT}/commands/update-user-attrs.md` |
-| `mcp_servers`, `skills`, anything structured | Bootstrap endpoint | `${CLAUDE_PLUGIN_ROOT}/commands/bootstrap.md` |
+| One of the eight connection keys from Step 3 — token, region, role | Extension attrs | `${CLAUDE_PLUGIN_ROOT}/commands/update-user-attrs.md` |
+| `mcp_servers`, `skills`, any other provider, telemetry or policy key, anything structured | Bootstrap endpoint | `${CLAUDE_PLUGIN_ROOT}/commands/bootstrap.md` |
 
-Attrs are an `az rest PATCH` per user — less work, but flat strings ≤256 chars
-only. Bootstrap is an HTTPS service you build — more work, no shape limits.
+Attrs are an `az rest PATCH` per user — less work, but on Anthropic's app only
+those eight keys, and always flat strings ≤256 chars. Bootstrap is an HTTPS
+service you build — more work, no shape limits.
 
 ## Step 6 — Verify a model is reachable
 

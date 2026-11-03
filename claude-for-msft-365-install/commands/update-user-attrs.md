@@ -4,29 +4,46 @@ description: Set per-user config (tokens, region overrides) via Azure AD extensi
 
 # Per-user config via extension attributes
 
-The attributes are already registered on Anthropic's app (`c2995f31-…`) — you
-don't create schema, you just write values. The add-in reads
-`extension_c2995f3111e74882b7a7ef9def0a0266_<key>` from the user's ID token.
+The eight attributes below are already registered on Anthropic's app
+(`c2995f31-…`) — you don't create schema, you just write values. You write
+`extension_c2995f3111e74882b7a7ef9def0a0266_<key>` on the user with Graph; the
+add-in reads it back as the `extn.<key>` claim in the user's ID token.
 
 **Requires `entra_sso=1` in the manifest.** Without it the add-in never
 acquires an Entra token, so these attributes are never read — they silently do
 nothing.
 
-Any of the config keys can be set per-user — the add-in merges per-user attrs
-over manifest params, so whatever's here wins. All values are 256 chars max.
+**Only these eight keys work this way on Anthropic's app** — it issues `extn.*`
+claims for no other attribute, so a value under any other attribute name never
+reaches the add-in. Attrs override manifest params, and a [bootstrap](bootstrap.md)
+response overrides both. All values are 256 chars max.
 
 | Key | Per-user use case |
 |---|---|
 | `gateway_token` | Per-user API key (rotation) |
 | `gateway_url` | Route different teams to different gateways |
-| `gateway_api_format` | Gateway speaks Bedrock/Vertex pass-through, not Anthropic `/v1/messages` |
-| `inference_headers` | Per-user accounting tag for the gateway (JSON; mind the 256-char cap) |
-| `bootstrap_url` | Per-user credential-vending endpoint |
 | `gcp_project_id` | Different teams on different GCP projects |
 | `gcp_region` | Data-residency override |
 | `google_client_id` `google_client_secret` | Different OAuth client per team (uncommon) |
 | `aws_role_arn` `aws_region` | Different Bedrock roles by team |
-| `otlp_endpoint` `otlp_headers` `otlp_resource_attributes` | Route telemetry to a team-specific OTEL collector / tag spans with team-level resource attributes |
+
+On Anthropic's app, anything else that varies per user — `azure_api_key`,
+`disabled_features`, `available_models`, `inference_headers`,
+`gateway_api_format`, the `otlp_*` telemetry keys — goes in a
+[bootstrap endpoint](bootstrap.md) response, and `bootstrap_url` itself goes in
+the manifest, one value for everyone; the endpoint tells users apart by the
+Entra token it validates.
+
+**Bring-your-own Entra app (`graph_client_id`):** the token comes from *your*
+app, so the `extension_c2995f31…_<key>` attributes do nothing there. Either use
+a bootstrap endpoint, or, for each key you need, register a directory extension
+on your app named exactly as the config key, add it as an ID-token optional
+claim (it reaches the add-in as `extn.<key>`), and swap your app's ID (no
+hyphens) into the `extension_…_<key>` commands below. Any config key works this
+way except `entra_sso`, `graph_client_id`, `graph_cloud`, `entra_scope`,
+`gateway_auth_source` and `allow_1p`, which the add-in reads from the manifest
+only. The 256-character limit still applies, so a longer value, such as most
+`access_policies` arrays, goes in the manifest or a bootstrap response.
 
 ## One user
 
