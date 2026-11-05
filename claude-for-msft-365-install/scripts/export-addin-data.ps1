@@ -12,13 +12,14 @@
   so only Claude's stores are copied -- other add-ins' stores are detected and
   skipped, and the script reports how many it ignored.
 
-  localStorage (settings, inference config, onboarding + terms flags) is NOT
-  per-origin: Chromium keeps one LevelDB per profile shared by every origin.
-  It cannot be split, so it is copied WHOLE, once per Office account, and that
-  copy therefore also contains other add-ins' and other sites' settings. The
-  run prints its size, in list mode too, so this is never a surprise. If that
-  is unacceptable for your data policy, delete the "Local Storage" folder from
-  the export -- everything else is Claude-only.
+  localStorage (settings, sign-in credentials, inference config, onboarding +
+  terms flags) is NOT per-origin: Chromium keeps one LevelDB per profile shared
+  by every origin. It cannot be split, so it is copied WHOLE, once per Office
+  account, and that copy therefore also contains whatever other add-ins and
+  sites keep there, which can include their credentials. The run prints its
+  size, in list mode too, so this is never a surprise. If that is unacceptable
+  for your data policy, delete the "Local Storage" folder from the export --
+  everything else is Claude-only.
 
   SEE IT YOURSELF -- you do not need this script to look
     The data is a plain, unencrypted folder. Paste into File Explorer:
@@ -45,8 +46,9 @@
     * On Windows the add-in's storage lives INSIDE the Wef folder, so the
       commonly circulated "delete %LOCALAPPDATA%\Microsoft\Office\16.0\Wef"
       fix deletes chat history along with the manifest cache. Export first.
-    * Sign-in tokens are deliberately NOT exported. The export does contain
-      conversation text -- handle it under your normal data policy.
+    * The export CONTAINS sign-in credentials (in the local storage it copies,
+      plus connector tokens in claude-mcp-gateways) and conversation text --
+      treat the output folder as a secret.
     * You do NOT need this to change add-ins. Storage is keyed by the origin
       the add-in is served from, not by add-in ID, so replacing the manifest,
       reinstalling, or moving to the store listing leaves the data in place.
@@ -54,7 +56,7 @@
 
 .EXAMPLE
   export-addin-data.ps1                  # list what is on this PC, copy nothing
-  export-addin-data.ps1 -Out C:\claude-export
+  export-addin-data.ps1 -Out "$env:USERPROFILE\claude-export"
 #>
 [CmdletBinding()]
 param(
@@ -236,9 +238,10 @@ foreach ($store in $stores) {
 }
 
 # --- localStorage: one shared LevelDB per PROFILE, not per origin ------------
-# Settings, the inference/customer config, and the onboarding + terms flags all
-# live here rather than in IndexedDB. Chromium gives every origin on a profile
-# the same store, so it cannot be split per add-in -- it is copied whole.
+# Settings, sign-in credentials, the inference/customer config, and the
+# onboarding + terms flags all live here rather than in IndexedDB. Chromium
+# gives every origin on a profile the same store, so it cannot be split per
+# add-in -- it is copied whole.
 #
 # Driven off the profile list rather than the store loop: a profile whose only
 # store fails the origin-name parse would otherwise lose its settings silently.

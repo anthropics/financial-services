@@ -172,8 +172,8 @@ don't let it scare you off the surgical path here.
 >
 > ⚠️ **On Windows that wipe is destructive.** The add-in's chat history,
 > skills, MCP registrations, and memory live *inside* the same tree
-> (`%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\webview2\…`), and there is no
-> server-side copy. The widely circulated "just delete the `Wef` folder"
+> (`%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\webview2\…`), and Anthropic
+> cannot restore them. The widely circulated "just delete the `Wef` folder"
 > fix deletes the user's conversations along with the manifest cache. If
 > anyone is about to do it, run
 > [`:export-data`](export-data.md) first.

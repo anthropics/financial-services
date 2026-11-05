@@ -5,8 +5,8 @@ description: Export a copy of a user's add-in chat history, skills, MCP registra
 # Export add-in data
 
 Chat history, uploaded skills, MCP registrations, memory, and settings live in browser
-storage **on the user's own machine**. There is no server-side copy. These
-scripts make a copy of it.
+storage **on the user's own machine**. Anthropic does not back up this data and
+cannot restore it into the add-in. These scripts make a copy of it.
 
 | Platform | Script |
 |---|---|
@@ -19,11 +19,11 @@ arguments and they just print what they found.
 
 ```bash
 ./scripts/export-addin-data.sh                      # macOS: list
-./scripts/export-addin-data.sh --out ~/claude-export
+(umask 077; ./scripts/export-addin-data.sh --out ~/claude-export)
 ```
 ```powershell
 .\scripts\export-addin-data.ps1                     # Windows: list
-.\scripts\export-addin-data.ps1 -Out C:\claude-export
+.\scripts\export-addin-data.ps1 -Out "$env:USERPROFILE\claude-export"
 ```
 
 ## Why reinstalling the add-in doesn't lose anything
@@ -72,7 +72,7 @@ holding it:
 | Change | Effect |
 |---|---|
 | Add-in served from a new host, or `https`→`http`, or a different port | New origin → new empty bucket. The old one still exists but nothing reads it. |
-| Machine rebuilt, or the browser profile wiped | Gone; nothing is stored server-side. |
+| Machine rebuilt, or the browser profile wiped | Gone. Anthropic cannot restore it. |
 | Windows: Office signed into a different account | Different profile path → different bucket. Reversible — sign back in. |
 
 ## When you need this
@@ -81,7 +81,7 @@ Export when the machine or the storage location is about to change:
 
 | Situation | Why |
 |---|---|
-| A PC or Mac is being rebuilt, reimaged, or handed to someone else | Nothing is stored server-side. |
+| A PC or Mac is being rebuilt, reimaged, or handed to someone else | Anthropic cannot restore this data. |
 | Clearing the Office add-in cache on **Windows** | The add-in's storage lives inside the `Wef` folder, so "delete the Wef folder" removes chat history too. On macOS these are separate trees and clearing the cache is harmless. |
 | Roaming-profile / FSLogix cleanup, or Edge policies like `ClearBrowsingDataOnExit` | Wipes the browser profile the add-in stores into. |
 | Old conversations matter | History keeps the 50 most recent chats per app, and drops the oldest automatically when storage runs low. |
@@ -99,7 +99,7 @@ claude-export/
     │   ├── claude-local-skills/
     │   ├── claude-mcp-gateways/
     │   ├── claude-memory/
-    │   └── local-storage/            settings, inference config, onboarding + terms
+    │   └── local-storage/            settings, sign-in credentials, onboarding + terms
     └── addins.contoso.com_8443/      a non-default port is kept in the name:
         └── …                         :8443 is a different origin, so a different store
 ```
@@ -119,23 +119,39 @@ claude-export\
 ```
 
 That last folder is the one exception to "only Claude's data". localStorage —
-settings, the inference config, the onboarding and terms-accepted flags — is a
-single LevelDB per profile shared by every origin, so it cannot be filtered
-down to one add-in. It is copied whole rather than dropped, and its size is
-printed on every run, including the argument-less preview. If that is
-unacceptable under your data policy, delete `Local Storage` from the export;
-everything else is Claude-only. On macOS localStorage *is* per-origin, so there
-it appears as a `local-storage/` folder inside each origin with nothing extra.
+settings, sign-in credentials, the inference config, the onboarding and
+terms-accepted flags — is a single LevelDB per profile shared by every origin,
+so it cannot be filtered down to one add-in. It is copied whole rather than
+dropped, and its size is printed on every run, including the argument-less
+preview. If that is unacceptable under your data policy, delete `Local Storage`
+from the export; everything else is Claude-only. On macOS localStorage *is*
+per-origin, so there it appears as a `local-storage/` folder inside each origin
+with nothing extra.
 
 Both layouts are **relabelled for readability, not a path mirror** — the real
 locations are nested under salted hashes (macOS) or `…\2\[n]\EBWebView\Default\`
 (Windows). Copying the export back over those paths will not work; see
 [Putting data back](#putting-data-back).
 
-Sign-in tokens are deliberately **not** included — a rebuilt machine signs in
-again, which is the safer default. The export **does** contain conversation
-text, and on Windows the `Local Storage` folder carries other add-ins' settings
-too; handle it under the same policy as any other copy of that content.
+The export **contains the add-in's sign-in credentials**, because they sit in
+the same local storage the scripts copy, and it contains conversation text. It
+also holds the connector tokens in the `claude-mcp-gateways` database, which is
+its own folder on macOS and sits inside the `.indexeddb.leveldb` folder on
+Windows, so deleting the local storage folder from the export does not remove
+every credential. On Windows the `Local Storage` folder is the whole profile's
+store, so it also holds whatever other add-ins and sites keep there, which can
+include their credentials. A rebuilt machine signs in again regardless.
+
+Treat an export folder as a secret. The scripts set no permissions of their
+own, so the copy is only as private as the folder you write it to: keep it
+somewhere only the people who need it can read, not a shared location (by
+default, a folder created directly under `C:\` is readable by every user of
+that PC, and a new folder directly in a macOS home folder by every local account
+on that Mac, which is why the macOS example runs under `umask 077`; a folder
+that already exists keeps the permissions it has). The example paths are inside
+the user's profile on that device: before a rebuild, reimage or profile cleanup,
+move the export off the device to storage only the people who need it can read,
+or it is wiped along with the original.
 
 ### Checking an export is complete
 
@@ -155,8 +171,11 @@ too. Don't read it as corruption.
 
 The scripts do not do this, on purpose. Writing into Office's storage risks
 damaging a working setup, and the right move depends on why the data went
-missing. Keep the export and raise it with Anthropic support — the folder is
-everything needed to recover.
+missing. Keep the export: it is your copy if the data on the device is lost.
+Anthropic support cannot restore it into the add-in for you, and there are no
+published steps for loading an export back in. If the earlier store is still on
+a Windows PC, see
+[Restore the earlier store on Windows](https://claude.com/docs/office-agents/data-storage#restore-the-earlier-store-on-windows).
 
 One case worth checking first, because it needs no recovery at all: on
 Windows the storage path includes the **signed-in Office account** —

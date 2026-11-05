@@ -50,19 +50,22 @@ Then inside the session: `/claude-for-msft-365-install:bootstrap`
 ## Exporting user data
 
 Chat history, uploaded skills, MCP registrations, memory, and settings live in browser
-storage on the user's own machine — there is no server-side copy.
+storage on the user's own machine. Anthropic does not back up this data and
+cannot restore it into the add-in.
 
 The export scripts are **read only**: they read Office's storage and write
 only to the folder you name. They never modify, move, or delete anything in
-Office. With no arguments they just print what they found.
+Office. With no arguments they just print what they found. The export contains
+sign-in credentials and connector tokens as well as conversation text, so treat
+the output folder as a secret.
 
 ```bash
 ./scripts/export-addin-data.sh                       # macOS: list
-./scripts/export-addin-data.sh --out ~/claude-export
+(umask 077; ./scripts/export-addin-data.sh --out ~/claude-export)
 ```
 ```powershell
 .\scripts\export-addin-data.ps1                      # Windows: list
-.\scripts\export-addin-data.ps1 -Out C:\claude-export
+.\scripts\export-addin-data.ps1 -Out "$env:USERPROFILE\claude-export"
 ```
 
 **Changing the add-in does not move or delete the data.** Storage is keyed by
