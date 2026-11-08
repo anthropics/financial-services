@@ -5,6 +5,12 @@
 # <addin-id>.manifest-*.xml. This removes ONLY the files matching one
 # add-in ID across Excel/Word/PowerPoint -- it never wipes the folder.
 #
+# It does NOT touch the add-in's stored data. On macOS chat history, skills,
+# MCP registrations and memory live in a different subtree entirely --
+# Data/Library/WebKit/WebsiteData -- while manifests live in Data/Documents/wef.
+# Clearing the manifest cannot reach the storage. (Windows is not so tidy: see
+# the note in clear-addin-cache.ps1.)
+#
 # Usage:
 #   clear-addin-cache.sh                       # list every add-in found, do nothing
 #   clear-addin-cache.sh /path/to/manifest.xml # dry-run: show what would be removed
@@ -12,15 +18,29 @@
 #   clear-addin-cache.sh /path/manifest.xml --apply   # actually delete
 set -euo pipefail
 
-APPS=(Excel Word Powerpoint)
+# Office writes the wef filename using whatever casing the manifest's <Id> had,
+# so a lowercase GUID from the admin will not match an uppercase file on disk.
+# Without this the script reports "already clear" and the admin escalates to a
+# folder-wide wipe. Characters that arrive from a quoted expansion (i.e. the ID
+# itself) still stay literal, so `--id '*'` remains inert.
+shopt -s nocaseglob
+
+# Outlook included: it has its own container and its own wef folder. Scanning
+# only three apps would report "NOT cleared" for a correct ID that simply lives
+# in the fourth -- the exact wrong-turn that sends admins to a folder-wide wipe.
+APPS=(Excel Word Powerpoint Outlook)
 wef_dir() { echo "$HOME/Library/Containers/com.microsoft.$1/Data/Documents/wef"; }
 
 MANIFEST="" ADDIN_ID="" APPLY=0
 while [ $# -gt 0 ]; do
   case "$1" in
-    --id) ADDIN_ID="${2:-}"; shift 2 ;;
+    # Guard the value: a bare `--id` would otherwise make `shift 2` fail under
+    # `set -e` and exit 1 with no output at all.
+    --id) [ $# -ge 2 ] || { echo "ERROR: --id requires a GUID" >&2; exit 1; }
+          ADDIN_ID="$2"; shift 2 ;;
     --apply) APPLY=1; shift ;;
-    -h|--help) grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    # Only the header block, so the shebang and internal comments stay out.
+    -h|--help) sed -n '2,/^set -euo/p' "$0" | grep '^#' | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) MANIFEST="$1"; shift ;;
   esac
 done
@@ -63,5 +83,15 @@ for app in "${APPS[@]}"; do
   done
 done
 
-[ "$found" -eq 0 ] && echo "  (nothing found for $ADDIN_ID -- already clear)"
+# A miss is a dead end, not a success. Reported as "already clear" it sends the
+# admin off to restart Office, still see the stale add-in, and reach for the
+# folder-wide wipe -- which on Windows takes the user's chat history with it.
+if [ "$found" -eq 0 ]; then
+  echo "  (no manifest matched $ADDIN_ID)"
+  echo
+  echo "NOT cleared. Either it was already removed, or the ID is wrong."
+  echo "Re-run with no arguments to list the IDs actually on this Mac."
+  exit 1
+fi
+
 echo "Quit and reopen the Office apps so they re-fetch the manifest."

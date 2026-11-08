@@ -132,6 +132,18 @@ Both **dry-run by default** — nothing is removed without `--apply` /
 `-Apply`. No-args lists every registered add-in so you confirm the ID
 first. Other add-ins are never affected.
 
+If the ID matches nothing the script says **NOT cleared** and exits non-zero
+— that means a typo or an already-removed add-in, *not* success. Re-run with
+no arguments and copy the ID from the list. Don't escalate to a folder-wide
+wipe on the strength of a miss here.
+
+**Neither script can touch the user's data.** Chat history, skills, MCP
+registrations, and memory are stored by the WebView, keyed by the origin the
+add-in is served from — not by add-in ID. On macOS that's a different subtree
+from the manifests (`Data/Library/WebKit/WebsiteData` vs `Data/Documents/wef`);
+on Windows the clear script only ever writes to `HKCU`, never to disk. Clearing
+the manifest by ID is safe to do on a machine whose history matters.
+
 **You must fully restart the Office app after clearing.** Removing the
 file/registry entry does nothing until the app re-reads it on launch — and
 a *backgrounded* app counts as still running. Quit **and reopen** Excel /
@@ -157,6 +169,14 @@ don't let it scare you off the surgical path here.
 > centrally-deployed update is
 > stale, prefer waiting out the service TTL or redeploying with a fresh
 > `<Id>` (below) over hand-deleting that cache.
+>
+> ⚠️ **On Windows that wipe is destructive.** The add-in's chat history,
+> skills, MCP registrations, and memory live *inside* the same tree
+> (`%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\webview2\…`), and there is no
+> server-side copy. The widely circulated "just delete the `Wef` folder"
+> fix deletes the user's conversations along with the manifest cache. If
+> anyone is about to do it, run
+> [`:export-data`](export-data.md) first.
 
 If it's still stale after the restart, the service-side cache hasn't caught
 up. Wait, or use a fresh `<Id>` (below).

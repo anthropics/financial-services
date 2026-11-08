@@ -29,12 +29,6 @@
       "description": "Private equity deal sourcing and workflow tools: company discovery, CRM integration, and founder outreach"
     },
     {
-      "name": "wealth-management",
-      "displayName": "Wealth Management",
-      "source": "./plugins/vertical-plugins/wealth-management",
-      "description": "Wealth management and financial advisory tools: client reviews, financial planning, portfolio analysis, and client reporting"
-    },
-    {
       "name": "fund-admin",
       "displayName": "Fund Administration",
       "source": "./plugins/vertical-plugins/fund-admin",

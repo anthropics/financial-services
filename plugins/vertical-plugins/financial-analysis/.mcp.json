@@ -47,9 +47,10 @@
     "longbridge": {
       "type": "http",
       "url": "https://mcp.longbridge.com"
-    }
+    },
     "box": {
       "type": "http",
       "url": "https://mcp.box.com"
+    }
   }
 }

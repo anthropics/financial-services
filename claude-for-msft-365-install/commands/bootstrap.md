@@ -260,6 +260,31 @@ layer.
 "disabled_features": ["skills.authoring"]
 ```
 
+### `available_models`
+
+Model-picker override for this user — same semantics and entry forms as the
+[manifest key](manifest.md#available_models). A JSON array of ids and/or
+`{id, label}` objects; because it is an override, list every model the user
+should keep.
+
+```json
+"available_models": [{ "id": "claude-opus-4-8", "label": "Opus 4.8" }, "claude-sonnet-5"]
+```
+
+### `access_policies`
+
+Native JSON array of allow/deny statements — the per-user layer of the
+[manifest key](manifest.md#access_policies); build the array with
+[access-policies](access-policies.md). Pass it as a real array, not a string:
+
+```json
+"access_policies": [
+  { "effect": "deny", "action": "addin.access",
+    "resource": { "type": "open_file",
+      "identifiers": [{ "type": "mip_label_guid", "equals": "<guid>" }] } }
+]
+```
+
 ### `bootstrap_expires_at`
 
 Epoch timestamp (seconds or milliseconds — auto-detected) for when this
