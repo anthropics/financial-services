@@ -237,10 +237,6 @@ async function main() {
     console.error(`Keys: ${Object.keys(KEYS).join(", ")}`);
     process.exit(1);
   }
-  if (host === "outlook" && pairs.some((p) => p.startsWith("aws_"))) {
-    console.error("error: Amazon Bedrock (aws_role_arn/aws_region) is not currently supported for Outlook");
-    process.exit(1);
-  }
   // graph_client_id and graph_cloud apply to both manifests: in Outlook it steers Graph +
   // Entra sign-in; in office it steers the Entra SSO authority.
 

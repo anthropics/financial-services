@@ -51,12 +51,13 @@ those flows. See the Entra SSO section in [manifest](manifest.md).
 ## Step 1b — Which Office apps?
 
 Ask: **Excel/Word/PowerPoint, Outlook, or both?** Outlook is a separate
-manifest and has one extra prerequisite.
+manifest and has extra prerequisites.
 
 If they're deploying Outlook:
-- **Bedrock is not currently supported for Outlook.** If they picked `bedrock`
-  in Step 1, Outlook is off the table for now — generate only the `office`
-  manifest.
+- **Outlook needs a newer model.** On a third-party platform, Claude for
+  Outlook supports only Claude Opus 4.7 and later and Claude Sonnet 5 and
+  later. Confirm one of those in Step 6: with only older models enabled, the
+  add-in connects and then fails on every message.
 - **Microsoft Graph admin consent is required.** Run
   [consent](consent.md#outlook--microsoft-graph-consent) — a Global Admin opens
   one URL and clicks Accept. Do this before generating the manifest so you can
@@ -115,6 +116,13 @@ Confirm with the admin:
 Three `aws iam` calls. The trust policy's `aud` condition is the security
 boundary — only tokens Azure minted for the Claude add-in can assume this role.
 
+If a manifest will carry their own Entra app (`graph_client_id`, captured in
+"Step 1b — Which Office apps?"), the add-in signs in as that app, so the ID
+token's `aud` is that app's client ID and AWS rejects it unless it is listed.
+Set `CLAUDE_APP_ID` below to their app's ID instead; if one manifest uses their
+app and the other Anthropic's, list both IDs (`--client-id-list "<id1>" "<id2>"`,
+and `["<id1>", "<id2>"]` as the value of the trust policy's `aud` condition).
+
 Substitute their tenant ID and region:
 
 ```bash
@@ -170,7 +178,12 @@ echo "aws_role_arn: arn:aws:iam::${ACCOUNT}:role/ClaudeBedrockAccess"
 ```
 
 If `create-open-id-connect-provider` errors with `EntityAlreadyExists`, a
-provider for that issuer already exists — that's fine, the role will trust it.
+provider for that issuer already exists — that's fine, the role will trust it;
+add any client ID it lacks with `aws iam add-client-id-to-open-id-connect-provider`,
+and if the role exists too, make sure its trust policy's `aud` condition lists
+the ID (`aws iam update-assume-role-policy` replaces the whole trust policy, so
+start from the current one:
+`aws iam get-role --role-name ClaudeBedrockAccess --query Role.AssumeRolePolicyDocument`).
 The ARN is deterministic (`arn:aws:iam::<account>:oidc-provider/<issuer>`).
 
 Capture: `aws_role_arn`, `aws_region`. Add `entra_sso=1` when generating the
@@ -307,8 +320,14 @@ only. Bootstrap is an HTTPS service you build — more work, no shape limits.
 ## Step 6 — Verify a model is reachable
 
 Before they deploy, confirm at least one of **Claude Sonnet 4.5** or
-**Claude Opus 4.5** (or newer) actually answers. A manifest that points at an
-unenabled model deploys fine and then fails silently at first user message.
+**Claude Opus 4.5** (or newer) actually answers — for Outlook, **Claude Opus
+4.7** or **Claude Sonnet 5** (or newer), so run the checks below against one of
+those rather than the Sonnet 4.5 in the examples (in the
+`gateway_api_format=bedrock` curl, `us.anthropic.claude-opus-4-7` or
+`us.anthropic.claude-sonnet-5`, with no `-v1:0` suffix; in the `vertex` one,
+`claude-opus-4-7` or `claude-sonnet-5`, with no `@` date). A manifest that
+points at an unenabled model deploys fine and then fails silently at first user
+message.
 
 **Gateway:** probe with a 1-token request. 200 means it works. 404 means the
 gateway doesn't route that model name — try the other, or ask them to check
@@ -329,7 +348,7 @@ curl -s -o /dev/null -w '%{http_code}\n' "<gateway_url>/v1/messages" \
 `gateway_api_format=bedrock` — model goes in the path, **not** the body:
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' \
-  "<gateway_url>/model/anthropic.claude-sonnet-4-5-v1:0/invoke" \
+  "<gateway_url>/model/us.anthropic.claude-sonnet-4-5-20250929-v1:0/invoke" \
   -H 'content-type: application/json' -H 'authorization: Bearer <token>' \
   -d '{"anthropic_version":"bedrock-2023-05-31","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}'
 ```
@@ -337,32 +356,42 @@ curl -s -o /dev/null -w '%{http_code}\n' \
 `gateway_api_format=vertex` — model, project, and region all go in the path:
 ```bash
 curl -s -o /dev/null -w '%{http_code}\n' \
-  "<gateway_url>/projects/<gcp_project_id>/locations/<gcp_region>/publishers/anthropic/models/claude-sonnet-4-5:rawPredict" \
+  "<gateway_url>/projects/<gcp_project_id>/locations/<gcp_region>/publishers/anthropic/models/claude-sonnet-4-5@20250929:rawPredict" \
   -H 'content-type: application/json' -H 'authorization: Bearer <token>' \
   -d '{"anthropic_version":"vertex-2023-10-16","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}'
 ```
 
 **Vertex:** model enablement is click-ops — the EULA accept has no API. Open
-the Model Garden page, confirm at least one model shows **Enabled** (not
-"Request access") for their region:
+the Model Garden page, confirm at least one model (for Outlook, Opus 4.7+ or
+Sonnet 5+) shows **Enabled** (not "Request access") for their region:
 
 > `https://console.cloud.google.com/vertex-ai/publishers/anthropic?project=<PROJECT_ID>`
 
 If it says "Request access", they click through, accept terms, wait for
 enable. No API call until they confirm.
 
-**Bedrock:** same constraint — model access grant has no API. Open the model
-access page, confirm at least one Claude 4.5+ model shows **Access granted**
-(not "Available to request"):
+**Bedrock:** AWS no longer has a per-model access page: serverless models are
+enabled by default, but two one-time steps remain. Anthropic models need a
+use-case form per account (submitting it from an AWS Organization's management
+account covers its member accounts), and each model is subscribed through AWS
+Marketplace the first time an identity with the `aws-marketplace:Subscribe`,
+`ViewSubscriptions` and `Unsubscribe` permissions invokes it in the account.
+The `ClaudeBedrockAccess` role has none of these, so users cannot trigger that
+subscription; an admin who has them makes the first call. Signed in as that
+admin, in the Bedrock console for their region, pick a Claude 4.5+ model (for
+Outlook, Opus 4.7+ or Sonnet 5) from the model catalog, submit the use-case
+details if the console asks for them, then open the model in the playground and
+send a test prompt. AWS finishes the subscription in the background and a first
+prompt can answer even if the subscription then fails (for example, if the
+account has no valid payment method for AWS Marketplace), so send a second
+prompt 15 minutes later and confirm it also gets a reply — once for each model
+users should be able to pick:
 
-> `https://console.aws.amazon.com/bedrock/home?region=<aws_region>#/modelaccess`
-
-If it says "Available to request", they request, accept terms, wait for grant
-(usually minutes, sometimes longer).
+> `https://console.aws.amazon.com/bedrock/home?region=<aws_region>`
 
 Log the verified model name to the setup log. Don't proceed until you have a
-200, a confirmed "Enabled", or a confirmed "Access granted" — whichever
-matches their path.
+200, a confirmed "Enabled", or a Bedrock test prompt that still answers 15
+minutes after the first — whichever matches their path.
 
 ## Step 7 — Deploy
 

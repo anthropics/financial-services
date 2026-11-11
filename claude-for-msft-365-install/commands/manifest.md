@@ -30,9 +30,6 @@ Prompt only for the keys their cloud path needs. Don't ask for all eight.
 | Gateway | `gateway_url` `gateway_token` `gateway_auth_header` `gateway_api_format` |
 | Gateway (`gateway_api_format=vertex`) | also `gcp_project_id` `gcp_region` |
 
-Amazon Bedrock is **not currently supported for the `outlook` host**; the script
-exits with an error if you pass `aws_*` keys with `outlook`.
-
 ## Outlook — Microsoft Graph
 
 Outlook reads the user's mailbox and calendar via Microsoft Graph, which
