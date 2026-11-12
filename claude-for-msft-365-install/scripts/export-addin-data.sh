@@ -29,8 +29,9 @@
 #     belongs to the macOS user account, and Office accounts signed in within
 #     it share one store. So there is nothing to pick between: this exports
 #     everything under the current macOS user.
-#   * Sign-in tokens are deliberately NOT exported. The export does contain
-#     conversation text -- handle it under your normal data policy.
+#   * The export CONTAINS sign-in credentials (in the local storage it copies,
+#     plus connector tokens in claude-mcp-gateways) and conversation text --
+#     treat the output folder as a secret.
 #   * Office can stay open. The data is SQLite and this takes a consistent
 #     snapshot of an open database.
 #   * Precisely: no conversation, skill, MCP or memory record is altered, and
@@ -137,8 +138,9 @@ for app in "${APPS[@]}"; do
     found=$((found + 1))
 
     # localStorage sits beside IndexedDB in the same per-origin folder. It is
-    # small but not redundant: settings, the inference/customer config, and the
-    # onboarding + terms-accepted flags live here, not in IndexedDB.
+    # small but not redundant: settings, sign-in credentials, the
+    # inference/customer config, and the onboarding + terms-accepted flags live
+    # here, not in IndexedDB.
     lstore="$inner/LocalStorage/localstorage.sqlite3"
 
     echo "[$app] $origin"

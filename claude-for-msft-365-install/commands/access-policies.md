@@ -25,12 +25,15 @@ the open document, by its **file path**; further resource types plug into the sa
 shape without a new config key. New deployments should start here;
 `disabled_features` remains supported for the simple flat case.
 
-Two document-conditioned controls ship today:
+Two document-conditioned controls have worked examples in step 2:
 
 - **Whether the add-in runs at all on an open document** (the `addin.access` kill
   switch), keyed off the open document's label or its path.
 - **Whether a file may be attached as an upload** (`file.upload`), keyed off the
   *attached* file's own label — Office files and PDFs.
+
+Every other feature can also be scoped to the open document: a `deny` turns it
+off while a matching document is open.
 
 Walk the admin through the four steps below, then hand the finished JSON to
 [manifest](manifest.md#access_policies) as one more key.
@@ -158,13 +161,19 @@ identifier  := { type: "mip_label_guid" | "mip_label_name" | "file_path", <one o
 | `action` slug | Gates | Takes a `resource`? |
 |---|---|---|
 | `addin.access` | Whether the add-in runs at all on the open document — the kill switch | `open_file` |
-| `file.upload` | Whether a file may be attached to the conversation | `uploaded_file` |
-| `skills.authoring` | Creating, editing, and uploading skills; running admin-provisioned skills is unaffected | — |
-| `thumbs` | Response feedback (thumbs up / down and the follow-up prompt) | — |
+| `file.upload` | Whether a file may be attached to the conversation | `uploaded_file`, `open_file` |
+| `skills.authoring` | Creating, editing, and uploading skills; running admin-provisioned skills is unaffected | `open_file` |
+| `thumbs` | Response feedback (thumbs up / down and the follow-up prompt) | `open_file` |
+| `web_search` | The built-in web search and web fetch tools and the user-facing web-search toggle; code execution is unaffected | `open_file` |
+| `permission_mode.accept_all_edits` | The "Accept all edits" and "Skip all permissions" modes; users in either go back to "Ask before edits". Connector (MCP) "Always allow" choices are unaffected | `open_file` |
+| `permission_mode.dangerously_always_allow` | The "Dangerously always allow" button and the "Skip all permissions" mode it switches to; users in that mode move to "Accept all edits", or "Ask before edits" if `permission_mode.accept_all_edits` is denied too | `open_file` |
 
 Unknown slugs are skipped and reported — forward-compatible. A resource-less
-statement works with any slug; today only `addin.access` and `file.upload`
-have a resource type to scope against.
+statement works with any slug. Every slug can scope to `open_file`;
+`uploaded_file` is evaluated only for `file.upload`. A feature named in an
+`open_file` statement stays off, whether or not the document matches, until the
+add-in has read the open document's label, and stays off if the label can't be
+read.
 
 | Operator | Value | Semantics |
 |---|---|---|
@@ -264,7 +273,9 @@ warning now: the add-in reports unknown action slugs and an unparseable value, b
 grammar is dropped silently — this build-time check is the only catch, and the
 admin would otherwise ship a rule that quietly never applies.
 
-`access_policies` is manifest / bootstrap only — it does **not** fit in Entra
-extension attributes (256-char cap). If they use per-user
+`access_policies` belongs in the manifest or bootstrap — it is not one of the
+eight keys Anthropic's Entra app carries as extension attrs, and more than one
+statement soon outgrows an attr's 256-char cap anyway (see
+[update-user-attrs](update-user-attrs.md)). If they use per-user
 [bootstrap](bootstrap.md), the same array goes there as a native JSON value
 rather than a string.
