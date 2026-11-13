@@ -104,7 +104,7 @@ Start with **financial-analysis** — it carries the shared modeling skills and 
 
 | Plugin | What it adds |
 |---|---|
-| **[financial-analysis](./plugins/vertical-plugins/financial-analysis)** *(core)* | Comps, DCF, LBO, 3-statement, deck QC, Excel audit. All 11 data connectors. |
+| **[financial-analysis](./plugins/vertical-plugins/financial-analysis)** *(core)* | Comps, DCF, LBO, 3-statement, deck QC, Excel audit. All 13 data connectors. |
 | **[investment-banking](./plugins/vertical-plugins/investment-banking)** | CIMs, teasers, process letters, buyer lists, merger models, deal tracking. |
 | **[equity-research](./plugins/vertical-plugins/equity-research)** | Earnings notes, initiations, model updates, thesis and catalyst tracking. |
 | **[private-equity](./plugins/vertical-plugins/private-equity)** | Sourcing, screening, diligence checklists, IC memos, portfolio monitoring. |
@@ -127,6 +127,7 @@ All connectors are centralized in the **financial-analysis** core plugin and sha
 | [Moody's](https://www.moodys.com/) | `https://api.moodys.com/genai-ready-data/m1/mcp` |
 | [MT Newswires](https://www.mtnewswires.com/) | `https://vast-mcp.blueskyapi.com/mtnewswires` |
 | [Aiera](https://www.aiera.com/) | `https://mcp-pub.aiera.com` |
+| [Bigdata.com](https://bigdata.com/) | `https://mcp.bigdata.com` |
 | [LSEG](https://www.lseg.com/) | `https://api.analytics.lseg.com/lfa/mcp` |
 | [PitchBook](https://pitchbook.com/) | `https://premium.mcp.pitchbook.com/mcp` |
 | [Chronograph](https://www.chronograph.pe/) | `https://ai.chronograph.pe/mcp` |
