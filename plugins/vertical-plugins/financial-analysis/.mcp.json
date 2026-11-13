@@ -47,6 +47,10 @@
     "box": {
       "type": "http",
       "url": "https://mcp.box.com"
+    },
+    "roic": {
+      "type": "http",
+      "url": "https://mcp.roic.ai/mcp"
     }
   }
 }
