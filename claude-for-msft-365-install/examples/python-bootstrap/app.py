@@ -7,6 +7,7 @@ that employee is allowed to use, and returns them.
 
 All customer-editable settings live in config.py — edit that, not this file.
 """
+import ipaddress
 import re
 import time
 
@@ -22,11 +23,21 @@ from config import (
     RULES,
     SKILLS,
 )
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from jwt import PyJWKClient
 
 _UA_RE = re.compile(r"^claude-(word|excel|powerpoint)/", re.I)
+
+def _is_loopback(host: str | None) -> bool:
+    if not host:
+        return False
+    if host in ("localhost", "testclient"):
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
 
 def parse_app(user_agent: str | None) -> str:
     m = _UA_RE.match(user_agent or "")
@@ -54,15 +65,15 @@ def validate(auth_header: str) -> dict:
     if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(401, "Missing bearer token")
     token = auth_header.removeprefix("Bearer ").strip()
-    if DEV_JWKS_PATH:
-        import json
-        with open(DEV_JWKS_PATH) as f:
-            key = jwt.PyJWK(json.load(f)["keys"][0]).key
-    else:
-        key = _jwks.get_signing_key_from_jwt(token).key
     try:
+        if DEV_JWKS_PATH:
+            import json
+            with open(DEV_JWKS_PATH) as f:
+                key = jwt.PyJWK(json.load(f)["keys"][0]).key
+        else:
+            key = _jwks.get_signing_key_from_jwt(token).key
         return jwt.decode(token, key, algorithms=["RS256"], audience=AUDIENCE, issuer=ISSUER)
-    except jwt.InvalidTokenError as e:
+    except Exception as e:
         raise HTTPException(401, f"Invalid token: {e}")
 
 # ─── HTTP ────────────────────────────────────────────────────────────
@@ -76,9 +87,14 @@ app.add_middleware(
 
 @app.get("/bootstrap")
 def bootstrap(
+    request: Request,
     authorization: str = Header(None),
     x_claude_user_agent: str = Header(None),
 ):
+    if DEV_JWKS_PATH:
+        client_host = request.client.host if request.client else None
+        if not _is_loopback(client_host):
+            raise HTTPException(403, "DEV_JWKS_PATH may only be used from loopback addresses")
     claims = validate(authorization)
     oid = claims.get("oid", "")
     # NOTE: We assume group membership arrives in the token's `groups` claim.
