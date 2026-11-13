@@ -68,6 +68,14 @@ def all_plugin_jsons() -> list[Path]:
     )
 
 
+def indexed_plugin_jsons() -> list[Path]:
+    """Find manifests in the index even when their working files are missing."""
+    return sorted(
+        ROOT / path for path in git("ls-files", "-z").split("\0")
+        if path and Path(path).parts[-2:] == (".claude-plugin", "plugin.json")
+    )
+
+
 def plugin_root(plugin_json: Path) -> Path:
     # <root>/.claude-plugin/plugin.json -> <root>
     return plugin_json.parent.parent
@@ -114,6 +122,27 @@ def working_version(plugin_json: Path) -> str | None:
         return None
 
 
+def staged_version(plugin_json: Path) -> str | None:
+    """The version in Git's index, not any unstaged working-tree edit."""
+    raw = git_ok("show", f":{rel(plugin_json)}")
+    if raw is None:
+        return None
+    try:
+        return json.loads(raw).get("version")
+    except json.JSONDecodeError:
+        return None
+
+
+def has_unstaged_changes(path: Path) -> bool:
+    result = subprocess.run(
+        ["git", "-C", str(ROOT), "diff", "--quiet", "--", rel(path)],
+        capture_output=True,
+    )
+    if result.returncode not in (0, 1):
+        raise subprocess.CalledProcessError(result.returncode, result.args, stderr=result.stderr)
+    return result.returncode == 1
+
+
 def is_ahead(work: str | None, base: str | None) -> bool:
     """True if the working version is strictly greater than the base version."""
     if base is None:
@@ -129,13 +158,13 @@ def is_ahead(work: str | None, base: str | None) -> bool:
 def changed_plugins(base: str, staged_only: bool) -> list[Path]:
     """Plugin roots touched relative to base (staged set, or base...HEAD)."""
     if staged_only:
-        files = git_ok("diff", "--cached", "--name-only") or ""
+        files = git_ok("diff", "--cached", "--name-only", "-z") or ""
     else:
-        files = git_ok("diff", "--name-only", f"{base}...HEAD") or ""
-    changed = {Path(line) for line in files.splitlines() if line}
+        files = git_ok("diff", "--name-only", "-z", f"{base}...HEAD") or ""
+    changed = {Path(name) for name in files.split("\0") if name}
 
     hits: list[Path] = []
-    for pj in all_plugin_jsons():
+    for pj in (indexed_plugin_jsons() if staged_only else all_plugin_jsons()):
         root_rel = Path(rel(plugin_root(pj)))
         if any(
             c == root_rel or root_rel in c.parents or str(c).startswith(f"{root_rel}/")
@@ -146,13 +175,33 @@ def changed_plugins(base: str, staged_only: bool) -> list[Path]:
 
 
 def cmd_apply(base: str) -> int:
-    bumped = []
+    pending = []
+    blocked = []
+    # Check every manifest before writing any of them, so a blocked plugin
+    # does not leave other plugins partly bumped in the index.
     for pj in changed_plugins(base, staged_only=True):
-        work = working_version(pj)
+        staged = staged_version(pj)
         bv = base_version(base, pj)
-        if is_ahead(work, bv):
-            continue  # already bumped on this branch — idempotent no-op
-        new = patch_bump(bv or work or "0.0.0")
+        if is_ahead(staged, bv):
+            continue
+        if has_unstaged_changes(pj):
+            blocked.append(rel(pj))
+            continue
+        pending.append((pj, bv, staged))
+
+    if blocked:
+        print(
+            "[version-bump] cannot bump manifests with unstaged changes; "
+            "stage or temporarily stash those changes first:",
+            file=sys.stderr,
+        )
+        for path in blocked:
+            print(f"  {path}", file=sys.stderr)
+        return 1
+
+    bumped = []
+    for pj, bv, staged in pending:
+        new = patch_bump(bv or staged or "0.0.0")
         data = json.loads(pj.read_text())
         data["version"] = new
         pj.write_text(json.dumps(data, indent=2) + "\n")
