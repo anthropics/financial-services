@@ -78,7 +78,7 @@ This applies to every merged section header in the DCF (market data, scenario bl
 - Test formulas immediately after creation
 
 **Formula Recalculation:**
-- Run `python recalc.py model.xlsx 30` before delivery
+- Run `python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" model.xlsx 30` before delivery
 - Fix ALL errors until status is "success"
 - Zero formula errors required (#REF!, #DIV/0!, #VALUE!, etc.)
 
@@ -802,12 +802,12 @@ Create **two sheets**:
 After creating or modifying the Excel model, **recalculate all formulas** using the recalc.py script from the xlsx skill:
 
 ```bash
-python recalc.py [path_to_excel_file] [timeout_seconds]
+python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" [path_to_excel_file] [timeout_seconds]
 ```
 
 Example:
 ```bash
-python recalc.py AAPL_DCF_Model_2025-10-12.xlsx 30
+python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" AAPL_DCF_Model_2025-10-12.xlsx 30
 ```
 
 The script will:
@@ -1222,7 +1222,7 @@ This approach centralizes scenario logic, making the model easier to audit and m
    - Cell comments on ALL hardcoded inputs
    - Professional borders around major sections
 
-2. **Recalculate formulas**: Run `python recalc.py model.xlsx 30`
+2. **Recalculate formulas**: Run `python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" model.xlsx 30`
 
 3. **Check output**:
    - If `status` is `"success"` → Continue to step 4
@@ -1249,7 +1249,7 @@ This approach centralizes scenario logic, making the model easier to audit and m
 Before delivering DCF model:
 
 **Required:**
-- Run `python recalc.py model.xlsx 30` until status is "success" (zero formula errors)
+- Run `python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" model.xlsx 30` until status is "success" (zero formula errors)
 - Two sheets: DCF (with sensitivity at bottom), WACC
 - Font colors: Blue=inputs, Black=formulas, Green=sheet links
 - Cell comments on ALL hardcoded inputs

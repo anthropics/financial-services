@@ -29,6 +29,16 @@ calc["C5"] = "=Inputs!C2*(1+Inputs!C3)"        # black = formula
 wb.save("./out/model.xlsx")
 ```
 
+## Formula recalculation
+
+After generating a workbook containing formulas, recalculate and validate it before delivery:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/skills/xlsx-author/scripts/recalc.py" ./out/model.xlsx 30
+```
+
+The command must return `"status": "success"` with zero formula errors before the workbook is delivered.
+
 ## Conventions (mirror `audit-xls`)
 
 - **Blue / black / green.** Blue = hardcoded input, black = formula, green = link to another sheet/file.
