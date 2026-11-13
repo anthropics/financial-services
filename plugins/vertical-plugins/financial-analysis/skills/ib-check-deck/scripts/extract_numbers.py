@@ -116,7 +116,9 @@ def extract_numbers(content: str) -> list[NumberInstance]:
     # Pattern for numbers with various formats
     # Matches: $500M, 500M, $500 million, 25%, 25.5%, 2.5x, 150bps, $1,234.56, etc.
     number_pattern = re.compile(
+        r'(?P<sign_before>(?<![\w.,])-)?'  # A leading minus, not a glued range separator
         r'(?P<currency>[$€£¥])?'  # Optional currency symbol
+        r'(?P<sign_after>(?<=[$€£¥])-)?'  # Also accept $-20M
         r'(?P<number>[\d,]+(?:\.\d+)?)'  # The number itself
         r'\s*'
         r'(?P<unit>%|bps|x|'  # Common units
@@ -135,10 +137,13 @@ def extract_numbers(content: str) -> list[NumberInstance]:
             continue
 
         # Find all numbers in the line
+        previous_figure_end = None
         for match in number_pattern.finditer(line):
             value_str = match.group('number')
             currency = match.group('currency') or ''
             unit = match.group('unit') or ''
+            sign_before = match.group('sign_before') or ''
+            sign_after = match.group('sign_after') or ''
 
             # Skip very short numbers without context (likely not financial)
             if len(value_str.replace(',', '').replace('.', '')) < 2 and not unit:
@@ -152,8 +157,16 @@ def extract_numbers(content: str) -> list[NumberInstance]:
             except ValueError:
                 pass
 
-            # Build full value string
-            full_value = f"{currency}{value_str}{unit}"
+            # A hyphen directly between two figures is a range separator,
+            # including when the endpoints are separated by whitespace.
+            if sign_before and previous_figure_end is not None:
+                if not line[previous_figure_end:match.start()].strip():
+                    sign_before = ''
+            previous_figure_end = match.end()
+
+            # Preserve the written sign and pass it to numeric normalization.
+            full_value = f"{sign_before}{currency}{sign_after}{value_str}{unit}"
+            signed_value = f"{'-' if sign_before or sign_after else ''}{value_str}"
 
             # Get context (surrounding words)
             start = max(0, match.start() - 50)
@@ -167,7 +180,7 @@ def extract_numbers(content: str) -> list[NumberInstance]:
                 else:
                     unit = f"USD_{unit}"
 
-            normalized = normalize_number(value_str, unit)
+            normalized = normalize_number(signed_value, unit)
             category = detect_category(context, unit)
 
             numbers.append(NumberInstance(
@@ -204,8 +217,8 @@ def find_inconsistencies(numbers: list[NumberInstance]) -> list[dict]:
             placed = False
             for group in value_groups:
                 ref_value = group[0].normalized
-                if ref_value > 0:
-                    diff_pct = abs(inst.normalized - ref_value) / ref_value
+                if ref_value != 0:
+                    diff_pct = abs(inst.normalized - ref_value) / abs(ref_value)
                     if diff_pct < 0.05:  # 5% tolerance
                         group.append(inst)
                         placed = True
