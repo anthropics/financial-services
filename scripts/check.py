@@ -69,7 +69,7 @@ def rel(p: Path) -> str:
 for yml in sorted(MANAGED.rglob("*.yaml")):
     checked += 1
     try:
-        with open(yml) as f:
+        with open(yml, encoding="utf-8") as f:
             yaml.safe_load(f)
     except yaml.YAMLError as e:
         err(f"YAML parse: {rel(yml)}: {e}")
@@ -84,14 +84,14 @@ for pat in json_globs:
     for jf in sorted(ROOT.glob(pat)):
         checked += 1
         try:
-            json.loads(jf.read_text())
+            json.loads(jf.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
 
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
     checked += 1
-    text = md.read_text()
+    text = md.read_text(encoding="utf-8")
     if not text.startswith("---"):
         err(f"frontmatter: {rel(md)}: missing leading ---")
         continue
@@ -108,7 +108,7 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
 # --- 4. reference resolution -----------------------------------------------
 def check_refs(yml: Path) -> None:
     try:
-        data = yaml.safe_load(yml.read_text()) or {}
+        data = yaml.safe_load(yml.read_text(encoding="utf-8")) or {}
     except yaml.YAMLError:
         return  # already reported above
     base = yml.parent
@@ -163,7 +163,7 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
     slug = md.parents[1].name
     sk_dir = PLUGINS / "agent-plugins" / slug / "skills"
     bundle = {p.name for p in sk_dir.iterdir() if p.is_dir()} if sk_dir.is_dir() else set()
-    for ref in set(re.findall(r"`([a-z0-9]+(?:-[a-z0-9]+)+)`", md.read_text())):
+    for ref in set(re.findall(r"`([a-z0-9]+(?:-[a-z0-9]+)+)`", md.read_text(encoding="utf-8"))):
         if ref in src_by_name and ref not in bundle:
             err(
                 f"agent-prose: {rel(md)}: references `{ref}` but "
@@ -172,7 +172,7 @@ for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
 
 # --- 4c. marketplace source paths resolve ----------------------------------
 mp = ROOT / ".claude-plugin" / "marketplace.json"
-for p in json.loads(mp.read_text()).get("plugins", []):
+for p in json.loads(mp.read_text(encoding="utf-8")).get("plugins", []):
     src = (ROOT / p["source"]).resolve()
     if not (src / ".claude-plugin" / "plugin.json").is_file():
         err(f"marketplace: {p['name']} source -> {p['source']} (no plugin.json)")

@@ -1,0 +1,8 @@
+{
+  "name": "financial-advisors",
+  "version": "0.1.0",
+  "description": "Advisor workflows: client review prep, client performance reports, and investment proposals",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}
