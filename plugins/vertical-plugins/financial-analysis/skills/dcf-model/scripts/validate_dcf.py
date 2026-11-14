@@ -88,9 +88,9 @@ class DCFModelValidator:
                         total_formulas += 1
 
                     # Check for errors
-                    if cell.value is not None and isinstance(cell.value, str):
+                    if cell.data_type == 'e':
                         for err in excel_errors:
-                            if err in cell.value:
+                            if err == cell.value:
                                 location = f"{sheet_name}!{cell.coordinate}"
                                 error_details[err].append(location)
                                 total_errors += 1
