@@ -47,6 +47,10 @@
     "box": {
       "type": "http",
       "url": "https://mcp.box.com"
+    },
+    "amendment": {
+      "type": "http",
+      "url": "https://mcp.amendment.app/mcp"
     }
   }
 }
