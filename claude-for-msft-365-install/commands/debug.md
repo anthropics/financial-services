@@ -15,6 +15,7 @@ Ask the admin to describe the symptom. Route by answer:
 |---|---|
 | Updated the manifest but users still see old config | [Stale config after update](#stale-config-after-update) |
 | Add-in shows "Connection failed" | [Read the error paste](#read-the-error-paste) |
+| Bedrock sign-in fails with 403 / "model not permitted" | [Sign-in 403: model not permitted by the IAM policy](#sign-in-403-model-not-permitted-by-the-iam-policy) |
 | Add-in doesn't appear in Excel/PowerPoint at all | [Add-in not visible](#add-in-not-visible) |
 | Want to test/iterate a manifest locally before deploying | [Sideload a manifest for local debugging](#sideload-a-manifest-for-local-debugging) |
 | Sign-in popup fails or loops | [Admin consent](#admin-consent) |
@@ -64,8 +65,63 @@ Raw error:
   - `STS AssumeRoleWithWebIdentity failed` → AWS IAM OIDC provider
     misconfigured or role trust policy wrong.
   - `HTTP 401/403` (gateway) → bad token or gateway rejected the key.
+  - `HTTP 403` at sign-in **on a direct Bedrock connection**, with a model or
+    `*.anthropic.*` inference-profile ID in the message → the IAM policy is too
+    narrow to permit any model the add-in can invoke. This is a model-permission
+    problem, not an STS or token failure (those read
+    `STS AssumeRoleWithWebIdentity failed` or `user_canceled`). See
+    [Sign-in 403: model not permitted by the IAM policy](#sign-in-403-model-not-permitted-by-the-iam-policy).
 
 ---
+
+## Sign-in 403: model not permitted by the IAM policy
+
+**Symptom:** Bedrock users can't sign in. The connect screen fails, and the
+error paste shows **HTTP 403** with a model or inference-profile identifier in
+the message (often a `*.anthropic.*` profile). This is a **direct-to-Bedrock**
+403, not a gateway 403.
+
+**What's happening:** at sign-in the add-in discovers and selects a permitted
+inference profile. If the `ClaudeBedrockAccess` IAM policy's `Resource` list is
+too narrow to permit *any* profile the add-in can invoke in your region,
+Bedrock returns 403 and sign-in fails — **for every user**. The usual cause is
+an over-aggressive least-privilege trim: e.g. keeping only a model family or a
+region prefix that has no invokeable profile for your deployment.
+
+**Distinguish from token/STS failures.** A 403 here is an *authorization*
+(model-permission) problem, not authentication:
+
+- `STS AssumeRoleWithWebIdentity failed` → OIDC/role trust problem, not this.
+- `user_canceled` → admin-consent/popup problem, not this. See
+  [Admin consent](#admin-consent).
+- `HTTP 401/403 (gateway)` → bad gateway token, not this — that path doesn't
+  touch Bedrock IAM. See [Read the error paste](#read-the-error-paste).
+
+**Fix:** make sure the Bedrock IAM policy permits at least one profile your
+region can invoke. Re-apply the Step 1b policy (it grants the five
+`*.anthropic.*` inference-profile prefixes — `us.`/`eu.`/`au.`/`apac.` plus the
+geography-agnostic `global.` — plus `bedrock:ListInferenceProfiles` and
+`bedrock:GetInferenceProfile`), or, if you trimmed it for
+[cost or residency](setup.md#1b-create-oidc-provider--role), confirm the model
+family and region prefix you kept actually has an invokeable profile — and that
+you left the `foundation-model/anthropic.*` resource in place (cross-region
+inference needs both the inference-profile and the foundation-model ARN). You
+can list what your account/region exposes:
+
+> ```bash
+> aws bedrock list-inference-profiles --region <aws_region>
+> ```
+
+Then confirm model access is also **granted** in the Bedrock console (see
+[setup Step 6](setup.md#step-6--verify-a-model-is-reachable)).
+
+> **Note on model/cost governance.** The IAM `Resource` list controls which
+> models the add-in can discover and use, so it's also how you keep cost in
+> check (e.g. permit Sonnet, omit Opus). If you need finer control than IAM
+> resources give you — per-user routing, request-level model remapping, or
+> spend caps — route the add-in through an LLM gateway via the
+> [Gateway setup](setup.md#gateway) section instead of connecting directly to
+> Bedrock.
 
 ## Stale config after update
 
