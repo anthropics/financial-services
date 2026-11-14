@@ -1,0 +1,8 @@
+{
+  "name": "personal-investing",
+  "version": "0.1.0",
+  "description": "Personal investing tools: investor profile, portfolio review, single-stock checkup, position sizing, and tax-aware rebalancing",
+  "author": {
+    "name": "mayongjun1286-prog"
+  }
+}

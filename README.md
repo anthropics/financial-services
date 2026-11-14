@@ -30,6 +30,7 @@ Each agent plugin is **self-contained** — it bundles the skills it uses, so in
 | | **[Month-End Closer](./plugins/agent-plugins/month-end-closer)** | Accruals, roll-forwards, variance commentary |
 | | **[Statement Auditor](./plugins/agent-plugins/statement-auditor)** | Audits LP statements before distribution |
 | **Operations & onboarding** | **[KYC Screener](./plugins/agent-plugins/kyc-screener)** | Parses onboarding docs, runs the rules engine, flags gaps |
+| **Personal investing**      | **[Portfolio Analyst](plugins/agent-plugins/portfolio-analyst)**   | Investor profile, holdings review, stock checkups, sizing, staged rebalancing           |
 
 For Managed Agent deployment — `agent.yaml`, leaf-worker subagents, steering-event examples, and per-agent security notes — see **[managed-agent-cookbooks/](./managed-agent-cookbooks)**.
 
@@ -67,6 +68,7 @@ claude plugin install financial-analysis@claude-for-financial-services
 claude plugin install pitch-agent@claude-for-financial-services
 claude plugin install gl-reconciler@claude-for-financial-services
 claude plugin install market-researcher@claude-for-financial-services
+claude plugin install portfolio-analyst@claude-for-financial-services
 
 # Vertical skill bundles
 claude plugin install investment-banking@claude-for-financial-services
@@ -110,6 +112,7 @@ Start with **financial-analysis** — it carries the shared modeling skills and 
 | **[private-equity](./plugins/vertical-plugins/private-equity)** | Sourcing, screening, diligence checklists, IC memos, portfolio monitoring. |
 | **[fund-admin](./plugins/vertical-plugins/fund-admin)** | GL recon, break tracing, accruals, roll-forwards, variance commentary, NAV tie-out. |
 | **[operations](./plugins/vertical-plugins/operations)** | KYC document parsing and rules-grid evaluation. |
+| **[personal-investing](plugins/vertical-plugins/personal-investing)** | Individual-investor toolkit: investor profile/IPS, portfolio look-through review, stock checkup, position sizing, tax-aware rebalancing. |
 | **[claude-for-financial-advisors](./claude-for-financial-advisors)** | Advisor workflows: meeting prep and follow-up, compliance pre-check, prospect intake, rebalance review, alts and estate briefs, on live data from the advisor's CRM, portfolio, planning, and estate platforms. |
 | **[lseg](./plugins/partner-built/lseg)** *(partner)* | Bond RV, swap curves, FX carry, options vol, macro-rates monitoring on LSEG data. |
 | **[sp-global](./plugins/partner-built/spglobal)** *(partner)* | Tear sheets, earnings previews, funding digests on S&P Capital IQ. |
@@ -232,6 +235,16 @@ These are reference templates — they get better when you tune them to how your
 | ai-readiness | `/ai-readiness` | Assess a portfolio company's AI readiness |
 
 </details>
+
+**personal-investing — individual investor toolkit**
+
+| Skill            | Command             | Description                                                        |
+| ---------------- | ------------------- | ------------------------------------------------------------------ |
+| investor-profile | `/investor-profile` | Goals, risk capacity vs tolerance, target allocation, personal rules |
+| portfolio-review | `/portfolio-review` | Look-through exposures, concentration, overlap, fees, findings     |
+| stock-checkup    | `/stock-checkup`    | Single-stock quality, risk, valuation, bull/bear, what must be true |
+| position-sizing  | `/size-position`    | Risk-budget, concentration and liquidity sizing, lot-rounded       |
+| rebalance-plan   | `/rebalance`        | Tax- and cost-aware staged rebalancing trade list                  |
 
 ## Contributing
 
