@@ -4,7 +4,8 @@ Lint all plugin + managed-agent manifests and verify cross-file references.
 
 Checks:
   1. Every *.yaml under managed-agents/ parses.
-  2. Every plugin.json / marketplace.json / steering-examples.json parses.
+  2. Every plugin.json / marketplace.json / steering-examples.json parses,
+     and every git-tracked *.mcp.json parses with a 'mcpServers' object.
   3. Every <vertical>/agents/*.md has valid YAML frontmatter with name + description.
   4. Every system.file, skills[].path, callable_agents[].manifest in agent.yaml
      and subagent yamls resolves to an existing file/dir.
@@ -87,6 +88,33 @@ for pat in json_globs:
             json.loads(jf.read_text())
         except json.JSONDecodeError as e:
             err(f"JSON parse: {rel(jf)}: {e}")
+
+# --- 2b. .mcp.json parse + shape --------------------------------------------
+# One malformed .mcp.json silently drops every MCP server in that plugin, so
+# gate every tracked copy (fall back to a filesystem walk outside a checkout).
+try:
+    mcp_files = [
+        ROOT / p
+        for p in subprocess.run(
+            ["git", "-C", str(ROOT), "ls-files", "-z", "*.mcp.json"],
+            capture_output=True, text=True, check=True,
+        ).stdout.split("\0")
+        if p
+    ]
+except (subprocess.SubprocessError, OSError):
+    mcp_files = [
+        p for p in ROOT.rglob("*.mcp.json")
+        if not any(part in {".git", "node_modules"} for part in p.parts)
+    ]
+for mf in sorted(mcp_files):
+    checked += 1
+    try:
+        data = json.loads(mf.read_text())
+    except (OSError, json.JSONDecodeError) as e:
+        err(f"JSON parse: {rel(mf)}: {e}")
+        continue
+    if not isinstance(data, dict) or not isinstance(data.get("mcpServers"), dict):
+        err(f"mcp: {rel(mf)}: missing top-level 'mcpServers' object")
 
 # --- 3. agent.md frontmatter -----------------------------------------------
 for md in sorted(PLUGINS.glob("agent-plugins/*/agents/*.md")):
