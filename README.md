@@ -104,7 +104,7 @@ Start with **financial-analysis** — it carries the shared modeling skills and 
 
 | Plugin | What it adds |
 |---|---|
-| **[financial-analysis](./plugins/vertical-plugins/financial-analysis)** *(core)* | Comps, DCF, LBO, 3-statement, deck QC, Excel audit. All 11 data connectors. |
+| **[financial-analysis](./plugins/vertical-plugins/financial-analysis)** *(core)* | Comps, DCF, LBO, 3-statement, deck QC, Excel audit. All 12 data connectors. |
 | **[investment-banking](./plugins/vertical-plugins/investment-banking)** | CIMs, teasers, process letters, buyer lists, merger models, deal tracking. |
 | **[equity-research](./plugins/vertical-plugins/equity-research)** | Earnings notes, initiations, model updates, thesis and catalyst tracking. |
 | **[private-equity](./plugins/vertical-plugins/private-equity)** | Sourcing, screening, diligence checklists, IC memos, portfolio monitoring. |
@@ -229,7 +229,58 @@ These are reference templates — they get better when you tune them to how your
 | ic-memo | `/ic-memo` | Investment committee memo drafting |
 | portfolio-monitoring | `/portfolio` | Track portfolio company KPIs and variances |
 | value-creation-plan | `/value-creation` | Post-close 100-day plans and EBITDA bridges |
-| ai-readiness | `/ai-readiness` | Assess a portfolio company's AI readiness |
+| ai-readiness | `/ai-readiness` | Scan the portfolio for the highest-leverage AI opportunities |
+
+</details>
+
+<details>
+<summary><b>fund-admin</b> — reconciliation and month-end close</summary>
+
+| Skill | Command | Description |
+|---|---|---|
+| gl-recon | — | Reconcile GL to subledger and classify breaks |
+| break-trace | — | Root-cause a reconciliation break to its source entry |
+| accrual-schedule | — | Period-end accrual schedule with draft JEs |
+| roll-forward | — | Balance-sheet roll-forwards tied to GL |
+| variance-commentary | — | Flux commentary vs prior period and budget |
+| nav-tieout | — | Tie LP statements to the fund NAV pack |
+
+</details>
+
+<details>
+<summary><b>operations</b> — KYC onboarding</summary>
+
+| Skill | Command | Description |
+|---|---|---|
+| kyc-doc-parse | — | Parse an onboarding packet into structured KYC fields |
+| kyc-rules | — | Apply the KYC/AML rules grid, rate risk, flag gaps |
+
+</details>
+
+<details>
+<summary><b>lseg</b> <i>(partner)</i> — rates, FX, fixed income, equity on LSEG data</summary>
+
+| Skill | Command | Description |
+|---|---|---|
+| bond-relative-value | `/analyze-bond-rv` | Bond richness/cheapness vs curves and spreads |
+| bond-futures-basis | `/analyze-bond-basis` | CTD, implied repo, and basis trade assessment |
+| swap-curve-strategy | `/analyze-swap-curve` | Swap curve trades with government and inflation overlays |
+| fx-carry-trade | `/analyze-fx-carry` | FX carry with forwards and vol context |
+| option-vol-analysis | `/analyze-option-vol` | Vol surface, Greeks, implied vs realized |
+| macro-rates-monitor | `/macro-rates` | Macro and rates dashboard |
+| fixed-income-portfolio | `/review-fi-portfolio` | Bond portfolio pricing, cashflows, and scenarios |
+| equity-research | `/research-equity` | Equity snapshot with consensus and fundamentals |
+
+</details>
+
+<details>
+<summary><b>sp-global</b> <i>(partner)</i> — S&P Capital IQ</summary>
+
+| Skill | Command | Description |
+|---|---|---|
+| tear-sheet | — | Company tear sheets for research, banking, corp dev, or sales |
+| earnings-preview-beta | — | 4–5 page earnings preview |
+| funding-digest | — | One-slide recap of recent funding rounds |
 
 </details>
 
