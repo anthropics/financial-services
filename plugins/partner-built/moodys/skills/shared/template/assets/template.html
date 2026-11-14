@@ -1,0 +1,384 @@
+<!--
+  Shared template asset — canonical CSS + reference HTML scaffolds.
+
+  This file is the SINGLE SOURCE OF TRUTH for the visual contract of the page
+  chrome (head boilerplate, cover, TOC, section, sources wrapper, footer,
+  outlook-badge) across the HTML report skills (earnings-brief,
+  peer-analysis, issuer-brief, sector-brief). It is the sibling
+  of skills/shared/citations/assets/template.html and uses the exact same
+  inlining contract.
+
+  Parent skills MUST:
+    1. Read this file alongside skills/shared/template/SKILL.md before
+       emitting any HTML report.
+    2. At EMIT TIME, copy the CONTENTS (not the <style> wrapper) of
+       <style id="shared-template-css">…</style> below into the parent
+       template's reserved CSS-comment marker region (the markers live INSIDE
+       the parent's <style> tag, so they are CSS comments, not HTML comments):
+           /* BEGIN shared-template-css ... */
+           /* END shared-template-css */
+       Parent templates do NOT carry a duplicated copy of these rules — they
+       ship only the marker comments. Do not edit CSS values per-skill.
+    3. Use the markup snippets in <template> tags below as the literal markup
+       contract — copy them and substitute the placeholders. Do NOT vary
+       class names or attribute order. Each parent picks ONE cover variant
+       (cover-simple OR cover-multi) — see SKILL.md for which.
+
+  Skill-specific CSS overrides (e.g. body font-size, .page max-width, table
+  classes, chart helpers, ECS .credit-badge, PA .sub-heading) live in the
+  parent template, ABOVE the marker region. Anything inside the canonical
+  block is owned by this skill and must not be re-defined locally.
+-->
+
+<!-- =============================================================== -->
+<!-- 1. Canonical CSS — copy verbatim into the parent template <style> -->
+<!-- =============================================================== -->
+<style id="shared-template-css">
+:root {
+  --navy:     #00205b;
+  --accent:   #0066cc;
+  --gray-100: #f5f6f8;
+  --gray-200: #e8eaed;
+  --gray-300: #cdd1d8;
+  --gray-400: #9aa0ab;
+  --gray-700: #444c58;
+  --g100:     var(--gray-100);
+  --g200:     var(--gray-200);
+  --g300:     var(--gray-300);
+  --g400:     var(--gray-400);
+  --g700:     var(--gray-700);
+  --text:     #1a1e27;
+  --positive: #1a7a4a;
+  --negative: #c0392b;
+  --neutral:  #7a6500;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  background: #f0f2f5;
+  line-height: 1.65;
+}
+
+.page {
+  max-width: 900px;
+  margin: 32px auto 64px;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(0,0,0,.13);
+}
+
+.cover-logo {
+  font-size: 16px; font-weight: 900; letter-spacing: 2px;
+  text-transform: uppercase; color: #fff;
+}
+.cover-agentic {
+  font-size: 13px; font-weight: 400; color: #8fa8d0;
+  letter-spacing: 1px; margin-top: 4px;
+}
+.cover-title {
+  font-weight: 300; line-height: 1.2; letter-spacing: -.5px;
+  color: #fff;
+}
+.cover-title strong { font-weight: 700; }
+.cover-meta {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.18);
+  display: flex; gap: 24px; font-size: 11px;
+  color: #8fa8d0; flex-wrap: wrap;
+}
+.cover-meta strong { color: #fff; }
+
+.cover.cover-simple {
+  background: var(--navy); color: #fff;
+  padding: 56px 52px 44px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  min-height: 280px;
+}
+.cover.cover-simple .cover-logo { margin-bottom: 44px; }
+.cover.cover-simple .cover-title { font-size: 36px; margin-bottom: 36px; }
+
+.cover.cover-multi { display: grid; grid-template-rows: auto; overflow: hidden; }
+.cover.cover-multi .cover-top {
+  display: grid; grid-template-columns: 1fr; min-height: 340px;
+}
+.cover.cover-multi .cover-top.has-cover-image {
+  grid-template-columns: 1fr 160px 16px;
+}
+.cover.cover-multi .cover-top:not(.has-cover-image) .cover-strip,
+.cover.cover-multi .cover-top:not(.has-cover-image) .cover-bar-top { display: none; }
+.cover.cover-multi .cover-bottom { display: none; }
+.cover.cover-multi .cover-bottom.has-cover-image {
+  display: grid; grid-template-columns: 1fr 16px; height: 220px;
+}
+.cover.cover-multi .cover-left {
+  background: var(--navy); color: #fff;
+  padding: 44px 44px 40px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.cover.cover-multi .cover-logo { margin-bottom: 52px; }
+.cover.cover-multi .cover-title { font-size: 40px; margin-bottom: 28px; }
+.cover.cover-multi .cover-companies {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+}
+.cover.cover-multi .company-chip {
+  background: rgba(255,255,255,.15); color: #fff;
+  font-size: 13px; font-weight: 600;
+  padding: 6px 16px; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,.35);
+  letter-spacing: .2px;
+}
+.cover.cover-multi .company-chip.target {
+  background: rgba(255,255,255,.28);
+  border-color: rgba(255,255,255,.55);
+}
+.cover.cover-multi .cover-companies-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: #8fa8d0; margin-bottom: 10px;
+}
+.cover.cover-multi .cover-strip { overflow: hidden; background: var(--navy); }
+.cover.cover-multi .cover-strip img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
+}
+.cover.cover-multi .cover-bar-top { background: #1a6edc; }
+.cover.cover-multi .cover-landscape { overflow: hidden; background: var(--navy); }
+.cover.cover-multi .cover-landscape img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center center; display: block;
+}
+.cover.cover-multi .cover-bar-bottom { background: #1a6edc; }
+
+.toc-page {
+  padding: 44px 56px 36px; border-bottom: 3px solid var(--navy);
+}
+.toc-heading {
+  font-size: 11px; font-weight: 800; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--navy);
+  margin-bottom: 20px; padding-bottom: 10px;
+  border-bottom: 2px solid var(--navy);
+}
+.toc-list { list-style: none; }
+.toc-list li {
+  display: flex; align-items: baseline; padding: 5px 0;
+  border-bottom: 1px dotted var(--g200);
+  font-size: 12.5px; color: var(--g700);
+}
+.toc-list li:last-child { border-bottom: none; }
+.toc-num {
+  font-weight: 700; color: var(--navy);
+  width: 90px; flex-shrink: 0; font-size: 12px;
+}
+.toc-label { flex: 1; }
+.toc-dots {
+  flex: 1; border-bottom: 1px dotted var(--g400); margin: 0 8px;
+  min-width: 40px; align-self: flex-end; margin-bottom: 4px;
+}
+.toc-list a { color: inherit; text-decoration: none; }
+.toc-list a:hover { color: var(--accent); }
+
+.report-body { padding: 0 56px 48px; }
+
+.section { padding-top: 36px; margin-top: 4px; }
+.section-heading {
+  font-size: 15px; font-weight: 700; color: var(--navy);
+  padding-bottom: 8px; border-bottom: 2px solid var(--navy);
+  margin-bottom: 14px;
+}
+.section-content { color: var(--g700); line-height: 1.7; }
+.section-content p { margin-bottom: 10px; }
+.section-content ul { padding-left: 20px; margin-bottom: 10px; }
+.section-content li { margin-bottom: 6px; }
+.section-content .subsection-title {
+  font-size: 13px; font-weight: 700; color: var(--text);
+  margin-top: 16px; margin-bottom: 6px; display: block;
+}
+.section-content strong { color: var(--text); }
+
+.outlook-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 10px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.outlook-badge.stable   { background: #e6f5ec; color: var(--positive); }
+.outlook-badge.positive { background: #e6f5ec; color: var(--positive); }
+.outlook-badge.negative { background: #fdf0ee; color: var(--negative); }
+.outlook-badge.review   { background: #fdf8e1; color: var(--neutral); }
+.outlook-badge.na       { background: var(--g100); color: var(--g400); }
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.report-footer {
+  background: var(--navy); padding: 14px 56px;
+  font-size: 10px; color: #8fa8d0;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-logo {
+  font-size: 14px; font-weight: 800; color: #fff; letter-spacing: 1px;
+}
+
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; margin: 0; max-width: none; }
+  .section { page-break-inside: avoid; }
+}
+</style>
+
+<!-- =============================================================== -->
+<!-- 2. Reference HTML snippets — markup contract for parent skills    -->
+<!-- =============================================================== -->
+
+<!-- 2a. Document head boilerplate.
+     Copy verbatim into the top of the parent template. The parent template's
+     <style> block lives inside <head> and contains:
+       (a) skill-specific overrides (body font-size, .page max-width, tables, …)
+       (b) the /* BEGIN shared-template-css ... */ marker region
+       (c) the /* BEGIN shared-citations-css ... */ marker region
+     Substitute {report_title}. -->
+<template id="document-head">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{report_title}</title>
+  <style>
+    /* skill-specific overrides go here (body font-size, .page max-width,
+       skill-only table/chart classes, etc.) */
+
+    /* BEGIN shared-template-css (inlined at emit time from
+       skills/shared/template/assets/template.html) */
+    /* END shared-template-css */
+
+    /* BEGIN shared-citations-css (inlined at emit time from
+       skills/shared/citations/assets/template.html) */
+    /* END shared-citations-css */
+  </style>
+</head>
+<body>
+<div class="page">
+  <!-- cover, toc, report-body, report-footer go here -->
+</div>
+</body>
+</html>
+</template>
+
+<!-- 2b. Cover (simple variant) — used by issuer-brief and
+     sector-brief. 1-column navy cover; one or more .cover-meta rows. -->
+<template id="cover-simple">
+<div class="cover cover-simple">
+  <div>
+    <div class="cover-logo">Moody's<div class="cover-agentic">AGENTIC SOLUTIONS</div></div>
+    <div class="cover-title">{Cover Title — use <strong> for the entity / topic name}</div>
+  </div>
+  <div class="cover-meta">
+    <span><strong>Date:</strong> {YYYY-MM-DD}</span>
+    <span><strong>Type:</strong> {report type label}</span>
+    <!-- additional <span><strong>Label:</strong> value</span> pairs as needed -->
+  </div>
+</div>
+</template>
+
+<!-- 2c. Cover (multi variant) — used by earnings-brief and
+     peer-analysis. 2-region grid; .cover-top has the navy left + optional
+     image strips; .cover-bottom is an optional landscape band.
+
+     Add the .has-cover-image class to .cover-top / .cover-bottom only when
+     populating the .cover-strip / .cover-landscape <img>. Otherwise omit it
+     and the strips will be hidden by the canonical CSS.
+
+     .company-chip rows are skill-specific in content (PA marks the target
+     entity with .company-chip.target; ECS lists the issuer first). The
+     wrapping markup is shared. -->
+<template id="cover-multi">
+<div class="cover cover-multi">
+  <div class="cover-top">
+    <div class="cover-left">
+      <div>
+        <div class="cover-logo">Moody's<div class="cover-agentic">AGENTIC SOLUTIONS</div></div>
+        <div class="cover-title">{Cover Title — use <strong> for the entity / topic name}</div>
+        <div class="cover-companies-label">{COMPANIES LABEL e.g. PEERS / COMPANIES}</div>
+        <div class="cover-companies">
+          <span class="company-chip">{Entity 1}</span>
+          <span class="company-chip">{Entity 2}</span>
+          <!-- repeat as needed; PA flags the target entity with class="company-chip target" -->
+        </div>
+      </div>
+      <div class="cover-meta">
+        <span><strong>Date:</strong> {YYYY-MM-DD}</span>
+        <span><strong>Type:</strong> {report type label}</span>
+        <!-- additional <span><strong>Label:</strong> value</span> pairs as needed -->
+      </div>
+    </div>
+    <div class="cover-strip"><!-- optional <img src="..."> --></div>
+    <div class="cover-bar-top"></div>
+  </div>
+  <div class="cover-bottom">
+    <div class="cover-landscape"><!-- optional <img src="..."> --></div>
+    <div class="cover-bar-bottom"></div>
+  </div>
+</div>
+</template>
+
+<!-- 2d. Table of contents.
+     Insert one <li> per section. Substitute {prefix} (ecs / pa / pib / sa)
+     and the section number / label / anchor target. The .toc-num, .toc-dots
+     pattern is invariant. -->
+<template id="toc-block">
+<div class="toc-page">
+  <div class="toc-heading">Contents</div>
+  <ul class="toc-list">
+    <li><span class="toc-num">01</span><a href="#{prefix}-section-a"><span class="toc-label">{Section A label}</span></a><span class="toc-dots"></span></li>
+    <li><span class="toc-num">02</span><a href="#{prefix}-section-b"><span class="toc-label">{Section B label}</span></a><span class="toc-dots"></span></li>
+    <!-- repeat per section; the trailing Citations row is part of the TOC -->
+    <li><span class="toc-num">{NN}</span><a href="#{prefix}-sources-anchor"><span class="toc-label">Citations</span></a><span class="toc-dots"></span></li>
+  </ul>
+</div>
+</template>
+
+<!-- 2e. Section block — the wrapper around every titled section in the
+     report body. Substitute {prefix}, {slug}, and the heading label.
+     The inner content (paragraphs, tables, lists) is skill-specific. The
+     #{prefix}-cite-{slot} target div is opt-in (only skills that opt into
+     per-section citation recaps render it; see shared/citations). -->
+<template id="section-block">
+<div class="section" id="{prefix}-section-{slug}">
+  <div class="section-heading">{Section Heading}</div>
+  <div class="section-content">
+    <!-- skill-specific content goes here -->
+    <div id="{prefix}-cite-{slot}"></div>
+  </div>
+</div>
+</template>
+
+<!-- 2f. Sources-section wrapper — exactly mirrors the citations skill's
+     <template id="sources-section"> shape. Re-shipped here so the chrome
+     stays adjacent to the rest of the document scaffold; the citations
+     skill remains the source of truth for the rows inside #{prefix}-sources. -->
+<template id="sources-section-block">
+<div class="sources-section" id="{prefix}-sources-anchor">
+  <div class="sources-heading">Citations</div>
+  <div id="{prefix}-sources">
+    <!-- one .source-item row per source, in [1], [2], … order.
+         Markup defined in skills/shared/citations/assets/template.html. -->
+  </div>
+</div>
+</template>
+
+<!-- 2g. Report footer. Substitute {YYYY-MM-DD}. -->
+<template id="report-footer">
+<div class="report-footer">
+  <span class="footer-logo">Moody's <span style="font-weight:400;color:#8fa8d0;">AGENTIC SOLUTIONS</span></span>
+  <span>Report generated {YYYY-MM-DD} • Confidential</span>
+</div>
+</template>
+
+<!-- 2h. Outlook badge. Class variants: stable, positive, negative, review,
+     na. The label text is uppercased by CSS, so the inner text can be
+     mixed-case. -->
+<template id="outlook-badge">
+<span class="outlook-badge {variant}">{label}</span>
+</template>

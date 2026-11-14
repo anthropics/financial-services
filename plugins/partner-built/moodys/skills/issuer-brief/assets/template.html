@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Issuer Brief</title>
+<style>
+body { font-size: 12.5px; }
+.page { max-width: 920px; }
+
+/* BEGIN shared-template-css (inlined at emit time from skills/shared/template/assets/template.html) */
+/* END shared-template-css */
+
+table.data-table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 11px; }
+table.data-table th { background: var(--navy); color: #fff; padding: 6px 8px; text-align: left; font-weight: 600; font-size: 10.5px; white-space: nowrap; }
+table.data-table td { padding: 5px 8px; border-bottom: 1px solid var(--g200); vertical-align: top; }
+table.data-table tr:nth-child(even) td { background: var(--g100); }
+table.data-table td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+table.fin-table { width: 100%; border-collapse: collapse; margin: 12px 0 16px; font-size: 10.5px; }
+table.fin-table th { background: var(--navy); color: #fff; padding: 5px 6px; text-align: right; font-weight: 600; font-size: 10px; white-space: nowrap; }
+table.fin-table th:first-child { text-align: left; }
+table.fin-table td { padding: 4px 6px; border-bottom: 1px solid var(--g200); text-align: right; font-variant-numeric: tabular-nums; }
+table.fin-table td:first-child { text-align: left; font-weight: 600; color: var(--text); white-space: nowrap; }
+table.fin-table tr:nth-child(even) td { background: var(--g100); }
+
+.chart-container { margin: 16px 0 20px; text-align: center; }
+.chart-container svg { max-width: 100%; }
+
+/* BEGIN shared-citations-css (inlined at emit time from skills/shared/citations/assets/template.html) */
+/* END shared-citations-css */
+</style>
+</head>
+<body>
+<div class="page">
+<div class="cover cover-simple">
+  <div>
+    <div class="cover-logo">Moody's<div class="cover-agentic">AGENTIC SOLUTIONS</div></div>
+    <div class="cover-title">Issuer Brief<br><strong id="pib-cover-company"></strong></div>
+  </div>
+  <div class="cover-meta">
+    <span><strong>Company:</strong> <span id="pib-company"></span></span>
+    <span><strong>Date:</strong> <span id="pib-date"></span></span>
+    <span><strong>Type:</strong> Issuer Brief</span>
+  </div>
+</div>
+<div class="toc-page">
+<div class="toc-heading">Contents</div>
+<ul class="toc-list">
+<li><span class="toc-num">01</span><a href="#sec-overview"><span class="toc-label">Company Overview</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">02</span><a href="#sec-segments"><span class="toc-label">Business Segments and Operations</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">03</span><a href="#sec-financials"><span class="toc-label">Historical Financials</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">04</span><a href="#sec-shareprice"><span class="toc-label">Share Price Performance and Valuation</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">05</span><a href="#sec-peers"><span class="toc-label">Peer Comparison and Competitive Landscape</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">06</span><a href="#sec-industry"><span class="toc-label">Industry Overview and Trends</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">07</span><a href="#sec-strategy"><span class="toc-label">Strategic Developments</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">08</span><a href="#sec-mgmt"><span class="toc-label">Management and Governance</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">09</span><a href="#sec-credit"><span class="toc-label">Credit Profile</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">10</span><a href="#sec-risks"><span class="toc-label">Risks and Challenges</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">11</span><a href="#sec-esg"><span class="toc-label">ESG Profile</span></a><span class="toc-dots"></span></li>
+<li><span class="toc-num">12</span><a href="#pib-sources-anchor"><span class="toc-label">Citations</span></a><span class="toc-dots"></span></li>
+</ul>
+</div>
+<div class="report-body">
+
+<div id="sec-overview" class="section">
+<div class="section-heading">1. Company Overview</div>
+<div class="section-content" id="pib-overview"></div>
+<div id="pib-cite-a"></div>
+</div>
+
+<div id="sec-segments" class="section">
+<div class="section-heading">2. Business Segments and Operations</div>
+<div class="section-content">
+<div id="pib-segments-intro"></div>
+<ul id="pib-segments-list"></ul>
+<div id="pib-segments-outro"></div>
+<div id="pib-cite-b"></div>
+</div>
+</div>
+
+<div id="sec-financials" class="section">
+<div class="section-heading">3. Historical Financials</div>
+<div class="section-content">
+<table class="fin-table" id="pib-fin-table">
+<thead>
+<tr>
+<th>Financial Items (in millions)</th>
+<th id="pib-fin-col-1"></th>
+<th id="pib-fin-col-2"></th>
+<th id="pib-fin-col-3"></th>
+<th id="pib-fin-col-4"></th>
+<th id="pib-fin-col-5"></th>
+<th id="pib-fin-col-6"></th>
+<th id="pib-fin-col-7"></th>
+<th id="pib-fin-col-8"></th>
+</tr>
+</thead>
+<tbody>
+<tr><td class="row-label">Revenues (net sales)</td><td id="pib-fin-r1-c1"></td><td id="pib-fin-r1-c2"></td><td id="pib-fin-r1-c3"></td><td id="pib-fin-r1-c4"></td><td id="pib-fin-r1-c5"></td><td id="pib-fin-r1-c6"></td><td id="pib-fin-r1-c7"></td><td id="pib-fin-r1-c8"></td></tr>
+<tr><td class="row-label">Gross profit</td><td id="pib-fin-r2-c1"></td><td id="pib-fin-r2-c2"></td><td id="pib-fin-r2-c3"></td><td id="pib-fin-r2-c4"></td><td id="pib-fin-r2-c5"></td><td id="pib-fin-r2-c6"></td><td id="pib-fin-r2-c7"></td><td id="pib-fin-r2-c8"></td></tr>
+<tr><td class="row-label">SG&amp;A</td><td id="pib-fin-r3-c1"></td><td id="pib-fin-r3-c2"></td><td id="pib-fin-r3-c3"></td><td id="pib-fin-r3-c4"></td><td id="pib-fin-r3-c5"></td><td id="pib-fin-r3-c6"></td><td id="pib-fin-r3-c7"></td><td id="pib-fin-r3-c8"></td></tr>
+<tr><td class="row-label">Operating expenses</td><td id="pib-fin-r4-c1"></td><td id="pib-fin-r4-c2"></td><td id="pib-fin-r4-c3"></td><td id="pib-fin-r4-c4"></td><td id="pib-fin-r4-c5"></td><td id="pib-fin-r4-c6"></td><td id="pib-fin-r4-c7"></td><td id="pib-fin-r4-c8"></td></tr>
+<tr><td class="row-label">Net income</td><td id="pib-fin-r5-c1"></td><td id="pib-fin-r5-c2"></td><td id="pib-fin-r5-c3"></td><td id="pib-fin-r5-c4"></td><td id="pib-fin-r5-c5"></td><td id="pib-fin-r5-c6"></td><td id="pib-fin-r5-c7"></td><td id="pib-fin-r5-c8"></td></tr>
+<tr><td class="row-label">EBITDA</td><td id="pib-fin-r6-c1"></td><td id="pib-fin-r6-c2"></td><td id="pib-fin-r6-c3"></td><td id="pib-fin-r6-c4"></td><td id="pib-fin-r6-c5"></td><td id="pib-fin-r6-c6"></td><td id="pib-fin-r6-c7"></td><td id="pib-fin-r6-c8"></td></tr>
+<tr><td class="row-label">FCF</td><td id="pib-fin-r7-c1"></td><td id="pib-fin-r7-c2"></td><td id="pib-fin-r7-c3"></td><td id="pib-fin-r7-c4"></td><td id="pib-fin-r7-c5"></td><td id="pib-fin-r7-c6"></td><td id="pib-fin-r7-c7"></td><td id="pib-fin-r7-c8"></td></tr>
+<tr><td class="row-label">CAPEX</td><td id="pib-fin-r8-c1"></td><td id="pib-fin-r8-c2"></td><td id="pib-fin-r8-c3"></td><td id="pib-fin-r8-c4"></td><td id="pib-fin-r8-c5"></td><td id="pib-fin-r8-c6"></td><td id="pib-fin-r8-c7"></td><td id="pib-fin-r8-c8"></td></tr>
+<tr><td class="row-label">Share repurchased</td><td id="pib-fin-r9-c1"></td><td id="pib-fin-r9-c2"></td><td id="pib-fin-r9-c3"></td><td id="pib-fin-r9-c4"></td><td id="pib-fin-r9-c5"></td><td id="pib-fin-r9-c6"></td><td id="pib-fin-r9-c7"></td><td id="pib-fin-r9-c8"></td></tr>
+<tr><td class="row-label">Dividends</td><td id="pib-fin-r10-c1"></td><td id="pib-fin-r10-c2"></td><td id="pib-fin-r10-c3"></td><td id="pib-fin-r10-c4"></td><td id="pib-fin-r10-c5"></td><td id="pib-fin-r10-c6"></td><td id="pib-fin-r10-c7"></td><td id="pib-fin-r10-c8"></td></tr>
+<tr><td class="row-label">Cash Flow from operations</td><td id="pib-fin-r11-c1"></td><td id="pib-fin-r11-c2"></td><td id="pib-fin-r11-c3"></td><td id="pib-fin-r11-c4"></td><td id="pib-fin-r11-c5"></td><td id="pib-fin-r11-c6"></td><td id="pib-fin-r11-c7"></td><td id="pib-fin-r11-c8"></td></tr>
+<tr><td class="row-label">Taxes paid</td><td id="pib-fin-r12-c1"></td><td id="pib-fin-r12-c2"></td><td id="pib-fin-r12-c3"></td><td id="pib-fin-r12-c4"></td><td id="pib-fin-r12-c5"></td><td id="pib-fin-r12-c6"></td><td id="pib-fin-r12-c7"></td><td id="pib-fin-r12-c8"></td></tr>
+<tr><td class="row-label">Cash &amp; Equivalents</td><td id="pib-fin-r13-c1"></td><td id="pib-fin-r13-c2"></td><td id="pib-fin-r13-c3"></td><td id="pib-fin-r13-c4"></td><td id="pib-fin-r13-c5"></td><td id="pib-fin-r13-c6"></td><td id="pib-fin-r13-c7"></td><td id="pib-fin-r13-c8"></td></tr>
+<tr><td class="row-label">Total debt</td><td id="pib-fin-r14-c1"></td><td id="pib-fin-r14-c2"></td><td id="pib-fin-r14-c3"></td><td id="pib-fin-r14-c4"></td><td id="pib-fin-r14-c5"></td><td id="pib-fin-r14-c6"></td><td id="pib-fin-r14-c7"></td><td id="pib-fin-r14-c8"></td></tr>
+<tr><td class="row-label">Net debt</td><td id="pib-fin-r15-c1"></td><td id="pib-fin-r15-c2"></td><td id="pib-fin-r15-c3"></td><td id="pib-fin-r15-c4"></td><td id="pib-fin-r15-c5"></td><td id="pib-fin-r15-c6"></td><td id="pib-fin-r15-c7"></td><td id="pib-fin-r15-c8"></td></tr>
+<tr><td class="row-label">Total Debt/EBITDA</td><td id="pib-fin-r16-c1"></td><td id="pib-fin-r16-c2"></td><td id="pib-fin-r16-c3"></td><td id="pib-fin-r16-c4"></td><td id="pib-fin-r16-c5"></td><td id="pib-fin-r16-c6"></td><td id="pib-fin-r16-c7"></td><td id="pib-fin-r16-c8"></td></tr>
+<tr><td class="row-label">Net Debt/EBITDA</td><td id="pib-fin-r17-c1"></td><td id="pib-fin-r17-c2"></td><td id="pib-fin-r17-c3"></td><td id="pib-fin-r17-c4"></td><td id="pib-fin-r17-c5"></td><td id="pib-fin-r17-c6"></td><td id="pib-fin-r17-c7"></td><td id="pib-fin-r17-c8"></td></tr>
+<tr><td class="row-label">ROE</td><td id="pib-fin-r18-c1"></td><td id="pib-fin-r18-c2"></td><td id="pib-fin-r18-c3"></td><td id="pib-fin-r18-c4"></td><td id="pib-fin-r18-c5"></td><td id="pib-fin-r18-c6"></td><td id="pib-fin-r18-c7"></td><td id="pib-fin-r18-c8"></td></tr>
+<tr><td class="row-label">EPS</td><td id="pib-fin-r19-c1"></td><td id="pib-fin-r19-c2"></td><td id="pib-fin-r19-c3"></td><td id="pib-fin-r19-c4"></td><td id="pib-fin-r19-c5"></td><td id="pib-fin-r19-c6"></td><td id="pib-fin-r19-c7"></td><td id="pib-fin-r19-c8"></td></tr>
+</tbody>
+</table>
+<strong class="subsection-title">Financial Summary</strong>
+<div id="pib-fin-summary"></div>
+<strong class="subsection-title">Recent Earnings Call Highlights</strong>
+<div id="pib-fin-highlights"></div>
+<strong class="subsection-title">Historical Financial Analysis</strong>
+<div id="pib-fin-analysis"></div>
+<div id="pib-cite-c"></div>
+</div>
+</div>
+
+<div id="sec-shareprice" class="section">
+<div class="section-heading">4. Share Price Performance and Valuation</div>
+<div class="section-content">
+<strong class="subsection-title">Monthly Share Price</strong>
+<div id="pib-shareprice-monthly-chart"></div>
+<div id="pib-shareprice-monthly-analysis"></div>
+<strong class="subsection-title">Peer Share Price Comparison</strong>
+<div id="pib-shareprice-peer-chart"></div>
+<div id="pib-shareprice-peer-analysis"></div>
+<strong class="subsection-title">Valuation Analysis</strong>
+
+<strong class="subsection-title">Market &amp; Price Data</strong>
+<table class="data-table" id="pib-val-1">
+<thead><tr><th>Line item</th><th id="pib-val-col-1"></th><th id="pib-val-col-2"></th><th id="pib-val-col-3"></th><th id="pib-val-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Market Capitalization / Sales</td><td id="pib-val-1-r1-c1"></td><td id="pib-val-1-r1-c2"></td><td id="pib-val-1-r1-c3"></td><td id="pib-val-1-r1-c4"></td></tr>
+<tr><td>Market Capitalization / EBITDA</td><td id="pib-val-1-r2-c1"></td><td id="pib-val-1-r2-c2"></td><td id="pib-val-1-r2-c3"></td><td id="pib-val-1-r2-c4"></td></tr>
+<tr><td>Debt / Market Capitalization</td><td id="pib-val-1-r3-c1"></td><td id="pib-val-1-r3-c2"></td><td id="pib-val-1-r3-c3"></td><td id="pib-val-1-r3-c4"></td></tr>
+<tr><td>Market Capitalization / Book Value</td><td id="pib-val-1-r4-c1"></td><td id="pib-val-1-r4-c2"></td><td id="pib-val-1-r4-c3"></td><td id="pib-val-1-r4-c4"></td></tr>
+</tbody>
+</table>
+<div id="pib-val-1-analysis"></div>
+
+<strong class="subsection-title">Profitability Metrics</strong>
+<table class="data-table" id="pib-val-2">
+<thead><tr><th>Line item</th><th id="pib-val-2-col-1"></th><th id="pib-val-2-col-2"></th><th id="pib-val-2-col-3"></th><th id="pib-val-2-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Revenue</td><td id="pib-val-2-r1-c1"></td><td id="pib-val-2-r1-c2"></td><td id="pib-val-2-r1-c3"></td><td id="pib-val-2-r1-c4"></td></tr>
+<tr><td>EBITDA</td><td id="pib-val-2-r2-c1"></td><td id="pib-val-2-r2-c2"></td><td id="pib-val-2-r2-c3"></td><td id="pib-val-2-r2-c4"></td></tr>
+<tr><td>EBITDA Margin</td><td id="pib-val-2-r3-c1"></td><td id="pib-val-2-r3-c2"></td><td id="pib-val-2-r3-c3"></td><td id="pib-val-2-r3-c4"></td></tr>
+<tr><td>EBIT Margin</td><td id="pib-val-2-r4-c1"></td><td id="pib-val-2-r4-c2"></td><td id="pib-val-2-r4-c3"></td><td id="pib-val-2-r4-c4"></td></tr>
+<tr><td>Net Income</td><td id="pib-val-2-r5-c1"></td><td id="pib-val-2-r5-c2"></td><td id="pib-val-2-r5-c3"></td><td id="pib-val-2-r5-c4"></td></tr>
+<tr><td>ROE</td><td id="pib-val-2-r6-c1"></td><td id="pib-val-2-r6-c2"></td><td id="pib-val-2-r6-c3"></td><td id="pib-val-2-r6-c4"></td></tr>
+<tr><td>ROA</td><td id="pib-val-2-r7-c1"></td><td id="pib-val-2-r7-c2"></td><td id="pib-val-2-r7-c3"></td><td id="pib-val-2-r7-c4"></td></tr>
+<tr><td>Operating Margin</td><td id="pib-val-2-r8-c1"></td><td id="pib-val-2-r8-c2"></td><td id="pib-val-2-r8-c3"></td><td id="pib-val-2-r8-c4"></td></tr>
+</tbody>
+</table>
+<div id="pib-val-2-analysis"></div>
+
+<strong class="subsection-title">Leverage &amp; Coverage</strong>
+<table class="data-table" id="pib-val-3">
+<thead><tr><th>Line item</th><th id="pib-val-3-col-1"></th><th id="pib-val-3-col-2"></th><th id="pib-val-3-col-3"></th><th id="pib-val-3-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Debt / EBITDA</td><td id="pib-val-3-r1-c1"></td><td id="pib-val-3-r1-c2"></td><td id="pib-val-3-r1-c3"></td><td id="pib-val-3-r1-c4"></td></tr>
+<tr><td>Total Debt</td><td id="pib-val-3-r2-c1"></td><td id="pib-val-3-r2-c2"></td><td id="pib-val-3-r2-c3"></td><td id="pib-val-3-r2-c4"></td></tr>
+<tr><td>Interest Coverage</td><td id="pib-val-3-r3-c1"></td><td id="pib-val-3-r3-c2"></td><td id="pib-val-3-r3-c3"></td><td id="pib-val-3-r3-c4"></td></tr>
+<tr><td>FCF / Debt</td><td id="pib-val-3-r4-c1"></td><td id="pib-val-3-r4-c2"></td><td id="pib-val-3-r4-c3"></td><td id="pib-val-3-r4-c4"></td></tr>
+</tbody>
+</table>
+<div id="pib-val-3-analysis"></div>
+
+<strong class="subsection-title">Cash Flow &amp; Efficiency</strong>
+<table class="data-table" id="pib-val-4">
+<thead><tr><th>Line item</th><th id="pib-val-4-col-1"></th><th id="pib-val-4-col-2"></th><th id="pib-val-4-col-3"></th><th id="pib-val-4-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Free Cash Flow</td><td id="pib-val-4-r1-c1"></td><td id="pib-val-4-r1-c2"></td><td id="pib-val-4-r1-c3"></td><td id="pib-val-4-r1-c4"></td></tr>
+<tr><td>CAPEX / Revenue</td><td id="pib-val-4-r2-c1"></td><td id="pib-val-4-r2-c2"></td><td id="pib-val-4-r2-c3"></td><td id="pib-val-4-r2-c4"></td></tr>
+</tbody>
+</table>
+<div id="pib-val-4-analysis"></div>
+
+<strong class="subsection-title">Earnings &amp; Shareholder Returns</strong>
+<table class="data-table" id="pib-val-5">
+<thead><tr><th>Line item</th><th id="pib-val-5-col-1"></th><th id="pib-val-5-col-2"></th><th id="pib-val-5-col-3"></th><th id="pib-val-5-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Basic EPS</td><td id="pib-val-5-r1-c1"></td><td id="pib-val-5-r1-c2"></td><td id="pib-val-5-r1-c3"></td><td id="pib-val-5-r1-c4"></td></tr>
+<tr><td>Diluted EPS</td><td id="pib-val-5-r2-c1"></td><td id="pib-val-5-r2-c2"></td><td id="pib-val-5-r2-c3"></td><td id="pib-val-5-r2-c4"></td></tr>
+<tr><td>Dividends as % of NPATBUI</td><td id="pib-val-5-r3-c1"></td><td id="pib-val-5-r3-c2"></td><td id="pib-val-5-r3-c3"></td><td id="pib-val-5-r3-c4"></td></tr>
+</tbody>
+</table>
+<div id="pib-val-5-analysis"></div>
+<div id="pib-cite-d"></div>
+</div>
+</div>
+
+<div id="sec-peers" class="section">
+<div class="section-heading">5. Peer Comparison and Competitive Landscape</div>
+<div class="section-content">
+<div id="pib-peers-intro"></div>
+<strong class="subsection-title">Peers</strong>
+<table class="data-table"><thead><tr><th>Name</th><th>Description</th></tr></thead>
+<tbody id="pib-peers-table"></tbody>
+</table>
+<strong class="subsection-title">Peers Rating</strong>
+<table class="data-table"><thead><tr><th>Company</th><th>Rating</th><th>Outlook</th></tr></thead>
+<tbody id="pib-peers-rating"></tbody>
+</table>
+<strong class="subsection-title">Quantitative Comparison (Key Indicators)</strong>
+<table class="data-table" id="pib-ki-table">
+<thead><tr><th>Account Name</th><th id="pib-ki-col-1"></th><th id="pib-ki-col-2"></th><th id="pib-ki-col-3"></th><th id="pib-ki-col-4"></th></tr></thead>
+<tbody>
+<tr><td>Revenue</td><td id="pib-ki-r1-c1"></td><td id="pib-ki-r1-c2"></td><td id="pib-ki-r1-c3"></td><td id="pib-ki-r1-c4"></td></tr>
+<tr><td>EBITDA</td><td id="pib-ki-r2-c1"></td><td id="pib-ki-r2-c2"></td><td id="pib-ki-r2-c3"></td><td id="pib-ki-r2-c4"></td></tr>
+<tr><td>EBITDA Margin</td><td id="pib-ki-r3-c1"></td><td id="pib-ki-r3-c2"></td><td id="pib-ki-r3-c3"></td><td id="pib-ki-r3-c4"></td></tr>
+<tr><td>Debt / EBITDA</td><td id="pib-ki-r4-c1"></td><td id="pib-ki-r4-c2"></td><td id="pib-ki-r4-c3"></td><td id="pib-ki-r4-c4"></td></tr>
+<tr><td>Interest Coverage</td><td id="pib-ki-r5-c1"></td><td id="pib-ki-r5-c2"></td><td id="pib-ki-r5-c3"></td><td id="pib-ki-r5-c4"></td></tr>
+<tr><td>Total Debt</td><td id="pib-ki-r6-c1"></td><td id="pib-ki-r6-c2"></td><td id="pib-ki-r6-c3"></td><td id="pib-ki-r6-c4"></td></tr>
+<tr><td>Net Debt</td><td id="pib-ki-r7-c1"></td><td id="pib-ki-r7-c2"></td><td id="pib-ki-r7-c3"></td><td id="pib-ki-r7-c4"></td></tr>
+<tr><td>Free Cash Flow</td><td id="pib-ki-r8-c1"></td><td id="pib-ki-r8-c2"></td><td id="pib-ki-r8-c3"></td><td id="pib-ki-r8-c4"></td></tr>
+</tbody>
+</table>
+<strong class="subsection-title">Conclusion</strong>
+<div id="pib-peers-conclusion"></div>
+<div id="pib-cite-e"></div>
+</div>
+</div>
+
+<div id="sec-industry" class="section">
+<div class="section-heading">6. Industry Overview and Trends</div>
+<div class="section-content" id="pib-industry"></div>
+<div id="pib-cite-f"></div>
+</div>
+
+<div id="sec-strategy" class="section">
+<div class="section-heading">7. Strategic Developments</div>
+<div class="section-content">
+<ul id="pib-strategy-list"></ul>
+<div id="pib-cite-g"></div>
+</div>
+</div>
+
+<div id="sec-mgmt" class="section">
+<div class="section-heading">8. Management and Governance</div>
+<div class="section-content" id="pib-mgmt"></div>
+<div id="pib-cite-h"></div>
+</div>
+
+<div id="sec-credit" class="section">
+<div class="section-heading">9. Credit Profile</div>
+<div class="section-content">
+<div id="pib-credit-analysis"></div>
+<div id="pib-credit-chart"></div>
+<table class="data-table"><thead><tr><th>Rating Class</th><th>Assigned Rating</th><th>Assigned Outlook</th><th>Rating Action Date</th></tr></thead>
+<tbody id="pib-rating-table"></tbody>
+</table>
+<div id="pib-cite-i"></div>
+</div>
+</div>
+
+<div id="sec-risks" class="section">
+<div class="section-heading">10. Risks and Challenges</div>
+<div class="section-content">
+<div id="pib-risks-narrative"></div>
+<table class="data-table"><thead><tr><th>Risk Category</th><th>Description</th><th>Potential Impact</th><th>Mitigation Strategy</th></tr></thead>
+<tbody id="pib-risk-table"></tbody>
+</table>
+<div id="pib-cite-j"></div>
+</div>
+</div>
+
+<div id="sec-esg" class="section">
+<div class="section-heading">11. ESG Profile</div>
+<div class="section-content">
+<div id="pib-esg-narrative"></div>
+<strong class="subsection-title">ESG Performance Summary</strong>
+<table class="data-table" id="pib-esg-table">
+<thead><tr><th>Category</th><th>Key Focus Areas</th><th>Moody's ESG Score</th></tr></thead>
+<tbody>
+<tr><td>Environmental</td><td id="pib-esg-r1-focus"></td><td id="pib-esg-r1-score"></td></tr>
+<tr><td>Social</td><td id="pib-esg-r2-focus"></td><td id="pib-esg-r2-score"></td></tr>
+<tr><td>Governance</td><td id="pib-esg-r3-focus"></td><td id="pib-esg-r3-score"></td></tr>
+</tbody>
+</table>
+<div id="pib-cite-k"></div>
+</div>
+</div>
+
+<div class="sources-section" id="pib-sources-anchor">
+<div class="sources-heading">Citations</div>
+<div id="pib-sources"></div>
+</div>
+</div>
+<div class="report-footer">
+<span class="footer-logo">Moody's <span style="font-weight:400;color:#8fa8d0;">AGENTIC SOLUTIONS</span></span>
+<span>Report generated <span id="pib-footer-date"></span> • Confidential</span>
+</div>
+</div>
+</body>
+</html>
