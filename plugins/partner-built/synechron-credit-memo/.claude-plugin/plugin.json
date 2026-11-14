@@ -1,0 +1,8 @@
+{
+  "name": "credit-memo-generation",
+  "version": "1.0.0",
+  "description": "Generate comprehensive, professional Credit Memorandums for loan analysis. Automatically collects 3–5 years of financial data from SEC EDGAR, Stock Analysis, Moody's, S&P, Fitch, and SerpApi. Supports public and private companies. Outputs Word (.docx), PDF, and PowerPoint with 10 embedded charts. Includes full financial, risk, repayment, industry, and management analysis with a 5-layer guardrails system.",
+  "author": {
+    "name": "Synechron Technologies PVT LTD"
+  }
+}
