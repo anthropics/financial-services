@@ -1,0 +1,40 @@
+{
+  "categories": [
+    {
+      "id": "market-data",
+      "display_name": "Market Data",
+      "servers": [
+        { "id": "daloopa", "name": "Daloopa" },
+        { "id": "morningstar", "name": "Morningstar" },
+        { "id": "factset", "name": "FactSet" },
+        { "id": "lseg", "name": "LSEG" },
+        { "id": "moodys", "name": "Moody's" },
+        { "id": "sp-global", "name": "S&P Global" }
+      ]
+    },
+    {
+      "id": "financial-analytics",
+      "display_name": "Financial Analytics",
+      "servers": [
+        { "id": "aiera", "name": "Aiera" },
+        { "id": "chronograph", "name": "Chronograph" }
+      ]
+    },
+    {
+      "id": "research-and-news",
+      "display_name": "Research & News",
+      "servers": [
+        { "id": "pitchbook", "name": "PitchBook" },
+        { "id": "mtnewswire", "name": "MT Newswire" }
+      ]
+    },
+    {
+      "id": "document-storage",
+      "display_name": "Document Storage",
+      "servers": [
+        { "id": "egnyte", "name": "Egnyte" },
+        { "id": "box", "name": "Box" }
+      ]
+    }
+  ]
+}
