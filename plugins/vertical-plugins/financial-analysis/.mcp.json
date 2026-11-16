@@ -47,6 +47,10 @@
     "box": {
       "type": "http",
       "url": "https://mcp.box.com"
+    },
+    "valuedge": {
+      "type": "http",
+      "url": "https://valuedge.app/mcp"
     }
   }
 }
