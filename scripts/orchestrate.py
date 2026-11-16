@@ -37,9 +37,12 @@ HANDOFF_PAYLOAD_SCHEMA = {
     },
 }
 
-HANDOFF_RE = re.compile(
-    r'\{"type":\s*"handoff_request".*?\}', re.DOTALL
-)
+# Marks where a handoff blob starts; the object itself is parsed with
+# json.JSONDecoder.raw_decode from that position, which consumes exactly one
+# complete JSON value. A regex that tries to also match the closing brace
+# (e.g. `.*?\}`) stops at the first `}` and truncates any handoff whose
+# payload is a nested object -- i.e. every valid one.
+HANDOFF_RE = re.compile(r'\{"type":\s*"handoff_request"')
 
 
 def extract_handoff(text: str) -> dict | None:
@@ -47,7 +50,7 @@ def extract_handoff(text: str) -> dict | None:
     if not m:
         return None
     try:
-        obj = json.loads(m.group(0))
+        obj, _ = json.JSONDecoder().raw_decode(text, m.start())
     except json.JSONDecodeError:
         return None
     target = obj.get("target_agent")
