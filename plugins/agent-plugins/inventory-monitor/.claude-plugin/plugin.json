@@ -1,0 +1,8 @@
+{
+  "name": "inventory-monitor",
+  "version": "0.1.0",
+  "description": "Monitors stock levels across coffee shop locations, compares against par levels, detects shortfalls, and triggers reorder alerts to the Supplier Order Agent",
+  "author": {
+    "name": "Anthropic FSI"
+  }
+}
