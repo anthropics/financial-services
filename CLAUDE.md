@@ -48,3 +48,7 @@ Run `python3 scripts/check.py` before committing — it lints every manifest, ve
 1. Edit markdown files directly - changes take effect immediately
 2. Test commands with `/plugin:command-name` syntax
 3. Skills are invoked automatically when their trigger conditions match
+
+## Display Conventions
+
+- **Precious metals:** Always show the matching ETF ticker price alongside the metal's spot price — **GLD** with gold (XAU/USD) and **SLV** with silver (XAG/USD). Applies to chat answers and any dashboard/report.
