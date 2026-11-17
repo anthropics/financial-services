@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "certnode-provenance": {
+      "command": "npx",
+      "args": ["-y", "@certnode/mcp-server"],
+      "env": {
+        "CERTNODE_API_KEY": "${CERTNODE_API_KEY}"
+      }
+    }
+  }
+}
