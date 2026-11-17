@@ -1,0 +1,4 @@
+# News Sentiment Brief - Python Dependencies
+
+# Excel file handling (used by scripts/validate_sentiment.py)
+openpyxl>=3.0.0
