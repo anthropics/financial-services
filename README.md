@@ -42,6 +42,7 @@ plugins/
   partner-built/               # Partner-authored plugins (LSEG, S&P Global)
 managed-agent-cookbooks/       # Claude Managed Agent cookbooks — one dir per agent
 claude-for-msft-365-install/   # Admin tooling to provision the Claude Microsoft 365 add-in
+sample-data/                   # Synthetic CSVs for demos, smoke tests, and prompt development
 scripts/                       # deploy-managed-agent.sh · check.py · validate.py · orchestrate.py · sync-agent-skills.py
 ```
 
