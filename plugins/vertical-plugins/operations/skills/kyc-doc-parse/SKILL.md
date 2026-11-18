@@ -35,6 +35,7 @@ Produce one JSON record. Use `null` for any field not found — do not guess.
   "registered_address": "...",
   "id_documents": [{"type": "...", "number": "...", "expiry": "YYYY-MM-DD", "issuer": "..."}],
   "beneficial_owners": [{"name": "...", "dob": "...", "nationality": "...", "ownership_pct": 0, "control_basis": "ownership | voting | other"}],
+  "ownership_links": [{"owner": "...", "owned": "...", "pct": 0}],
   "controllers": [{"name": "...", "role": "director | trustee | authorised signatory"}],
   "source_of_funds": "one-line description with doc reference",
   "pep_declared": true,
@@ -42,6 +43,8 @@ Produce one JSON record. Use `null` for any field not found — do not guess.
   "documents_received": [{"type": "...", "ref": "...", "date": "YYYY-MM-DD"}]
 }
 ```
+
+`ownership_links` is every holding shown in the org chart or register of members, intermediate holding companies included: one row per link, with that link's own direct share as stated (not multiplied through the chain). Use `null` for a share the documents do not give, and `[low, high]` for a band such as "25-50%".
 
 ## Step 3: Flag obvious gaps
 
