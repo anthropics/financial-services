@@ -35,3 +35,13 @@ output_schema:
         properties:
           name:    { type: string, maxLength: 200, pattern: "^[A-Za-z0-9 .,'_-]+$" }
           pct:     { type: number }
+    links:
+      type: array
+      maxItems: 200
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          owner:   { type: string, maxLength: 200, pattern: "^[A-Za-z0-9 .,'&_/-]+$" }
+          owned:   { type: string, maxLength: 200, pattern: "^[A-Za-z0-9 .,'&_/-]+$" }
+          pct:     { type: [number, "null"] }
