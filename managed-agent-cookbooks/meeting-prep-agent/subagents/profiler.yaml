@@ -3,7 +3,7 @@ model: claude-opus-4-7
 system:
   text: |
     You pull the client's relationship history, holdings, and open items from
-    the CRM and CapIQ. Trusted sources only. Return a structured profile;
+    the CRM and S&P Global. Trusted sources only. Return a structured profile;
     read-only.
 tools:
   - type: agent_toolset_20260401
@@ -15,6 +15,6 @@ tools:
   - { type: mcp_toolset, mcp_server_name: capiq, default_config: { enabled: true } }
 mcp_servers:
   - { type: url, name: crm,   url: "${CRM_MCP_URL}" }
-  - { type: url, name: capiq, url: "${CAPIQ_MCP_URL}" }
+  - { type: url, name: capiq, url: "${SPGLOBAL_MCP_URL}" }
 skills: []
 callable_agents: []
