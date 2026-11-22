@@ -1,0 +1,364 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://second-line-financial-services/plugins/capability-plugins/risk-compliance-core/skills/policy-gap-review/schemas/policy-gap-matrix.schema.json",
+  "title": "policy-gap-matrix",
+  "description": "Structured gap matrix produced by the policy-gap-review skill. The matrix carries one row per gap between a firm policy and a named, dated benchmark of obligations or supervisory expectations. Foundational primitive consumed by issue-writeup (rows whose severity warrants tracking as findings), obligation-mapping (rows whose linked_obligation_ids is empty and which imply an obligation the register did not yet carry), control-matrix (rows whose gap has an operational dimension), and evidence-binder (evidence_needed asks). Stable contract: additive changes only between minor versions; breaking changes ship as a versioned migration.",
+  "type": "object",
+  "required": [
+    "review_id",
+    "as_of_date",
+    "policy_under_review",
+    "benchmark_sources",
+    "scope_of_review",
+    "source_posture",
+    "gaps",
+    "coverage_summary",
+    "confidence_label",
+    "human_review_required"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "description": "Semver of this schema. Default 1.0.0.",
+      "default": "1.0.0",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "review_id": {
+      "type": "string",
+      "description": "Stable identifier for this review instance. Reused across revisions of the same review.",
+      "minLength": 1
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date the review was last revised."
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Foreign key into scope.schema.json when the review was built under a formal scope."
+    },
+    "policy_under_review": {
+      "type": "object",
+      "required": ["policy_name", "policy_version", "owner_role"],
+      "additionalProperties": false,
+      "properties": {
+        "policy_name": {
+          "type": "string",
+          "description": "Named policy or set under review. Where a set, name the primary; supporting standards land in supporting_artefacts."
+        },
+        "policy_version": {
+          "type": "string",
+          "description": "Version label as the firm uses it (e.g., v6.1, 2025-Q1)."
+        },
+        "effective_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "owner_role": {
+          "type": "string",
+          "description": "Named role accountable for the policy. Generic labels are insufficient."
+        },
+        "document_identifier": {
+          "type": "string",
+          "description": "Internal doc ID, GRC platform record, or intranet URL."
+        },
+        "supporting_artefacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["artefact_name", "artefact_version"],
+            "additionalProperties": false,
+            "properties": {
+              "artefact_name": {"type": "string"},
+              "artefact_version": {"type": "string"},
+              "owner_role": {"type": "string"}
+            }
+          },
+          "description": "Supporting standards or procedures that fall in scope of the review alongside the primary policy."
+        }
+      }
+    },
+    "benchmark_sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["source_name", "section_references"],
+        "additionalProperties": false,
+        "properties": {
+          "source_name": {
+            "type": "string",
+            "description": "Named benchmark (e.g., 'OCC Bulletin 2026-13', 'Interagency Guidance on Third-Party Relationships (June 2023)', 'NIST AI RMF 1.0')."
+          },
+          "edition": {
+            "type": "string",
+            "description": "Edition, version, or amendment label."
+          },
+          "date": {
+            "type": "string",
+            "description": "Publication or effective date."
+          },
+          "section_references": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1,
+            "description": "Section references actually used as benchmark in this review. Use [verify section] in references/source-anchors.md when the exact reference is not yet confirmed; do not invent section labels."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "obligation_register_ref": {
+            "type": "string",
+            "description": "Foreign key into obligation-register.schema.json when the benchmark is an obligation register rather than the underlying source."
+          }
+        }
+      },
+      "description": "The benchmark list. A review without at least one named, dated benchmark with section references is internal-consistency editing, not a gap review."
+    },
+    "scope_of_review": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["policy_section"],
+        "additionalProperties": false,
+        "properties": {
+          "policy_section": {
+            "type": "string",
+            "description": "Section or heading of the policy actually read against the benchmark."
+          },
+          "benchmark_sources_used": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Names of benchmark sources used for this section."
+          }
+        }
+      },
+      "description": "Sections of the policy in scope of this review. Sections outside this list are not silently assumed compliant."
+    },
+    "source_posture": {
+      "type": "string",
+      "enum": [
+        "public-only",
+        "firm-policy-overlay",
+        "mixed"
+      ],
+      "description": "public-only: the matrix carries the policy text and the benchmark, no firm operational evidence. firm-policy-overlay: firm policies and standards augment the benchmark set. mixed: both, with named seams."
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "gap_id",
+          "benchmark_requirement",
+          "benchmark_source_anchor",
+          "gap_classification",
+          "severity",
+          "severity_rationale",
+          "recommended_edit",
+          "owner_role"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "gap_id": {
+            "type": "string",
+            "description": "Stable identifier scoped to this matrix. Downstream issue-writeup, obligation-mapping, and control-matrix consumers key off this ID.",
+            "minLength": 1
+          },
+          "benchmark_requirement": {
+            "type": "string",
+            "description": "One sentence stating what the benchmark requires. Paraphrase preserves the operative verb and operative object."
+          },
+          "benchmark_source_anchor": {
+            "type": "object",
+            "required": ["source_name", "section"],
+            "additionalProperties": false,
+            "properties": {
+              "source_name": {"type": "string"},
+              "section": {"type": "string"},
+              "date": {"type": "string"},
+              "url": {"type": "string", "format": "uri"}
+            }
+          },
+          "policy_text_excerpt": {
+            "type": "string",
+            "description": "Policy text on the topic. Verbatim where the wording is at issue; paraphrased where the issue is silence or scope. Where the policy is silent, value reads 'policy is silent'."
+          },
+          "policy_location": {
+            "type": "string",
+            "description": "Section number or heading in the policy. Where the policy is silent, value names the section the topic should sit under."
+          },
+          "gap_classification": {
+            "type": "string",
+            "enum": ["missing", "partial", "weak", "inconsistent", "outdated"],
+            "description": "missing: policy does not address the requirement at all. partial: addresses some but stops short. weak: addresses at lower rigor than the benchmark expects. inconsistent: contradicts the benchmark or another firm policy. outdated: reflects a prior edition of the benchmark."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "moderate", "high", "critical"],
+            "description": "Severity rating. Always carries human review; unattested severity is a proposal, not a rating."
+          },
+          "severity_rationale": {
+            "type": "string",
+            "description": "References materiality (against firm thresholds where they exist), supervisory exposure, customer impact, operational risk, and compensating practice. Severity without rationale is opinion."
+          },
+          "compensating_practice": {
+            "type": "string",
+            "description": "Operational practice (not a policy fix) that reduces the practical exposure pending the policy edit. 'none' or omitted when there is no compensating practice."
+          },
+          "recommended_edit": {
+            "type": "string",
+            "description": "Declarative voice. What the policy should say, summary-drafted to a level the policy author can work from."
+          },
+          "evidence_needed": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Operational artefacts beyond the text edit: standards updates, training, workflow changes, attestations. Mandatory on rows classified partial, weak, inconsistent, or outdated."
+          },
+          "linked_obligation_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Foreign keys into obligation.schema.json. Empty when the obligation register did not yet carry the obligation; the empty array routes a back-reference into obligation-mapping rather than fabricating an ID."
+          },
+          "linked_control_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Foreign keys into control.schema.json. Empty when the gap is purely textual; populated when the gap has a control dimension."
+          },
+          "owner_role": {
+            "type": "string",
+            "description": "Named role accountable for the policy section. 'Compliance' is not an owner; firm-specific role labels live in references/firm-overlay.md."
+          },
+          "row_confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Per-row confidence where the practitioner is reading between the lines or relying on a single secondary source. Optional; matrix-level confidence covers the default case."
+          }
+        }
+      },
+      "description": "The matrix rows. Order in the structured record does not bind the surface artifact's sequencing; a sign-off pack may sequence by severity, by policy section, or by benchmark source depending on audience."
+    },
+    "coverage_summary": {
+      "type": "object",
+      "required": [
+        "total_benchmark_items",
+        "covered_items",
+        "partial_items",
+        "missing_items"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_benchmark_items": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total benchmark requirements in scope of this review."
+        },
+        "covered_items": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Benchmark requirements the policy covers in full."
+        },
+        "partial_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "inconsistent_items": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "outdated_items": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "description": "Integer counts. Percentages are derived for the surface artifact; the structured record carries counts."
+    },
+    "out_of_scope_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "rationale"],
+        "additionalProperties": false,
+        "properties": {
+          "item": {
+            "type": "string",
+            "description": "Benchmark item the firm deliberately does not cover."
+          },
+          "rationale": {
+            "type": "string",
+            "description": "Why the firm does not cover the item. Threshold not met, institution-type exemption, deferred effective date, etc."
+          }
+        }
+      },
+      "description": "Audit-defence artefact. Reconstructed rationale is harder than written rationale."
+    },
+    "cross_policy_interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["other_policy", "interaction_type", "description"],
+        "additionalProperties": false,
+        "properties": {
+          "other_policy": {
+            "type": "string",
+            "description": "Named other firm policy this gap interacts with."
+          },
+          "interaction_type": {
+            "type": "string",
+            "enum": ["dependency", "conflict", "overlap"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "linked_gap_ids": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Gap IDs in this matrix involved in the cross-policy interaction."
+          }
+        }
+      },
+      "description": "Most material gaps interact with at least one other firm policy. Burying the interaction in commentary breaks the firm's overall governance architecture."
+    },
+    "recommended_next_steps": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Operational next steps: draft revisions for legal review, route to committee, schedule working session, schedule training refresh."
+    },
+    "confidence_label": {
+      "type": "string",
+      "enum": ["high", "medium", "low", "unknown"],
+      "description": "Author's confidence in the matrix as a whole. Per-row confidence available where the practitioner is reading between the lines."
+    },
+    "reviewer_questions": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Questions for the human reviewer at sign-off. Specific to this matrix; tied to a named gap, classification, severity rating, or cross-policy interaction."
+    },
+    "human_review_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Always true. The skill stops at draft; severity assignment always carries human review."
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "reason", "delta"],
+        "additionalProperties": false,
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "reason": {"type": "string"},
+          "delta": {"type": "string"},
+          "approved_by": {"type": "string"}
+        }
+      },
+      "description": "Append-only revision log."
+    }
+  }
+}

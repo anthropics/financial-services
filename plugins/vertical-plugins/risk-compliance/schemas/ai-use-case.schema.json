@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI use case intake",
+  "type": "object",
+  "required": [
+    "use_case_id",
+    "purpose",
+    "users",
+    "data_categories",
+    "autonomy_level",
+    "decision_impact",
+    "risk_tier",
+    "human_review_required"
+  ],
+  "properties": {
+    "use_case_id": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "users": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "data_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "model_type": {
+      "type": "string"
+    },
+    "vendor_or_internal": {
+      "enum": [
+        "vendor",
+        "internal",
+        "hybrid",
+        "unknown"
+      ]
+    },
+    "autonomy_level": {
+      "enum": [
+        "assistive",
+        "human-in-loop",
+        "human-on-loop",
+        "autonomous",
+        "unknown"
+      ]
+    },
+    "decision_impact": {
+      "enum": [
+        "low",
+        "moderate",
+        "high",
+        "material-customer-impact",
+        "unknown"
+      ]
+    },
+    "risk_tier": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical",
+        "needs-review"
+      ]
+    },
+    "human_review_required": {
+      "type": "boolean"
+    }
+  }
+}

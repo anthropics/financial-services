@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Third-party arrangement",
+  "type": "object",
+  "required": [
+    "arrangement_id",
+    "service_type",
+    "criticality",
+    "data_access",
+    "subcontractors",
+    "exit_plan_status",
+    "owner"
+  ],
+  "properties": {
+    "arrangement_id": {
+      "type": "string"
+    },
+    "service_type": {
+      "type": "string"
+    },
+    "criticality": {
+      "enum": [
+        "not-critical",
+        "important",
+        "critical",
+        "unknown"
+      ]
+    },
+    "data_access": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "subcontractors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "contract_gap_summary": {
+      "type": "string"
+    },
+    "exit_plan_status": {
+      "enum": [
+        "complete",
+        "draft",
+        "missing",
+        "not-applicable"
+      ]
+    },
+    "owner": {
+      "type": "string"
+    }
+  }
+}
