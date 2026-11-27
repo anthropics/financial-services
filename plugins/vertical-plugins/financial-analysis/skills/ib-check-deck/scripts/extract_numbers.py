@@ -58,7 +58,7 @@ def normalize_number(value_str: str, unit: str) -> float:
     }
 
     for unit_key in sorted(multipliers.keys(), key=len, reverse=True):
-        if unit_key.lower() in unit.lower():
+        if re.search(rf'(?<![a-z]){re.escape(unit_key.lower())}(?![a-z])', unit.lower()):
             return base_value * multipliers[unit_key]
 
     return base_value
